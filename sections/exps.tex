@@ -1,0 +1,101 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+\subsection{Research Questions}
+
+We evaluate five questions: \textbf{RQ1} Can the method reconstruct multi-step episodes from heterogeneous evidence? \textbf{RQ2} Does it improve risk ranking and calibration relative to static correlation, graph-oriented baselines, and direct LLM/RAG triage? \textbf{RQ3} Does performance degrade gracefully under telemetry loss, benign operational drift, and misleading CTI? \textbf{RQ4} Can it provide analyst-verifiable evidence traces? \textbf{RQ5} Is the system operationally feasible in realistic telemetry conditions?
+
+\subsection{Three-Tier Experimental Setting}
+\label{sec:setting}
+
+\paragraph{Tier 1: Public provenance-rich traces.} We use selected DARPA Transparent Computing (TC) engagement traces to support reproducible multi-step attack analysis. The TC program provides public materials for provenance-oriented security research~\cite{darpatc}. These traces are appropriate for evaluating temporal and causal episode formation, but they are not equivalent to long-lived production enterprise telemetry. Attack reports and scenario labels are used only as ground truth; they are excluded from the RAG corpus to avoid label leakage.
+
+\paragraph{Tier 2: Controlled Caldera BAS.} We construct an isolated laboratory with a Caldera control node, Linux and Windows endpoints, EDR and NDR collection, central logging, identity observations, asset inventory, curated CTI, and the \trustepisode scoring service. Caldera is an ATT\&CK-aligned automated adversary-emulation platform~\cite{caldera}. Scenario families include non-destructive APT-style chains (execution, discovery, credential-access simulation, lateral movement, collection simulation, and C2 emulation) and ransomware precursor chains (remote-administration misuse, discovery, credential-access simulation, lateral movement, share/backup discovery, and impact markers). We vary telemetry loss, event delay, benign administrative drift, CTI freshness, CTI conflict, attack order, and inter-step timing.
+
+\paragraph{Tier 3: Enterprise external validation.} We deploy a prototype on anonymized enterprise telemetry and evaluate high-priority episode quality, analyst agreement, alert reduction, time to meaningful triage, evidence trace completeness, and operational overhead. We do not claim complete attack ground truth in this tier. Host identifiers are pseudonymized, user identifiers are hashed, IP addresses are tokenized or redacted, and organization-specific metadata is removed.
+
+
+\subsection{System Implementation and Laboratory Context}
+\label{sec:implementation}
+
+The prototype consists of a normalization service, temporal evidence-graph store, episode-linking engine, calibrated scoring service, retrieval index, and analyst-facing case interface. The normalization service consumes source-native events and maps them into a common schema. The graph store maintains entity and relation state over a configurable horizon; the scoring service maintains episode state and contribution traces; the retrieval index stores curated CTI, policy records, and historical investigation material with source and freshness metadata.
+
+The controlled laboratory is intentionally segmented. A Caldera control node orchestrates emulation activities against designated Windows and Linux targets. EDR, network telemetry, Syslog, identity observations, and asset labels are routed to the collection layer. The testing scenarios are non-destructive: they use discovery, process execution, credential-access simulation, lateral movement, and impact markers rather than destructive encryption or production service disruption. This environment provides a repeatable setting to vary one factor at a time while holding collection and scoring configurations constant.
+
+\subsection{Ablation and Robustness Protocol}
+\label{sec:ablation}
+
+We evaluate the contribution of each design choice by comparing the full model with variants that remove CTI, remove cross-source corroboration, disable the calibration objective, permit unbounded CTI, replace learnable contributions with fixed thresholds, or omit Agentic Evidence Assurance. CTI robustness is evaluated under no-CTI, valid contextual CTI, stale CTI, conflicting CTI, and misleading CTI conditions. Telemetry robustness is evaluated by withholding one source class, delaying identity events, dropping a fraction of network records, and introducing benign operational drift such as approved maintenance scripts and periodic administrative scans.
+
+A robust model should degrade gracefully rather than become overconfident. We therefore report both discriminative performance and calibration under each perturbation. Counterfactual stability measures the change in score when weak evidence is removed: a score supported by independent endpoint, network, and identity observations should not collapse when a single low-quality CTI object is discounted. Conversely, a score dominated by CTI should show a visible, reviewable reduction when that input is removed.
+
+\subsection{Analyst Review Protocol}
+\label{sec:analyst}
+
+For selected Tier 3 episodes, analysts first review a normalized episode timeline without the model's rank. They then review the TrustEpisode score trace and cited narrative. We record agreement on priority, perceived sufficiency of evidence, false-positive rationale, and time to reach a defensible next step. This protocol evaluates whether explanations change analysts' decisions constructively rather than merely making a system appear persuasive. Any analyst feedback used for recalibration is logged separately from held-out evaluation decisions.
+
+\begin{table*}[t]
+\caption{Three-tier empirical evaluation design.}
+\label{tab:tiers}
+\centering
+\small
+\begin{tabular}{p{0.15\textwidth}p{0.22\textwidth}p{0.23\textwidth}p{0.32\textwidth}}
+\toprule
+\textbf{Tier} & \textbf{Data / context} & \textbf{Ground truth} & \textbf{Primary purpose} \\
+\midrule
+Tier 1 & DARPA TC provenance-rich adversarial traces & Attack reports, scenario intervals, and labels & Reproducible evaluation of episode linking, causal coherence, and calibration. \\
+Tier 2 & Isolated Caldera BAS laboratory with EDR, NDR, Syslog, identity, asset, and CTI inputs & Scenario and ATT\&CK-aligned technique labels & Controlled robustness tests under missing telemetry, benign drift, stale/conflicting CTI, and attack variations. \\
+Tier 3 & Anonymized enterprise telemetry and analyst review & Analyst adjudication and operational case review & External validity, analyst utility, and deployment overhead. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Baselines and Metrics}
+\label{sec:metrics}
+
+We compare \trustepisode against (B1) static severity aggregation, (B2) fixed rule-based correlation, (B3) frequency or anomaly-based provenance scoring, (B4) an adaptive provenance baseline inspired by CAPTAIN, and (B5) direct LLM/RAG triage. Baselines are configured to consume compatible inputs where possible and are evaluated under identical episode windows.
+
+Episode reconstruction is measured by episode precision, recall, F1, attack-path coverage, and time-to-episode detection. Risk ranking is measured by AUPRC, AUROC, NDCG@10, Precision@K, and mean reciprocal rank. Since SOC data are strongly imbalanced, AUPRC and NDCG@10 are primary ranking measures. Calibration is measured by expected calibration error (ECE), Brier score, negative log-likelihood, and reliability diagrams. Robustness measures include performance degradation under telemetry loss, calibration degradation under CTI perturbation, and score variance under benign drift. Evidence assurance is measured through citation-support precision, unsupported-claim rate, contradiction-retrieval recall, missing-evidence identification rate, and evidence-trace completeness. Operational metrics include events per second, end-to-end scoring latency, memory usage, agentic-investigation latency, and analyst time-to-grounded conclusion.
+
+\subsection{Results Table and Reporting Plan}
+\label{sec:results}
+
+Table~\ref{tab:results-template} is the final reporting layout. Values are intentionally marked as pending because this submission draft does not fabricate experimental outcomes. The completed paper will report means and confidence intervals over scenario seeds, time windows, or analyst-review samples as appropriate. We will additionally include calibration plots, an ablation of bounded CTI alignment, and two compact case studies: one APT-style lateral-movement episode and one false positive reduced by contradictory maintenance-window evidence.
+
+\begin{table*}[t]
+\caption{Main result table template. Replace pending entries only with measured values from the three-tier evaluation. Arrows indicate preferred direction.}
+\label{tab:results-template}
+\centering
+\small
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Method} & \textbf{Episode F1} $\uparrow$ & \textbf{AUPRC} $\uparrow$ & \textbf{NDCG@10} $\uparrow$ & \textbf{ECE} $\downarrow$ & \textbf{Brier} $\downarrow$ & \textbf{Trace Comp.} $\uparrow$ & \textbf{Latency} $\downarrow$ \\
+\midrule
+Static severity aggregation & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Fixed rule correlation & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Provenance anomaly baseline & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Adaptive provenance baseline & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Direct LLM/RAG triage & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+\textbf{\trustepisode} & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+\subsection{Planned Result Analysis}
+\label{sec:resultanalysis}
+
+The completed results section will use three complementary views. First, a main comparison table will report episode F1, ranking metrics, calibration, trace completeness, and latency. Second, reliability diagrams will show whether predicted likelihood tracks empirical attack frequency. Third, robustness plots will compare the full model and ablations across telemetry-loss and CTI-perturbation conditions. We will avoid claiming superiority from a single aggregate score; results must be consistent across ranking, calibration, and traceability measures.
+
+Two case studies will accompany the quantitative results. The first will reconstruct an APT-style lateral-movement episode from low-severity endpoint execution, identity anomalies, cross-host movement, and contextual CTI. The second will demonstrate a false-positive reduction: a suspicious script on a critical asset is discounted after the assurance layer retrieves an approved maintenance window, authorized administrative identity, and known management server. These paired cases illustrate both escalation and de-escalation behavior.
+
+\subsection{Discussion}
+\label{sec:discussion}
+
+\paragraph{Beyond adaptive provenance detection.} \trustepisode adopts CAPTAIN's adaptation principle but changes the target of learning. Rather than learning configuration for a host-provenance alarm, it learns calibrated episode-level risk from heterogeneous sources, separates likelihood from impact, constrains CTI influence, and records an auditable evidence trace.
+
+\paragraph{Why Agentic RAG does not score.} An LLM can help discover context and explain a decision, but its output is probabilistic and can vary with retrieval content. Allowing an agent to determine the primary score would complicate calibration, reproducibility, and safety review. The assurance layer instead verifies, challenges, cites, and identifies gaps in the factors used by the scorer.
+
+\paragraph{Limitations.} Public provenance traces do not capture all modern enterprise networks; Caldera emulation cannot represent every evasion behavior; and enterprise validation may not provide complete attack labels. Asset criticality and CTI quality can also be incomplete. Secure online adaptation and poisoning-resilient drift management remain future work.
+
+\paragraph{Safety and ethics.} All BAS experiments are isolated and non-destructive. No production-impacting ransomware encryption or disruptive OT operation is executed. Enterprise telemetry is anonymized and access controlled. Agentic tools are read-only and cannot autonomously modify enforcement controls.

@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Security operations centers receive heterogeneous alerts from endpoint detection and response (EDR), network detection and response (NDR), identity systems, system logs, asset inventories, operational technology (OT) monitoring, and cyber-threat intelligence (CTI) feeds. APT and ransomware campaigns are not normally represented by one conclusive alarm. They appear as an evolving sequence of weak signals: an unusual remote connection, a suspicious script, a credential-access indicator, lateral movement, and finally an impact precursor. Each element alone can be benign, incomplete, or too low-confidence to merit escalation.
+
+The central operational question is therefore not only whether an event is anomalous. It is whether a set of heterogeneous observations should be assembled into one candidate attack episode, how much confidence should be assigned to that episode, and whether the resulting score is sufficiently grounded for analyst action. Static SIEM and XDR correlation commonly rely on manually tuned rule chains and severity aggregation. These mechanisms are fast and interpretable, but are brittle when behavior differs across sites, telemetry is partially missing, or normal administration resembles attacker tradecraft. At the opposite extreme, deep graph methods and LLM-based triage can improve recall or narrative quality but often weaken score calibration, repeatability, and factor-level explanation.
+
+CAPTAIN demonstrates that a rule-oriented provenance detector can be made adaptive by learning fine-grained node, edge, and threshold parameters through differentiable tag propagation~\cite{captain2025}. Its central insight is important: systems should retain lightweight, semantically meaningful detection mechanisms while learning deployment-specific configurations. \trustepisode extends this insight beyond host provenance into heterogeneous, episode-level operational risk scoring. We treat an attack episode as a temporal evidence subgraph spanning endpoint, network, identity, context, and CTI observations, and explicitly separate (i) episode formation, (ii) calibrated risk scoring, and (iii) evidence assurance.
+
+This separation is especially important for Agentic RAG. CTI, historical cases, and policy documents can be valuable for investigation, but retrieved text may be stale, contradictory, irrelevant to local context, or adversarially influenced. Therefore, \trustepisode uses Agentic RAG to retrieve support, contradiction, and missing evidence, while the numerical score remains under a constrained learnable scoring model. The agent can explain and challenge a score; it cannot silently replace it.
+
+\paragraph{Research question.} How can a security system assign calibrated, interpretable, and evidence-traceable risk scores to multi-step attack episodes formed from heterogeneous telemetry without relying solely on fixed rules or unconstrained LLM judgment?
+
+\paragraph{Contributions.} This paper makes four contributions:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+    \item We introduce \trustepisode, a multi-layer framework that converts heterogeneous security telemetry into prioritized, evidence-traceable attack episodes.
+    \item We propose a constrained learnable episode scorer that combines behavioral deviation, temporal and causal coherence, cross-source corroboration, evidence quality, asset impact, and bounded CTI alignment.
+    \item We define an Agentic Evidence Assurance Layer that retrieves supporting, contradicting, and missing evidence without directly controlling numerical risk scores.
+    \item We specify a three-tier evaluation protocol using public provenance-rich traces, controlled Caldera BAS scenarios, and anonymized enterprise validation.
+\end{enumerate}
