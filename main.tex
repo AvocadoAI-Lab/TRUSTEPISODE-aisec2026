@@ -18,8 +18,10 @@
 \usepackage{enumitem}
 \usepackage{balance}
 \usepackage{microtype}
+\usepackage{xspace}
 
 \graphicspath{{figs/}}
+\DeclareGraphicsExtensions{.pdf,.eps}
 
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{6pt plus 2pt minus 2pt}
@@ -27,10 +29,12 @@
 \setlength{\abovecaptionskip}{4pt}
 \setlength{\belowcaptionskip}{0pt}
 \captionsetup{font=small}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
 
-\newcommand{\trustepisode}{\textsc{TrustEpisode}}
-\newcommand{\cti}{\textsc{CTI}}
-\newcommand{\rag}{\textsc{RAG}}
+\newcommand{\trustepisode}{\textsc{TrustEpisode}\xspace}
+\newcommand{\cti}{\textsc{CTI}\xspace}
+\newcommand{\rag}{\textsc{RAG}\xspace}
 \newcommand{\tbd}{\textemdash}
 
 \begin{document}
@@ -44,7 +48,7 @@
 \begin{abstract}
 Multi-step cyber attacks, including advanced persistent threats (APTs) and ransomware campaigns, rarely manifest as a single decisive alert. Instead, they unfold through temporally dispersed, heterogeneous, and partially inconsistent observations across endpoint activity, network telemetry, identity events, asset context, operational technology visibility, and cyber-threat intelligence. Existing security operations commonly rely on static correlation rules that are difficult to adapt across environments, while LLM-based security agents can produce plausible but insufficiently calibrated risk assessments when evidence is incomplete, stale, or contradictory.
 
-We present \trustepisode, a multi-layer framework for calibrated and evidence-traceable episode risk scoring over heterogeneous security telemetry. The Evidence Fabric Layer transforms observations into a temporally aligned evidence graph with provenance, reliability, freshness, and asset-context annotations. The Episode Synthesis Layer groups related observations into candidate attack episodes. The Calibrated Trust Scoring Layer computes a score from behavioral deviation, attack-stage coherence, cross-source corroboration, source reliability, evidence freshness, asset criticality, and bounded CTI alignment using a constrained learnable model. Unlike fully rule-based correlation, \trustepisode learns score calibration from observed benign and attack behavior while retaining factor-level interpretability. An Agentic Evidence Assurance Layer applies evidence-grounded retrieval to retrieve supporting and contradicting evidence, identify missing observations, and produce cited narratives; it does not directly assign the numerical score.
+We present \trustepisode, a multi-layer framework for calibrated and evidence-traceable episode risk scoring over heterogeneous security telemetry. The Evidence Fabric Layer transforms observations into a temporally aligned evidence graph with provenance, reliability, freshness, and asset-context annotations. The Episode Synthesis Layer groups related observations into candidate attack episodes. The Calibrated Trust Scoring Layer separates maliciousness likelihood, operational impact, operational priority, and evidence sufficiency: asset criticality affects consequence rather than maliciousness, while missing telemetry produces uncertainty caveats rather than benign labels. Unlike fully rule-based correlation, \trustepisode learns score calibration from observed benign and attack behavior while retaining factor-level interpretability. An Agentic Evidence Assurance Layer applies evidence-grounded retrieval to retrieve supporting and contradicting evidence, identify missing observations, and produce cited narratives; it does not directly assign or overwrite the numerical score.
 
 We evaluate \trustepisode through a three-tier empirical protocol: public DARPA Transparent Computing traces, controlled Caldera-based breach-and-attack simulations, and anonymized enterprise telemetry for external validation. We measure episode reconstruction, risk ranking, calibration, robustness to telemetry loss and misleading CTI, evidence traceability, and time to analyst-verifiable conclusions.
 \end{abstract}
@@ -60,10 +64,27 @@ We evaluate \trustepisode through a three-tier empirical protocol: public DARPA 
 \input{sections/related}
 \input{sections/arch}
 \input{sections/exps}
+\ifdefined\fullappendix
+\clearpage
+\fi
 \input{sections/conc}
+\ifdefined\fullappendix
+\input{sections/appendix}
+\else
+\input{sections/appendix_submission}
+\fi
 
+\ifdefined\fullappendix
+\clearpage
+\fi
 \balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bib/references}
+
+\paragraph{Use of Generative AI}
+Generative AI tools were used as writing and editing assistants for language revision,
+consistency checking, figure drafting, and \LaTeX{} formatting. The authors reviewed and
+remain responsible for all research claims, methods, sources, analyses, and final text. No
+AI-generated empirical data or results are reported.
 
 \end{document}

@@ -1,103 +1,317 @@
 \section{TrustEpisode Method}
 \label{sec:method}
 
-\subsection{Overview and Threat Model}
+\trustepisode transforms endpoint detection and response (EDR) and network detection and response (NDR) telemetry into deterministic candidate-episode revisions and version-scoped evidence records. The online path is label blind: the Evidence Fabric normalizes events and collector-health observations; Episode Synthesis alone owns event membership and immutable revisions; a stateless scorer maps two explicit evidence features to a raw logit; and an affine calibrator is the sole producer of a maliciousness probability when the current revision matches a supported manifest. A separate deterministic evaluator reports a structured evidence-sufficiency profile without changing that probability. Each revision produces exactly one append-only AuditRecord containing the raw score, nullable calibrated probability, sufficiency state, versions, provenance references, and canonical digest. Ground truth is joined only after inference for fitting or evaluation. The method therefore estimates whether a frozen candidate revision contains malicious activity under the observed EDR/NDR collection boundary; it does not estimate enterprise-wide risk, operational impact, response priority, or attacks that leave no observable trace. Figure~\ref{fig:method-architecture} summarizes these ownership and trust boundaries.
 
-\trustepisode receives telemetry streams from EDR, NDR, Syslog, identity logs, OT/ICS visibility, asset/CMDB sources, and CTI. It outputs candidate episodes, a calibrated likelihood, an operational-priority score, a factor-level score trace, and an analyst-facing cited narrative. Figure~\ref{fig:overview} presents the architecture.
+\subsection{Problem Scope, Output Contract, and Ownership}
+\label{sec:problem-formulation}
 
-We assume that monitored collectors and transport are trusted for the scope of this work, as in common PIDS assumptions~\cite{captain2025}. Attackers may execute APT or ransomware precursor behavior, use living-off-the-land techniques, create low-signal activity, exploit delayed telemetry, and benefit from stale or misleading CTI. We do not address attacks that leave no relevant observable trace in the monitored environment.
+Let $\mathcal C$ be every EpisodeRevision emitted by the frozen formation policy. Let
+\begin{equation}
+\mathcal C_{\mathrm{sup}}=
+\{\epsilon^{(r)}\in\mathcal C:
+\kappa_{\epsilon^{(r)}}\in
+\{\kappa_G,\kappa_g\}\}
+\label{eq:supported-population}
+\end{equation}
+where $\kappa_G$ and $\kappa_g$ denote \path{supported_global} and
+\path{supported_group}. This is the subset for which a calibration manifest supports a
+probability. The supervised target
+$Y_{\epsilon^{(r)}}\in\{0,1\}$ states whether the immutable membership of revision
+$\epsilon^{(r)}$ contains malicious activity under a frozen temporal and entity-overlap policy.
+The label is joined offline only after that revision has completed online inference. A malicious
+action first observed in revision $r+1$ cannot retroactively relabel revision $r$. Positive and
+negative revisions form the primary supervised cohort; mixed and ambiguous revisions are
+reported separately and enter only pre-registered sensitivity analyses.
+
+For every $\epsilon^{(r)}\in\mathcal C$, runtime emits a raw logit $z_{\epsilon^{(r)}}$, a
+calibration status $\kappa_{\epsilon^{(r)}}$, a nullable calibrated probability
+$P_{\epsilon^{(r)}}$, a structured sufficiency profile $U_{\epsilon^{(r)}}$, and exactly one
+immutable AuditRecord. When defined, $P$ is candidate-conditioned and version-scoped:
+\begin{equation}
+P_{\epsilon^{(r)}} =
+\Pr(Y_{\epsilon^{(r)}}=1\mid
+\epsilon^{(r)},v_{\mathrm{episode}},v_{\mathrm{feature}},
+v_{\mathrm{model}},v_{\mathrm{cal}}).
+\label{eq:scoped-probability}
+\end{equation}
+It is not an unconditional probability that the organization is under attack.
+
+The contract relies on three assumptions. The \emph{observable-trace assumption} limits
+inference to traces visible inside the declared EDR/NDR scope. The
+\emph{collector-boundary assumption} treats collector identity and transport metadata as
+authenticated while representing outages, delay, and parser failure explicitly. The
+\emph{label-blind online assumption} forbids labels, scenario identifiers, split assignments,
+and ground-truth windows from every online object. Consequently, \trustepisode cannot
+guarantee detection of activity that leaves no relevant observable trace.
+
+\begin{table*}[t]
+\caption{Single-owner online object contract.}
+\label{tab:ownership}
+\centering
+\small
+\begin{tabular}{p{0.16\textwidth}p{0.18\textwidth}p{0.25\textwidth}p{0.31\textwidth}}
+\toprule
+\textbf{Object} & \textbf{Sole producer} & \textbf{Consumers} & \textbf{Forbidden behavior} \\
+\midrule
+NormalizedEvent & Evidence Fabric & Episode Synthesis & label, split, or scenario fields \\
+SourceCoverage & Health Monitor & Scope Resolver; Sufficiency Evaluator & infer outage from event silence \\
+EpisodeRevision & Episode Synthesis & Feature Extractor; audit path & scorer-side membership change \\
+FeatureVector $[D,C]$ & Feature Extractor & Stateless Scorer & health, $U$, or label fields \\
+Raw logit $z$ & Stateless Scorer & Calibrator; AuditRecord & probability wording \\
+CalibrationStatus $\kappa$ & Scope Resolver & Calibrator; Sufficiency Evaluator; audit path & test-selected status \\
+Nullable calibrated $P$ & Calibrator & AuditRecord; downstream review & modification by $U$; numeric value when unsupported \\
+Structured $U$ & Sufficiency Evaluator & AuditRecord; downstream review & replacement or recomputation of $P$ \\
+AuditRecord & Append-only audit store & Replay; evaluation; review & update of an earlier revision record \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[t]
+\caption{Core notation.}
+\label{tab:notation}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$e_i$ & normalized event \\
+$\epsilon^{(r)}$ & immutable episode revision \\
+$m_{\epsilon,s}$ & observed source-family mask \\
+$h_\epsilon$ & collector-health snapshot \\
+$q_{\epsilon,s}$ & independent detection support \\
+$D_\epsilon$ & normalized detector-deviation feature \\
+$C_\epsilon$ & EDR/NDR corroboration feature \\
+$z_\epsilon$ & raw logit \\
+$P_\epsilon$ & nullable calibrated maliciousness probability \\
+$\kappa_\epsilon$ & calibration-support status \\
+$U_\epsilon$ & structured evidence-sufficiency profile \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig1_workflow.png}
-\caption{A brief overview of the workflow and major components of \trustepisode. The four layers preserve the separation between evidence representation, episode formation, calibrated scoring, and agentic assurance.}
-\label{fig:overview}
+  \centering
+  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig01_final_architecture.pdf}
+  \caption{\trustepisode online and offline boundaries. The solid primary candidate path contains EDR/NDR only. Evidence Fabric, Episode Synthesis, Feature Extractor, Stateless Scorer, Scope Resolver, Calibrator, and Sufficiency Evaluator respectively own NormalizedEvent, EpisodeRevision, $[D,C]$, $z$, $\kappa$, $P$, and $U$. Identity is not an online input, and $U$ has no numerical path into the scorer or calibrator.}
+  \label{fig:method-architecture}
 \end{figure*}
 
-\subsection{Evidence Fabric Layer}
+\subsection{Evidence Fabric and Independent Source Health}
 \label{sec:evidence-fabric}
 
-Each raw event is normalized into $e=(t,s,u,v,a,x,q,p)$, where $t$ is timestamp, $s$ is telemetry source, $u$ and $v$ are subject and object entities, $a$ is an action, $x$ is associated attributes, $q$ is collection confidence, and $p$ is provenance that links to raw evidence. The Evidence Fabric Layer constructs a temporal evidence graph $G=(V,E)$, where nodes represent processes, hosts, users, files, IP addresses, services, assets, CTI objects, and contextual objects. Edges represent causal, temporal, communication, identity, containment, and semantic relations.
+The Evidence Fabric maps each source record to a NormalizedEvent containing a stable ID,
+event time, ingest time, source family and instance, canonical entities and action, an
+immutable raw pointer, and a root dependency group. Event time describes when the source
+observed an action; ingest time describes when the pipeline received it. The distinction is
+required for deterministic late-data handling~\cite{akidau2015dataflow}. Forwarded or
+derived copies inherit the same root dependency group and cannot create additional evidence.
+Normalization artifacts, including source-specific parsers and empirical transforms, are fitted
+or selected using training data and are read-only at runtime. OCSF v1.8.0 provides a field-name
+alignment target, not a claim of cross-vendor semantic equivalence~\cite{ocsf2026}.
 
-Evidence objects retain source reliability, freshness, completeness, asset context, and corroborating-source count. CTI objects additionally retain publication time, source confidence, technique mapping, and relevance metadata. This representation is deliberately broader than a host-only provenance graph: a process execution can be linked to a device identity, an external destination, an asset criticality label, and CTI context without treating any one source as conclusive.
+SourceCoverage is a separate health stream produced by authenticated heartbeat, lag, parser,
+and transport observations. Absence of an event never implies that a collector is down. For
+source family $s\in\mathcal S^\star=\{\mathrm{EDR},\mathrm{NDR}\}$, define
+\begin{equation}
+m_{\epsilon,s}=\mathbb{1}[
+\epsilon\text{ contains an observed event from }s].
+\label{eq:source-mask}
+\end{equation}
+The vector $m_\epsilon$ is the observed source mask; replay event masking can change $m$
+without changing health. The snapshot $h_\epsilon$ is resolved from SourceCoverage intervals
+that overlap the episode interval. Finally, $q_{\epsilon,s}=1$ only when $s$ contains
+lineage-deduplicated supporting detection evidence tied to an episode core entity or edge.
+Thus a healthy but silent family can have $m=0$ and health \texttt{healthy}; an observed
+family without supporting detection can have $m=1,q=0$. Neither $m$ nor $q$ alone diagnoses
+collector failure. The Scope Resolver jointly uses $(m_\epsilon,h_\epsilon)$ and frozen
+pipeline versions to determine $\kappa_\epsilon$. Appendix~\ref{app:data-contracts} gives the
+contract-complete schema registry, canonical serialization, and firewall rules.
 
-\subsection{Episode Synthesis Layer}
+\subsection{Deterministic Episode Synthesis and Immutable Revisions}
 \label{sec:episode-synthesis}
 
-A candidate episode $\epsilon=(V_\epsilon,E_\epsilon,t_0,t_1,A_\epsilon)$ is a temporally bounded evidence subgraph with affected asset set $A_\epsilon$. \trustepisode joins events or subgraphs using an episode-linking function:
+Episode Synthesis is the only component that may attach, merge, or revise membership. For a
+new event $e_i$ and an open episode $E$, eligibility is
 \begin{equation}
-\begin{split}
-L(e_i,e_j) = &\; \alpha_T\,T_{ij} + \alpha_C\,C_{ij} + \alpha_E\,E_{ij} \\
-&+ \alpha_S\,S_{ij} + \alpha_M\,M_{ij} + \alpha_X\,X_{ij},
-\end{split}
-\label{eq:link}
+\begin{aligned}
+\ell(e_i,E)=\mathbb{1}\!\big[
+&\Delta_t(e_i,E)\le W_{\mathrm{gap}}
+\land R(e_i,E)=1\\
+&{}\land \operatorname{span}(E\cup\{e_i\})\le W_{\max}
+\land H(e_i,E)=0
+\big],
+\end{aligned}
+\label{eq:link-eligibility}
 \end{equation}
-where $T_{ij}$ measures temporal proximity, $C_{ij}$ causal relation, $E_{ij}$ entity continuity, $S_{ij}$ shared asset context, $M_{ij}$ coarse ATT\&CK-stage coherence, and $X_{ij}$ cross-source corroboration. Events are merged when $L$ exceeds a context-aware threshold. Episodes may progress through \emph{emerging}, \emph{corroborating}, \emph{high-risk}, \emph{under investigation}, and \emph{resolved or escalated} states. This lifecycle allows later contradictory evidence to reduce confidence rather than forcing every episode into a fixed attack chain.
+where $\Delta_t$ is the event-time inactivity gap, $R$ denotes at least one frozen
+process-causal, authenticated-session, endpoint-mapped connection, or specific-entity
+relation, and $H$ marks a forbidden hub-only link. Temporal proximity alone is insufficient.
 
+Zero eligible candidates start a new episode; one candidate receives the event; multiple
+candidates are processed by the frozen total order and merge guard in
+Appendix~\ref{app:episode-algorithm}. The appendix also fixes canonical episode IDs, merge
+lineage, inclusive boundaries, and event ordering. Event time determines relation
+eligibility, whereas ingest time advances the watermark. Accepted evidence inside the
+revision horizon emits revision $r+1$ and a new AuditRecord; evidence beyond the horizon
+follows the frozen late-store or drop policy. No path overwrites an earlier revision or its
+record. These controls apply the causal-context lessons of alert-correlation and provenance
+systems while retaining an auditable, deliberately compact candidate generator
+~\cite{ning2002attackscenarios,holmes2019,nodlink2024,kairos2024}.
 
-\subsection{Feature Semantics and Constraint Design}
-\label{sec:features}
-
-The feature design intentionally separates evidence strength from evidence impact. Behavioral deviation $D_\epsilon$ is computed against a local baseline for entities, services, or communication patterns rather than a global frequency alone. Attack-stage coherence $K_\epsilon$ measures whether observed actions form a temporally and causally plausible progression, while allowing missing or reordered stages. Cross-source corroboration $C_\epsilon$ rewards independent agreement among endpoint, network, identity, and context sources, avoiding double-counting multiple alerts generated by the same upstream event.
-
-Evidence quality $Q_\epsilon$ aggregates collection reliability, parsing confidence, and temporal freshness. Operational impact $A_\epsilon$ incorporates asset criticality, exposure, affected-user scope, and segment sensitivity, but cannot independently turn benign maintenance activity into a high-risk episode. CTI alignment $T_\epsilon$ is a semantic and indicator-level comparison between observed evidence and curated intelligence. Its contribution is bounded because a match to a stale or generic report should not override stronger local evidence. Finally, $M_\epsilon$ captures missing evidence, such as an absent expected network observation after a suspicious execution event. This penalty expresses uncertainty rather than treating absence as proof of benignness.
-
-The model imposes monotonic and bounded constraints derived from security semantics. For example, increased independent corroboration must not decrease the likelihood score; lower source reliability must not increase confidence; and the contribution of CTI must remain within a predefined range. These constraints preserve interpretability and prevent the learned model from converging to spurious, difficult-to-review configurations.
-
-\subsection{Calibrated Trust Scoring Layer}
-\label{sec:scoring}
-
-The scorer separates maliciousness likelihood $P_\epsilon$ from operational impact $I_\epsilon$. The final operational priority is $R_\epsilon=P_\epsilon\times I_\epsilon$. For each episode, it computes behavioral deviation $D_\epsilon$, temporal and causal coherence $K_\epsilon$, corroboration $C_\epsilon$, evidence quality $Q_\epsilon$, asset impact $A_\epsilon$, bounded CTI alignment $T_\epsilon$, and missing-evidence penalty $M_\epsilon$.
-
-The uncalibrated score is:
-\begin{equation}
-\label{eq:score}
-z_\epsilon=f_D(D_\epsilon)+f_K(K_\epsilon)+f_C(C_\epsilon)+f_Q(Q_\epsilon)+f_A(A_\epsilon)+\mathrm{clip}(f_T(T_\epsilon),-\kappa,\kappa)-f_M(M_\epsilon)+b,
-\end{equation}
-where each $f$ is constrained to preserve interpretable monotonic behavior. For example, stronger corroboration cannot decrease risk, missing evidence cannot increase confidence, and CTI influence cannot exceed a bound $\kappa$. A calibration function produces $P_\epsilon=\mathrm{Calibrate}(\sigma(z_\epsilon))$.
-
-The model is not a static rule chain such as ``suspicious process AND external IP implies high risk.'' It learns factor contributions and calibration from benign and attack behavior while retaining semantic constraints. The learning objective combines classification, calibration, stability, regularization, and CTI-bound terms:
-\begin{equation}
-\mathcal{L}=\mathcal{L}_{\mathrm{cls}}+\lambda_1\mathcal{L}_{\mathrm{cal}}+\lambda_2\mathcal{L}_{\mathrm{stab}}+\lambda_3\mathcal{L}_{\mathrm{reg}}+\lambda_4\mathcal{L}_{\mathrm{CTI}}.
-\end{equation}
-
-For every score, the system preserves contributing events, feature values, contribution values, source reliability, CTI contribution, calibration version, and counterfactual score changes. Analysts can ask how a score changes when CTI is removed, NDR telemetry is unavailable, or an asset is not critical.
-
-
-\subsection{Learning, Calibration, and Online Operation}
-\label{sec:learning}
-
-Training is organized in two stages. First, the Evidence Fabric Layer estimates baselines from benign or analyst-approved windows. Second, the scoring parameters are optimized from labeled attack episodes when available, or from calibrated negative feedback and controlled BAS traces when attack labels are limited. We use temporally separated train, validation, and test periods so that closely adjacent events do not leak into both calibration and evaluation sets. Hyperparameters, including the CTI bound $\kappa$, are selected on validation data and fixed before test evaluation.
-
-At runtime, the pipeline processes normalized events incrementally. It updates the temporal graph, re-evaluates affected candidate episodes, and emits a score only when the episode state changes materially or a configured decision boundary is crossed. Baseline updates are gated: benign feedback must satisfy source-quality and analyst-review conditions before it can influence the local model. This design reduces the risk that a single burst of anomalous activity or attacker-driven poisoning changes the normality model. Each deployed scorer is versioned, enabling analysts to determine which calibration model produced a historical score.
-
-\subsection{Trace-Transparent Risk Computation}
-\label{sec:trace}
-
-A TrustEpisode record is an auditable object, not merely a number. It contains the episode graph, source event identifiers, feature values, calibrated likelihood, operational impact, factor contributions, data-quality caveats, CTI items used, model version, and counterfactual scores. The counterfactual interface replays a score after removing one category of evidence, changing asset criticality, or discounting stale CTI. This supports both analyst investigation and post-incident review: a reviewer can distinguish ``high risk because of independent endpoint and identity corroboration'' from ``high risk largely because of a weak CTI match.''
+\paragraph{Algorithm 1: label-blind episode update.}
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item Normalize and dependency-deduplicate the incoming event.
+\item Retrieve open candidates satisfying the inclusive temporal bounds.
+\item Evaluate allowed non-temporal relations and forbidden hub links.
+\item Apply giant-component and merge guards from the frozen policy.
+\item Follow the frozen zero/one/multiple-candidate branch and total order.
+\item Advance the ingest-time watermark and apply the revision-horizon rule.
+\item Emit an immutable EpisodeRevision and exactly one new AuditRecord.
+\end{enumerate}
 
 \begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig2_episode_scoring.png}
-\caption{An example candidate episode and its interpretable score contributions. CTI is present as contextual evidence but its contribution is explicitly bounded.}
-\label{fig:episode-scoring}
+  \centering
+  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig02_episode_revision_lifecycle.pdf}
+  \caption{Deterministic episode and revision lifecycle. Event time governs linking under
+  $W_{\mathrm{gap}}$ and $W_{\max}$; ingest time governs watermarks. Accepted late evidence
+  creates a new immutable revision and AuditRecord, while evidence beyond the horizon cannot
+  rewrite history.}
+  \label{fig:episode-revision-lifecycle}
 \end{figure*}
 
-\subsection{Agentic Evidence Assurance Layer}
-\label{sec:agentic-assurance}
+\subsection{Compact Feature Semantics and Stateless Raw Scorer}
+\label{sec:feature-semantics}
 
-The Agentic Evidence Assurance Layer does not calculate $P_\epsilon$, $I_\epsilon$, or $R_\epsilon$. Instead, it retrieves (i) evidence supporting a high-risk episode, (ii) evidence contradicting the episode hypothesis, (iii) missing telemetry or context, and (iv) relevant CTI, policy, and historical incident records. It then generates a cited narrative with score caveats and a recommended analyst next step.
+The primary feature contract is
+\begin{equation}
+x_\epsilon=[D_\epsilon,C_\epsilon].
+\label{eq:feature-vector}
+\end{equation}
+For each eligible source-native detector value $r_i$, the frozen transform
+$d_i=\widehat F^{\mathrm{train,benign}}_{s_i}(r_i)$ maps the value through the empirical CDF
+fitted on training-benign observations from its source family. $D_\epsilon$ is the mean of the
+three largest eligible $d_i$ values, or all values when fewer than three exist. If none exist,
+$D_\epsilon=0$ is only a deterministic raw-model placeholder and
+$u_{\mathrm{provenance}}=\texttt{missing}$. This is not benign evidence; unless the
+calibration manifest explicitly supports that regime, $P_\epsilon=\mathrm{NA}$.
 
-Retrieval is source-aware and restricted to the episode-graph neighborhood, raw telemetry provenance, curated CTI, asset/service inventory, historical incident records, detection policies, and controlled validation records. The agent uses read-only investigation tools, requires citations for factual claims, and must emit an \emph{insufficient evidence} state when the available record cannot justify a conclusion. It cannot directly modify the primary score or autonomously enforce a destructive response. Figure~\ref{fig:assurance} illustrates this separation.
+The primary scope is permanently fixed to
+\begin{equation}
+\mathcal S^\star=\{\mathrm{EDR},\mathrm{NDR}\},\qquad K=2,
+\end{equation}
+and corroboration is
+\begin{equation}
+C_\epsilon =
+q_{\epsilon,\mathrm{EDR}}q_{\epsilon,\mathrm{NDR}}.
+\label{eq:corroboration}
+\end{equation}
+Heartbeat, inventory, and dependency-linked forwarded copies do not set $q=1$. Identity, if
+available in a later pilot-gated study, remains an offline exploratory annotation: it does not
+enter NormalizedEvent, Episode Synthesis, candidate IDs or membership, $D$, $C$, any
+calibrator manifest, or a primary research question. Thus it cannot change the candidate
+universe, and $\mathcal S^\star$ and $K=2$ remain fixed.
 
+The stateless scorer is
+\begin{equation}
+z_\epsilon=b+w_DD_\epsilon+w_CC_\epsilon,
+\qquad w_D,w_C\ge0.
+\label{eq:raw-logit}
+\end{equation}
+Its only learned coefficients are $(b,w_D,w_C)$. Training minimizes unweighted
+candidate-level log loss; formation and feature settings are selected using training and
+development data, then frozen before the final train-only normalizer and scorer are fitted.
+Campaign/run is the split and uncertainty cluster. Health, $m$, $\kappa$, $U$, labels, and
+outage status never enter $x_\epsilon$. The terms $w_DD_\epsilon$ and $w_CC_\epsilon$ are
+replayable logit decompositions, not causal explanations. Appendix~\ref{app:parameter-registry}
+records preprocessing artifacts, implementation settings, owners, and freeze points.
 
-\paragraph{Two-sided retrieval.} For each high-risk episode, the agent executes a support-and-challenge loop. It first retrieves the evidence objects that contributed to the score, then seeks alternative explanations such as known maintenance windows, approved remote-management systems, asset ownership information, or benign historical patterns. A narrative is accepted only when it distinguishes direct observation from inferred context and cites the provenance of each material claim.
+\subsection{Manifest-Scoped Affine Calibration}
+\label{sec:calibration}
 
-\paragraph{Evidence gates and human oversight.} The assurance layer marks an episode as evidence-sufficient only when required source categories and citation checks are satisfied. When high-priority evidence is contradictory or incomplete, the output is a confidence caveat and an analyst task, not an autonomous enforcement decision. This boundary is essential for environments in which blocking or isolating an asset can have business, safety, or clinical consequences.
+Neither $z_\epsilon$ nor $\sigma(z_\epsilon)$ is called a validated probability. The primary
+calibrator is a positive-slope global affine mapping fitted on an independent calibration
+split with natural candidate prevalence, following the score-to-probability principle of
+Platt scaling and evaluation with proper scoring rules
+~\cite{platt1999probabilistic,gneiting2007proper}:
+\begin{equation}
+P_\epsilon=
+\begin{cases}
+\sigma(a z_\epsilon+b_{\mathrm{cal}}),
+& \kappa_\epsilon=\kappa_G,\\
+\sigma(a_g z_\epsilon+b_g),
+& \kappa_\epsilon=\kappa_g,\\
+\mathrm{NA},
+& \kappa_\epsilon=\kappa_\varnothing,
+\end{cases}
+\quad a,a_g>0.
+\label{eq:affine-calibration}
+\end{equation}
+$\kappa_\varnothing$ denotes \path{out_of_support}; $\kappa_G$ and $\kappa_g$ retain the
+status meanings defined after Equation~\ref{eq:supported-population}.
+The global mapping preserves ranking over the same candidate set. A group mapping preserves
+ranking only within that group and makes no cross-group ranking claim. Group calibration is
+conditional: a pre-registered gate requires sufficient positive revisions, negative revisions,
+and independent runs plus evidence that the global mapping is inadequate. Selection and fit
+use run-level cross-fitting or an internal calibration holdout, never the locked test.
 
-\begin{figure*}[t]
+Exact support requires the current episode, feature, detector, raw-model, label-policy,
+candidate-selection, and schema versions plus source mask to match the calibrator manifest.
+A supported group uses \path{supported_group}; a supported revision that fails only the
+group gate falls back to the primary global mapping as \path{supported_global}; a manifest
+or regime mismatch is \path{out_of_support}, stores canonical null for $P$, and sets
+\path{decision_eligible=false}. It retains $z$ for diagnosis but no unvalidated number in
+$[0,1]$ is named a probability. Appendix~\ref{app:calibration-manifest} defines the resolver,
+manifest, gate, and invalidation matrix.
+
+\subsection{Independent Structured Sufficiency and Append-Only Audit}
+\label{sec:sufficiency}
+
+Evidence sufficiency is a structured state:
+\begin{equation}
+U_\epsilon=(u_{\mathrm{coverage}},u_{\mathrm{provenance}},
+u_{\mathrm{lateness}},u_{\mathrm{contradiction}},
+u_{\mathrm{calibration}}).
+\label{eq:sufficiency}
+\end{equation}
+
+\begin{table*}[t]
+\caption{Deterministic Evidence Sufficiency Profile.}
+\label{tab:sufficiency}
 \centering
-\includegraphics[width=\textwidth]{fig3_scoring_assurance.png}
-\caption{\trustepisode separates calibrated scoring from agentic evidence assurance. Solid arrows are the scoring path; dashed green arrows indicate retrieval and assurance loops.}
-\label{fig:assurance}
-\end{figure*}
+\small
+\begin{tabular}{p{0.15\textwidth}p{0.35\textwidth}p{0.39\textwidth}}
+\toprule
+\textbf{Axis} & \textbf{Value set} & \textbf{Deterministic online inputs} \\
+\midrule
+coverage & complete; degraded; unavailable; unknown & deployment manifest and SourceCoverage \\
+provenance & complete; partial; missing & raw pointers and entity/edge traces \\
+lateness & stable; revisable; late-accepted; horizon-exceeded & watermark and revision state \\
+contradiction & none; present; unevaluable & frozen online-only contradiction rules \\
+calibration & supported-global; supported-group; out-of-support & Scope Resolver status $\kappa$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+$U$ is not scalar confidence: its axes are never weighted, averaged, or one-hot ranked. It does
+not modify, gate, or relabel $P$. The contradiction axis reads only online evidence and cannot
+read scenario, ability, or label metadata. A downstream review or abstention policy may
+jointly consume $P$ and $U$, but that policy is outside the method.
+
+Each EpisodeRevision produces exactly one insert-only AuditRecord containing ordered
+membership and link reasons, $D$, $C$, $z$, nullable $P$, $\kappa$, $U$, source-health
+snapshot, evidence references, policy/model/calibrator versions, and a canonical digest.
+Accepted late evidence creates a complete new record in the revision chain. Canonical null,
+serialization, key, and hashing rules are specified in Appendix~\ref{app:data-contracts}.
+
+\subsection{Method Boundary and Reproducibility Contract}
+\label{sec:method-boundary}
+
+The method excludes CTI enrichment, RAG or agent components, impact or priority scoring,
+automated response, Identity as a primary source, OT/ICS generalization, ground-truth-assisted
+online inference, and downstream queue optimization. Its canonical replay payload excludes
+wall-clock execution timestamps and machine-specific runtime metadata. The contribution is
+limited to deterministic candidate-episode construction, compact version-scoped probability
+calibration, independent evidence-sufficiency reporting, and replayable append-only provenance
+under endpoint and network telemetry.

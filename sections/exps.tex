@@ -1,101 +1,317 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-\subsection{Research Questions}
+The evaluation is a frozen, pre-registered contract rather than an open-ended list of
+experiments. Dataset roles, campaign-level partitions, artifacts, support gates, interventions,
+metrics, baselines, matching rules, and resampling units are fixed before the locked test is
+opened. Result cells remain pending until generated from measured runs; no synthetic
+performance value, curve, or confidence interval is used.
 
-We evaluate five questions: \textbf{RQ1} Can the method reconstruct multi-step episodes from heterogeneous evidence? \textbf{RQ2} Does it improve risk ranking and calibration relative to static correlation, graph-oriented baselines, and direct LLM/RAG triage? \textbf{RQ3} Does performance degrade gracefully under telemetry loss, benign operational drift, and misleading CTI? \textbf{RQ4} Can it provide analyst-verifiable evidence traces? \textbf{RQ5} Is the system operationally feasible in realistic telemetry conditions?
+\subsection{Research Questions and Claim Boundaries}
+\label{sec:research-questions}
 
-\subsection{Three-Tier Experimental Setting}
-\label{sec:setting}
+\textbf{RQ1 -- episode formation fidelity.} Does the frozen label-blind builder recover a
+larger fraction of malicious actions and paths than fixed-window and time-plus-entity
+comparators while reducing fragmentation, over-merge, and benign contamination?
 
-\paragraph{Tier 1: Public provenance-rich traces.} We use selected DARPA Transparent Computing (TC) engagement traces to support reproducible multi-step attack analysis. The TC program provides public materials for provenance-oriented security research~\cite{darpatc}. These traces are appropriate for evaluating temporal and causal episode formation, but they are not equivalent to long-lived production enterprise telemetry. Attack reports and scenario labels are used only as ground truth; they are excluded from the RAG corpus to avoid label leakage.
+\textbf{RQ2 -- ranking and probability calibration.} Does the compact $D+C$ scorer improve
+AUPRC and fixed-budget recall over the registered severity comparator and $D$-only ablation?
+Does independent affine calibration improve Brier score, negative log-likelihood (NLL), and
+reliability? A positive-slope global mapping must leave AUPRC and AUROC unchanged on the same
+candidate set; a difference triggers an implementation audit. Conditional group mappings are
+checked only for within-group ranking and do not claim cross-group invariance.
 
-\paragraph{Tier 2: Controlled Caldera BAS.} We construct an isolated laboratory with a Caldera control node, Linux and Windows endpoints, EDR and NDR collection, central logging, identity observations, asset inventory, curated CTI, and the \trustepisode scoring service. Caldera is an ATT\&CK-aligned automated adversary-emulation platform~\cite{caldera}. Scenario families include non-destructive APT-style chains (execution, discovery, credential-access simulation, lateral movement, collection simulation, and C2 emulation) and ransomware precursor chains (remote-administration misuse, discovery, credential-access simulation, lateral movement, share/backup discovery, and impact markers). We vary telemetry loss, event delay, benign administrative drift, CTI freshness, CTI conflict, attack order, and inter-step timing.
+\textbf{RQ3 -- partial telemetry and revision behavior.} Under paired replay perturbations and
+a separate physical-collector outage procedure, how do formation, $z$, supported calibration,
+$U$, revisions, support status, and decision eligibility change?
 
-\paragraph{Tier 3: Enterprise external validation.} We deploy a prototype on anonymized enterprise telemetry and evaluate high-priority episode quality, analyst agreement, alert reduction, time to meaningful triage, evidence trace completeness, and operational overhead. We do not claim complete attack ground truth in this tier. Host identifiers are pseudonymized, user identifiers are hashed, IP addresses are tokenized or redacted, and organization-specific metadata is removed.
+\textbf{RQ4 -- reproducibility and cost.} Do frozen inputs, ordering policy, and versions
+produce byte-identical canonical outputs? We measure throughput, p50/p95/p99 latency, peak
+memory, storage per event and revision, and replay time without defining an unmeasured
+\emph{acceptable cost} threshold.
 
+\subsection{Dataset Roles and Controlled Laboratory}
+\label{sec:datasets}
 
-\subsection{System Implementation and Laboratory Context}
-\label{sec:implementation}
+\begin{table*}[t]
+\caption{Pre-registered dataset roles and claim boundaries.}
+\label{tab:dataset-roles}
+\centering
+\small
+\begin{tabular}{p{0.11\textwidth}p{0.30\textwidth}p{0.29\textwidth}p{0.21\textwidth}}
+\toprule
+\textbf{Tier} & \textbf{Source} & \textbf{Permitted use} & \textbf{Forbidden claim} \\
+\midrule
+Tier 1 & DARPA Transparent Computing E3 CADETS, THEIA, and TRACE subsets with frozen schema and ground-truth mappings~\cite{darpatc} & formation sanity checks and secondary path reconstruction & EDR/NDR calibration or deployment prevalence \\
+Tier 2 & Controlled Caldera v5.3.0 laboratory with EDR and NDR collection~\cite{caldera} & all primary formation, ranking, calibration, partial-telemetry, outage, and replay claims & generalization beyond the frozen manifest \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-The prototype consists of a normalization service, temporal evidence-graph store, episode-linking engine, calibrated scoring service, retrieval index, and analyst-facing case interface. The normalization service consumes source-native events and maps them into a common schema. The graph store maintains entity and relation state over a configurable horizon; the scoring service maintains episode state and contribution traces; the retrieval index stores curated CTI, policy records, and historical investigation material with source and freshness metadata.
+Tier 1 and Tier 2 are never pooled for scorer fitting or calibration. Tier 1 contains
+provenance-rich traces but not the primary EDR/NDR deployment contract. Tier 2 contains a
+Caldera control plane, isolated Windows and Linux targets, a benign service, EDR and NDR
+collectors, Health Monitor, production-like online pipeline, separate Ground Truth Store, and
+offline Evaluation Harness. Each run freezes clock-synchronization status, image hashes,
+collector configuration, random seed, and benign-workload manifest. Identity collection is
+only a pilot-gated offline extension: Identity observations are excluded from NormalizedEvent,
+Episode Synthesis, candidate IDs and membership, the primary features, and every calibrator
+manifest. Gate passage permits only a separately labeled post-inference exploratory analysis;
+$\mathcal S^\star=\{\mathrm{EDR},\mathrm{NDR}\}$ and $K=2$ never change. Field telemetry not
+yet collected is future external-validity work, not a current evaluation tier.
 
-The controlled laboratory is intentionally segmented. A Caldera control node orchestrates emulation activities against designated Windows and Linux targets. EDR, network telemetry, Syslog, identity observations, and asset labels are routed to the collection layer. The testing scenarios are non-destructive: they use discovery, process execution, credential-access simulation, lateral movement, and impact markers rather than destructive encryption or production service disruption. This environment provides a repeatable setting to vary one factor at a time while holding collection and scoring configurations constant.
+\subsection{Ground Truth Firewall and Label Registry}
+\label{sec:ground-truth}
 
-\subsection{Ablation and Robustness Protocol}
+Online schemas use explicit allowlists and deny evaluation-only fields. The firewall rejects:
+\begin{itemize}[leftmargin=*,nosep]
+\item \path{operation_id}, \path{ability_id}, and \path{adversary_profile};
+\item \path{technique_label}, attack marker, and attack window;
+\item \path{scenario_class} and \path{malicious_label}; and
+\item \path{split_assignment}.
+\end{itemize}
+These fields cannot enter
+NormalizedEvent, SourceCoverage, EpisodeRevision, FeatureVector, AuditRecord, or any online
+lookup. This boundary addresses target leakage at both schema and partition levels
+~\cite{kaufman2012leakage}.
+
+The versioned label registry freezes temporal tolerance, entity-overlap rule, minimum
+malicious overlap, benign-contamination threshold, adjudication procedure, exclusions, and
+sensitivity analyses. A \emph{positive} revision passes the frozen malicious-overlap rule; a
+\emph{negative} revision is attributable to benign/background activity and does not overlap
+an attack action within the frozen tolerances. A \emph{mixed} revision exceeds both malicious
+and unrelated-benign overlap thresholds; an \emph{ambiguous} revision cannot be uniquely
+adjudicated because of missing or conflicting time/entity evidence. Primary binary fitting and
+metrics use positive and negative revisions only; mixed and ambiguous counts are always
+reported and enter the pre-registered sensitivity view. Test labels cannot select formation,
+features, groups, calibration mappings, thresholds, or bins.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig05_ground_truth_firewall.pdf}
+  \caption{Ground Truth Firewall and offline label join. Schema tests reject evaluation-only
+  fields before inference. Versioned labels are joined to immutable EpisodeRevision and
+  AuditRecord outputs only inside the offline Evaluation Harness.}
+  \label{fig:ground-truth-firewall}
+\end{figure*}
+
+\subsection{Scenario and Benign Workload Catalogue}
+\label{sec:scenarios}
+
+\begin{table*}[t]
+\caption{Controlled malicious scenario families.}
+\label{tab:malicious-scenarios}
+\centering
+\small
+\begin{tabular}{p{0.08\textwidth}p{0.35\textwidth}p{0.25\textwidth}p{0.22\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Scenario family} & \textbf{Primary stressor} & \textbf{Expected primary evidence} \\
+\midrule
+M1 & Windows discovery, share access, remote execution & multi-step lateral chain & EDR process and NDR connection \\
+M2 & Script execution, staged transfer, local persistence & weak-to-strong sequence & EDR lineage and NDR transfer \\
+M3 & Linux discovery, remote shell, file action & cross-platform chain & Linux EDR and NDR session \\
+M4 & Low-rate periodic connection followed by local action & sparse weak signals & NDR cadence and EDR action \\
+M5 & Endpoint action with optional Identity precursor & offline Identity-boundary check & EDR/NDR only; Identity annotation optional \\
+M6 & Benign-tool misuse followed by remote action & tool-name shortcut resistance & context-dependent EDR/NDR evidence \\
+M7 & Slow campaign spanning long inactive gaps & formation-boundary stress & fragmentation and stabilization \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+M5's EDR/NDR endpoint actions may enter the primary analysis independently of the Identity
+gate; Identity observations never do. A passed gate permits only a separately labeled offline
+exploratory annotation. Replay variants formerly called M8 are
+interventions in Section~\ref{sec:partial-telemetry}, not independent malicious scenarios.
+The benign catalogue contains B1 inventory scripting, B2 patch deployment, B3 file-share
+synchronization, B4 vulnerability scanning, B5 helpdesk remote administration, B6 log
+collection, B7 configuration management, and B8 unscheduled maintenance. The same tools
+appear in benign and malicious contexts. Pure benign, attack-only, and concurrent
+attack-plus-benign runs are all collected. Appendix~\ref{app:lab-label-policy} freezes
+family-level admission, repetition, cleanup, and failed-run handling; the companion
+reproducibility appendix retains each card's ordered preconditions, harmless markers, expected
+observations, and cleanup procedure.
+
+\subsection{Campaign-Level Splits and Artifact Freeze}
+\label{sec:splits}
+
+The independent partition unit is a complete campaign/run. All events, episodes, revisions,
+paired replays, and paired outage records from a base run remain in one mutually exclusive
+partition and one bootstrap cluster.
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item Engineering smoke runs verify schemas, clocks, collection, and raw pointers; they never enter formal results.
+\item Pilot runs estimate candidate prevalence, episode size, source-mask support, and perturbation feasibility.
+\item Training fits each candidate normalizer and scorer; development selects formation, feature, and implementation settings.
+\item After those choices freeze, final train-only normalization and scorer artifacts are produced.
+\item The natural-prevalence calibration split fits the affine mapping and executes the pre-registered group gate.
+\item The locked test is evaluated once with all artifacts, bins, metrics, and analysis scripts frozen.
+\item A method change invalidates affected calibrators and requires a separately identified confirmatory test.
+\end{enumerate}
+
+No event- or episode-level random split is permitted. Calibration selects no feature, and the
+locked test selects no threshold, group, fallback, bin, baseline, or metric.
+
+\subsection{Calibration Protocol and Support Gate}
+\label{sec:calibration-protocol}
+
+Calibration has three separate procedures. First, training fits the constrained raw scorer,
+and development freezes its contract. Second, the natural-prevalence calibration split fits
+the primary global affine mapping. Third, the manifest resolver assigns
+\texttt{supported\_global}, \texttt{supported\_group}, or
+\texttt{out\_of\_support}. Conditional group selection and fitting use the internal run-level
+procedure in Appendix~\ref{app:calibration-manifest}; the locked test never chooses a group.
+
+Every supported calibration result reports candidates, positives, negatives, independent
+runs, prevalence, uncalibrated-sigmoid and calibrated Brier/NLL, a reliability diagram with
+bin counts, and campaign-level 95\% intervals. AUPRC and AUROC measure ranking, not
+calibration. Unsupported records report out-of-support rate, supported decision coverage,
+raw-logit distribution, $U$ state, and error categories; they are excluded from calibrated
+Brier, NLL, and reliability calculations. CORP-style decomposition is exploratory and
+reported only in the companion reproducibility appendix.
+
+\subsection{Baselines and Component Ablations}
 \label{sec:ablation}
 
-We evaluate the contribution of each design choice by comparing the full model with variants that remove CTI, remove cross-source corroboration, disable the calibration objective, permit unbounded CTI, replace learnable contributions with fixed thresholds, or omit Agentic Evidence Assurance. CTI robustness is evaluated under no-CTI, valid contextual CTI, stale CTI, conflicting CTI, and misleading CTI conditions. Telemetry robustness is evaluated by withholding one source class, delaying identity events, dropping a fraction of network records, and introducing benign operational drift such as approved maintenance scripts and periodic administrative scans.
-
-A robust model should degrade gracefully rather than become overconfident. We therefore report both discriminative performance and calibration under each perturbation. Counterfactual stability measures the change in score when weak evidence is removed: a score supported by independent endpoint, network, and identity observations should not collapse when a single low-quality CTI object is discounted. Conversely, a score dominated by CTI should show a visible, reviewable reduction when that input is removed.
-
-\subsection{Analyst Review Protocol}
-\label{sec:analyst}
-
-For selected Tier 3 episodes, analysts first review a normalized episode timeline without the model's rank. They then review the TrustEpisode score trace and cited narrative. We record agreement on priority, perceived sufficiency of evidence, false-positive rationale, and time to reach a defensible next step. This protocol evaluates whether explanations change analysts' decisions constructively rather than merely making a system appear persuasive. Any analyst feedback used for recalibration is logged separately from held-out evaluation decisions.
+All comparisons use the same run partitions, ground-truth policy, and eligible candidate
+population for the question they answer.
 
 \begin{table*}[t]
-\caption{Three-tier empirical evaluation design.}
-\label{tab:tiers}
+\caption{Registered formation comparisons.}
+\label{tab:formation-baselines}
 \centering
 \small
-\begin{tabular}{p{0.15\textwidth}p{0.22\textwidth}p{0.23\textwidth}p{0.32\textwidth}}
+\begin{tabular}{p{0.12\textwidth}p{0.35\textwidth}p{0.42\textwidth}}
 \toprule
-\textbf{Tier} & \textbf{Data / context} & \textbf{Ground truth} & \textbf{Primary purpose} \\
+\textbf{ID} & \textbf{Single implementation} & \textbf{Purpose} \\
 \midrule
-Tier 1 & DARPA TC provenance-rich adversarial traces & Attack reports, scenario intervals, and labels & Reproducible evaluation of episode linking, causal coherence, and calibration. \\
-Tier 2 & Isolated Caldera BAS laboratory with EDR, NDR, Syslog, identity, asset, and CTI inputs & Scenario and ATT\&CK-aligned technique labels & Controlled robustness tests under missing telemetry, benign drift, stale/conflicting CTI, and attack variations. \\
-Tier 3 & Anonymized enterprise telemetry and analyst review & Analyst adjudication and operational case review & External validity, analyst utility, and deployment overhead. \\
+EB1 & non-overlapping fixed event-time windows & external time-only comparator \\
+EB2 & EB1 plus at least one specific shared entity & external time-plus-entity comparator \\
+EB3 & proposed deterministic temporal-causal builder & proposed reference \\
+EB3-H & EB3 with hub suppression disabled & one component ablation for giant-component risk \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\subsection{Baselines and Metrics}
+\begin{table*}[t]
+\caption{Registered scoring and calibration comparisons.}
+\label{tab:scoring-baselines}
+\centering
+\small
+\begin{tabular}{p{0.12\textwidth}p{0.36\textwidth}p{0.41\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Single implementation} & \textbf{Purpose} \\
+\midrule
+SB1 & maximum normalized source-native severity in the episode & external ranking comparator; no probability metrics \\
+SB2 & constrained $D$-only logit & ablate independent corroboration \\
+SB3 & proposed $D+C$ raw logit $z$ & proposed raw ranking \\
+SB4 & $\sigma(z)$ without calibration & uncalibrated probability comparator \\
+SB5 & SB3 plus primary global affine calibration & proposed calibrated method \\
+SB6 & pre-registered supported group calibration & conditional exploratory analysis \\
+SB7 & unavailable-source detector values forced to zero while support is ignored & robustness anti-pattern comparator \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The fixed-weight $D+C$ heuristic, nonlinear capacity check, optional benign-context feature,
+and any ablation in which removing $U$ changes $P$ are excluded. An available-source
+denominator comparator is used only in the physical-outage analysis; when fewer than two
+families are healthy it deterministically returns no corroboration. It is not applied to replay
+masking, where health remains unchanged. Each unique comparison appears in exactly one
+result row.
+
+\subsection{Paired Replay Perturbations and Physical Outage}
+\label{sec:partial-telemetry}
+
+Each frozen M1--M7 base run has paired replay children for source-event masking with unchanged
+health, random event drop, bounded burst drop, ingest-time delay, arrival reorder, event-time
+clock skew, dependency-aware duplicate injection, and an unchanged replay control. Each child
+retains its base label, split, and bootstrap cluster; variants do not increase the independent
+sample size.
+
+Physical outage is a separate procedure. A collector is actually stopped or isolated;
+authenticated heartbeat transitions to degraded/down; SourceCoverage changes; and the
+pipeline is observed through watermark, revision, scope-status, eligibility, recovery, and
+stabilization behavior. Every outage run has a \path{pair_id} linking it to a normal run with
+the same scenario and seed. Paired records remain in one split and bootstrap cluster. Replay
+and outage outcomes are never pooled. All perturbation levels and outage durations are frozen
+before locked test access.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig07_partial_telemetry_perturbations.pdf}
+  \caption{Paired replay perturbations and separate physical-outage validation. Replay masking
+  changes observed events without claiming collector failure; physical outage changes
+  authenticated health and is analyzed independently.}
+  \label{fig:telemetry-perturbation-design}
+\end{figure*}
+
+\subsection{Metrics and Statistical Analysis}
 \label{sec:metrics}
 
-We compare \trustepisode against (B1) static severity aggregation, (B2) fixed rule-based correlation, (B3) frequency or anomaly-based provenance scoring, (B4) an adaptive provenance baseline inspired by CAPTAIN, and (B5) direct LLM/RAG triage. Baselines are configured to consume compatible inputs where possible and are evaluated under identical episode windows.
+RQ1 primary outcomes are malicious-action coverage, fragmentation rate, and over-merge rate.
+Benign contamination and episode precision/recall/F1 under the frozen matching rule are
+secondary. RQ2 ranking outcomes are AUPRC and recall at the fixed analyst-review budget;
+Brier, NLL, and reliability are the calibration outcomes. AUPRC is emphasized for the
+imbalanced candidate population~\cite{saito2015pr}. AUROC and precision at $k$ are secondary.
 
-Episode reconstruction is measured by episode precision, recall, F1, attack-path coverage, and time-to-episode detection. Risk ranking is measured by AUPRC, AUROC, NDCG@10, Precision@K, and mean reciprocal rank. Since SOC data are strongly imbalanced, AUPRC and NDCG@10 are primary ranking measures. Calibration is measured by expected calibration error (ECE), Brier score, negative log-likelihood, and reliability diagrams. Robustness measures include performance degradation under telemetry loss, calibration degradation under CTI perturbation, and score variance under benign drift. Evidence assurance is measured through citation-support precision, unsupported-claim rate, contradiction-retrieval recall, missing-evidence identification rate, and evidence-trace completeness. Operational metrics include events per second, end-to-end scoring latency, memory usage, agentic-investigation latency, and analyst time-to-grounded conclusion.
+RQ3 has two non-pooled views. The replay table reports paired formation changes, $z$ shift,
+supported-regime Brier/NLL degradation, supported decision coverage, every $U$ axis, revision
+count, and stabilization. The physical-outage table reports health-detection latency,
+SourceCoverage transitions, decision eligibility, recovery, and stabilization; out-of-support
+records receive no calibrated proper score. RQ4 checks equality of the canonical replay hash
+and reports throughput, run-level p50/p95/p99 latency, peak memory, storage per event/revision,
+and replay time. Hardware, concurrency, warm-up, and measurement interval are frozen.
 
-\subsection{Results Table and Reporting Plan}
+Campaign/run is the only resampling unit. Confidence intervals use a cluster bootstrap by run
+~\cite{field2007bootstrap}; replay and outage contrasts are paired by base run. We report
+absolute differences with 95\% intervals and treat relative differences as supplemental.
+Every subgroup reports runs, candidates, positives, negatives, and prevalence. Event latency
+is summarized inside each run before run-level aggregation. $U$ is never scalarized and no
+single \emph{U-AUC} is computed. Appendix~\ref{app:experimental-contract} gives formulas,
+matching, bootstrap seed, and the full RQ matrix.
+
+\subsection{Reporting Plan}
 \label{sec:results}
 
-Table~\ref{tab:results-template} is the final reporting layout. Values are intentionally marked as pending because this submission draft does not fabricate experimental outcomes. The completed paper will report means and confidence intervals over scenario seeds, time windows, or analyst-review samples as appropriate. We will additionally include calibration plots, an ablation of bounded CTI alignment, and two compact case studies: one APT-style lateral-movement episode and one false positive reduced by contradictory maintenance-window evidence.
+Results are populated only by the locked analysis pipeline. R1 reports split/run/candidate and
+label counts. The primary method tables deliberately separate formation from ranking and
+calibration:
 
 \begin{table*}[t]
-\caption{Main result table template. Replace pending entries only with measured values from the three-tier evaluation. Arrows indicate preferred direction.}
-\label{tab:results-template}
+\caption{R2 formation-result shell. All cells remain pending until locked evaluation.}
+\label{tab:formation-results}
 \centering
 \small
-\begin{tabular}{lccccccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Method} & \textbf{Episode F1} $\uparrow$ & \textbf{AUPRC} $\uparrow$ & \textbf{NDCG@10} $\uparrow$ & \textbf{ECE} $\downarrow$ & \textbf{Brier} $\downarrow$ & \textbf{Trace Comp.} $\uparrow$ & \textbf{Latency} $\downarrow$ \\
+\textbf{Builder} & \textbf{Action coverage} $\uparrow$ & \textbf{Fragmentation} $\downarrow$ & \textbf{Over-merge} $\downarrow$ & \textbf{Contamination} $\downarrow$ & \textbf{Episode F1} $\uparrow$ \\
 \midrule
-Static severity aggregation & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
-Fixed rule correlation & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
-Provenance anomaly baseline & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
-Adaptive provenance baseline & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
-Direct LLM/RAG triage & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
-\textbf{\trustepisode} & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+EB1 & \tbd & \tbd & \tbd & \tbd & \tbd \\
+EB2 & \tbd & \tbd & \tbd & \tbd & \tbd \\
+EB3 & \tbd & \tbd & \tbd & \tbd & \tbd \\
+EB3-H & \tbd & \tbd & \tbd & \tbd & \tbd \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
+The separately structured R3a ranking and R3b supported-calibration shells appear in
+Appendix~\ref{app:result-shells}; moving the empty registries does not change their frozen
+columns or the main-text reporting contract.
 
-\subsection{Planned Result Analysis}
-\label{sec:resultanalysis}
+R4 reports paired replay perturbations; R5 reports physical outage and recovery; R6 reports
+determinism and resource cost; and R7 reports error categories. Planned result figures are raw
+versus calibrated reliability, reliability by supported mask, decision coverage, builder
+fragmentation/contamination, and measured revision behavior. They are intentionally absent
+until real locked-test outputs exist.
 
-The completed results section will use three complementary views. First, a main comparison table will report episode F1, ranking metrics, calibration, trace completeness, and latency. Second, reliability diagrams will show whether predicted likelihood tracks empirical attack frequency. Third, robustness plots will compare the full model and ablations across telemetry-loss and CTI-perturbation conditions. We will avoid claiming superiority from a single aggregate score; results must be consistent across ranking, calibration, and traceability measures.
-
-Two case studies will accompany the quantitative results. The first will reconstruct an APT-style lateral-movement episode from low-severity endpoint execution, identity anomalies, cross-host movement, and contextual CTI. The second will demonstrate a false-positive reduction: a suspicious script on a critical asset is discounted after the assurance layer retrieves an approved maintenance window, authorized administrative identity, and known management server. These paired cases illustrate both escalation and de-escalation behavior.
-
-\subsection{Discussion}
+\subsection{Limitations and Safety}
 \label{sec:discussion}
 
-\paragraph{Beyond adaptive provenance detection.} \trustepisode adopts CAPTAIN's adaptation principle but changes the target of learning. Rather than learning configuration for a host-provenance alarm, it learns calibrated episode-level risk from heterogeneous sources, separates likelihood from impact, constrains CTI influence, and records an auditable evidence trace.
-
-\paragraph{Why Agentic RAG does not score.} An LLM can help discover context and explain a decision, but its output is probabilistic and can vary with retrieval content. Allowing an agent to determine the primary score would complicate calibration, reproducibility, and safety review. The assurance layer instead verifies, challenges, cites, and identifies gaps in the factors used by the scorer.
-
-\paragraph{Limitations.} Public provenance traces do not capture all modern enterprise networks; Caldera emulation cannot represent every evasion behavior; and enterprise validation may not provide complete attack labels. Asset criticality and CTI quality can also be incomplete. Secure online adaptation and poisoning-resilient drift management remain future work.
-
-\paragraph{Safety and ethics.} All BAS experiments are isolated and non-destructive. No production-impacting ransomware encryption or disruptive OT operation is executed. Enterprise telemetry is anonymized and access controlled. Agentic tools are read-only and cannot autonomously modify enforcement controls.
+The controlled laboratory does not represent every deployment, evasion strategy, or base
+rate. DARPA TC supports only the formation claim. Calibration applies only to the frozen
+manifest and explicitly supported regimes. Identity remains offline and exploratory even if
+its pilot gate passes; it cannot alter primary candidates or outputs. Uncollected field data
+are not part of the present evaluation. Emulation uses isolated
+hosts, test accounts, harmless markers, cleanup manifests, and recorded failed or aborted
+runs. The evaluation does not study CTI, agent components, impact, priority, or autonomous
+response.
