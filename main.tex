@@ -17,6 +17,7 @@
 \usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{balance}
+\usepackage{placeins}
 \usepackage{microtype}
 \usepackage{xspace}
 
@@ -33,27 +34,40 @@
 \raggedbottom
 
 \newcommand{\trustepisode}{\textsc{TrustEpisode}\xspace}
-\newcommand{\cti}{\textsc{CTI}\xspace}
-\newcommand{\rag}{\textsc{RAG}\xspace}
-\newcommand{\tbd}{\textemdash}
+\newcommand{\tbd}{\texttt{pending}}
 
 \begin{document}
 
-\title{TrustEpisode: Calibrated Episode Risk Scoring with Evidence-Grounded Agentic RAG for Multi-Step Cyber Attacks}
+\title{TrustEpisode: Deterministic Episode Formation and Manifest-Scoped Calibration for Partial EDR/NDR Telemetry}
 
 \author{Anonymous Authors}
 \affiliation{\institution{Anonymous Institution}}
 \email{anonymous@anonymous.edu}
 
 \begin{abstract}
-Multi-step cyber attacks, including advanced persistent threats (APTs) and ransomware campaigns, rarely manifest as a single decisive alert. Instead, they unfold through temporally dispersed, heterogeneous, and partially inconsistent observations across endpoint activity, network telemetry, identity events, asset context, operational technology visibility, and cyber-threat intelligence. Existing security operations commonly rely on static correlation rules that are difficult to adapt across environments, while LLM-based security agents can produce plausible but insufficiently calibrated risk assessments when evidence is incomplete, stale, or contradictory.
+Multi-step attacks appear as temporally dispersed endpoint and network observations rather than
+one decisive alert. Correlation must therefore define which events form a candidate episode,
+preserve deterministic revisions under late data, and distinguish an unsupported probability
+from a low probability when telemetry is missing.
 
-We present \trustepisode, a multi-layer framework for calibrated and evidence-traceable episode risk scoring over heterogeneous security telemetry. The Evidence Fabric Layer transforms observations into a temporally aligned evidence graph with provenance, reliability, freshness, and asset-context annotations. The Episode Synthesis Layer groups related observations into candidate attack episodes. The Calibrated Trust Scoring Layer separates maliciousness likelihood, operational impact, operational priority, and evidence sufficiency: asset criticality affects consequence rather than maliciousness, while missing telemetry produces uncertainty caveats rather than benign labels. Unlike fully rule-based correlation, \trustepisode learns score calibration from observed benign and attack behavior while retaining factor-level interpretability. An Agentic Evidence Assurance Layer applies evidence-grounded retrieval to retrieve supporting and contradicting evidence, identify missing observations, and produce cited narratives; it does not directly assign or overwrite the numerical score.
+We present \trustepisode, a label-blind EDR/NDR pipeline with explicit ownership boundaries.
+Evidence Fabric emits canonical events and independent source-health intervals; Episode
+Synthesis alone owns membership and immutable revisions; a two-feature stateless scorer emits
+a raw logit; and a manifest-scoped affine calibrator emits a nullable maliciousness
+probability. A separate deterministic evaluator reports a five-axis evidence-sufficiency
+profile without changing that probability. An AuditRecord Assembler creates one terminal,
+append-only outcome per revision: a complete AuditRecord from independently produced inputs, or
+an explicit AssemblyFailureRecord without fabricated score or probability fields.
 
-We evaluate \trustepisode through a three-tier empirical protocol: public DARPA Transparent Computing traces, controlled Caldera-based breach-and-attack simulations, and anonymized enterprise telemetry for external validation. We measure episode reconstruction, risk ranking, calibration, robustness to telemetry loss and misleading CTI, evidence traceability, and time to analyst-verifiable conclusions.
+We specify a frozen controlled-laboratory protocol for formation, ranking, calibration,
+partial-telemetry replay, physical collector outage, and deterministic replay. The protocol
+fixes candidate populations, split assignment, thresholds, group-calibration gates,
+interventions, matching, metrics, resampling, and empty RT1--RT7 result schemas before locked
+test access. Empirical result cells remain \texttt{pending}; no synthetic performance values
+or confidence intervals are reported.
 \end{abstract}
 
-\keywords{multi-step attack detection, calibrated risk scoring, provenance, security telemetry, agentic RAG, cyber threat intelligence}
+\keywords{attack episode formation, probability calibration, partial telemetry, provenance, EDR, NDR}
 
 \maketitle
 \fancyhf{}
@@ -77,14 +91,8 @@ We evaluate \trustepisode through a three-tier empirical protocol: public DARPA 
 \ifdefined\fullappendix
 \clearpage
 \fi
-\balance
+\FloatBarrier
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bib/references}
-
-\paragraph{Use of Generative AI}
-Generative AI tools were used as writing and editing assistants for language revision,
-consistency checking, figure drafting, and \LaTeX{} formatting. The authors reviewed and
-remain responsible for all research claims, methods, sources, analyses, and final text. No
-AI-generated empirical data or results are reported.
 
 \end{document}

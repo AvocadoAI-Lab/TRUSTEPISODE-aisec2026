@@ -1,21 +1,22 @@
 # TrustEpisode - AISec 2026 Paper
 
-TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿，研究重點是：將 EDR/NDR 異質遙測轉換成 deterministic、immutable episode revisions，並對每個 revision 產生 manifest-supported calibrated maliciousness probability、獨立的 evidence-sufficiency profile，以及 append-only audit record。
+TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿，研究重點是：將 EDR/NDR 異質遙測轉換成 deterministic、immutable episode revisions，並對每個 revision 產生 manifest-supported calibrated maliciousness probability、獨立的 evidence-sufficiency profile，以及 append-only terminal assembly outcome。
 
 論文標題：
 
-> **TrustEpisode: Calibrated Episode Risk Scoring with Evidence-Grounded Agentic RAG for Multi-Step Cyber Attacks**
-
-> 注意：目前 Title、Abstract、Sections 1/2/5 仍保留較早期的 CTI/RAG/Agentic/impact 敘事；新版 Section 3 的正式方法邊界已排除這些模組。此全篇敘事一致性問題仍須在正式投稿前處理。
+> **TrustEpisode: Deterministic Episode Formation and Manifest-Scoped Calibration for Partial EDR/NDR Telemetry**
 
 ## 目前輸出版本
 
 | 檔案 | 頁數 | 圖數 | 用途 |
 |---|---:|---:|---|
-| `main.pdf` | 12 | 4 | AISec 投稿版；主文於第 10 頁結束，附錄與 References 使用第 10--12 頁 |
-| `main_full.pdf` | 20 | 5 | 完整重現與內部審查版；保留 Appendix A--F |
+| `main.pdf` | 12 | 4 | AISec 唯一投稿 PDF；Conclusion 於第 9 頁，References 位於第 11--12 頁 |
 
-[ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。投稿還必須在 references/appendices 後加入 Generative AI 使用聲明；該聲明不計頁限。`main.pdf` 已同時符合頁數與聲明要求。
+`main_full.pdf` 只屬於可選的內部審查輸出，不是投稿交付物，也不再封裝於 reproducibility companion。
+
+`main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact，並綁定 SHA-256 `5c226ba73667d628058538ede2adbbb174cdd9986b9e58ea2bf082b75bcf7e83`。正式投稿時必須上傳完全相同的 ZIP；缺件或 hash 不符均使 machine-readable contract 主張失效。
+
+[ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。`main.pdf` 目前為 12 頁，正文 Conclusion 位於第 9 頁；`Use of Generative AI` 尾段已依本次稿件決策移除，正式投稿前仍應由作者依當時 submission policy 自行確認 disclosure 欄位或文字要求。
 
 ## 方法範圍
 
@@ -25,7 +26,9 @@ TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿�
 EDR + NDR telemetry
   -> Evidence Fabric
   -> deterministic Episode Synthesis
+  -> health-independent [D, C, m, detector observation]
   -> compact stateless scorer
+  -> Scope Resolver [resolved availability, kappa, group key, eligibility]
   -> manifest-scoped affine calibrator
   -> nullable calibrated probability P
 
@@ -33,8 +36,12 @@ SourceCoverage + EpisodeRevision + provenance + calibration status
   -> deterministic Sufficiency Evaluator
   -> structured five-axis U
 
-P + U + versions + evidence references
-  -> immutable append-only AuditRecord
+P + U + independently owned inputs
+  -> exactly one terminal AssemblyOutcome per revision
+  -> AuditRecord or AssemblyFailureRecord
+
+Beyond-horizon evidence
+  -> LateEvidenceRecord in late store only
 
 Ground truth
   -> offline training / calibration / evaluation only
@@ -50,7 +57,11 @@ Ground truth
 - Unsupported regime 必須輸出 canonical-null `P` 與 `decision_eligible=false`。
 - `U` 是五軸 evidence-sufficiency profile，不是第二個 probability，也不修改 `P`。
 - Ground truth、scenario IDs、attack windows 與 split assignments 不得進入 online objects。
-- 每個 EpisodeRevision 只能產生一筆 immutable、append-only AuditRecord。
+- 每個 EpisodeRevision 只能產生一個 immutable、append-only terminal AssemblyOutcome：完整 AuditRecord 或明確 AssemblyFailureRecord。
+- Feature Extractor 不讀取 health；resolved detector availability 與 `decision_eligible` 只由 Scope Resolver 產生。
+- `eligible_detector_count=0` 必定產生 out-of-support、`decision_eligible=false` 與 JSON-null `P`；`no_detection` 不得繞過此規則。
+- Raw scorer 使用 $b\in\mathbb R$、$w_D,w_C\ge0$；intercept 不受非負限制。
+- Beyond-horizon evidence 只產生 LateEvidenceRecord，不能回寫既有 revision、`U` 或 AuditRecord。
 
 ## 專案結構
 
@@ -60,6 +71,11 @@ main_full.tex                    # 啟用完整 Appendix A--F
 main.pdf                         # 已驗證投稿版
 main_full.pdf                    # 已驗證完整重現版
 section3.md                      # Section 3 繁體中文 Markdown 對照版
+section4.md                      # Section 4 繁體中文 Markdown 對照版
+
+artifacts/contracts/             # Frozen JSON schema、threshold、split、scenario、RT contracts
+TrustEpisode_reproducibility_companion_v1.zip
+TrustEpisode_reproducibility_companion_v1.sha256
 
 sections/
   intro.tex                      # Section 1: Introduction
@@ -100,10 +116,14 @@ trustepisode_figures/pdf/fig05_ground_truth_firewall.pdf
 trustepisode_figures/pdf/fig07_partial_telemetry_perturbations.pdf
 ```
 
-完整版另外引用：
+完整版另外引用以下五張 companion figures：
 
 ```text
+trustepisode_figures/pdf/fig03_calibration_and_sufficiency.pdf
+trustepisode_figures/pdf/fig04_lab_topology.pdf
+trustepisode_figures/pdf/fig06_split_and_freeze_workflow.pdf
 trustepisode_figures/pdf/fig08_episode_linking_decision.pdf
+trustepisode_figures/pdf/fig09_calibration_validity_state_machine.pdf
 ```
 
 LaTeX 插圖範例：
@@ -237,8 +257,15 @@ $script | python -
 目前驗證基準：
 
 ```text
-main.pdf       12 pages, 4 figures, no overfull
-main_full.pdf  20 pages, 5 figures, bibliography balance warning only
+main.pdf       12 pages, 4 figures, 7 tables, no overfull hbox/undefined reference
+               (1.17 pt final-page output vbox; visually and geometrically in bounds)
+```
+
+目前 PDF SHA-256：
+
+```text
+main.pdf       aca9399f0a2721ef6d69111eacbf27d590f3b1bc1d9eebf5ee6542a6eeac5f3b
+companion zip  5c226ba73667d628058538ede2adbbb174cdd9986b9e58ea2bf082b75bcf7e83
 ```
 
 ## 結果與投稿狀態
@@ -254,14 +281,14 @@ main_full.pdf  20 pages, 5 figures, bibliography balance warning only
 
 1. 執行 M1--M7、B1--B8 與 paired replay／physical-outage protocol。
 2. 產生 RQ1--RQ4 的 locked-test metrics、cluster-bootstrap intervals 與 reliability plots。
-3. 統一 Title、Abstract、Sections 1/2/5 與新版 Section 3 method boundary。
-4. 依 AISec 2026 CFP 完成匿名檢查、artifact link 決策與 Generative AI 聲明複核。
-5. 重新編譯、檢查所有 references/citations，並逐頁渲染 PDF。
+3. 依 AISec 2026 CFP 完成最終匿名檢查與 artifact link 決策。
+4. 以真實 locked outputs 重新編譯並逐頁複核最終 PDF。
 
 ## 協作規則
 
 - 一次修改一個 `sections/*.tex`，降低 merge conflicts。
 - 修改 `sections/arch.tex` 時，同步更新一對一中文對照 `section3.md`。
+- 修改 `sections/exps.tex` 時，同步更新一對一中文對照 `section4.md`。
 - 新增 citation 時同步更新 `bib/references.bib`。
 - 修改主文引用的 appendix label 時，必須同步更新 `appendix.tex` 與 `appendix_submission.tex`。
 - 正式圖片只從 `trustepisode_figures/svg/` 維護，並輸出到 `trustepisode_figures/pdf/`。
@@ -271,6 +298,7 @@ main_full.pdf  20 pages, 5 figures, bibliography balance warning only
 ## 詳細報告
 
 - `AISEC_PAGE_LIMIT_OPTIMIZATION_REPORT.md`：12 頁投稿版的頁數與合規證據。
+- `HTML_REVIEW_REMEDIATION_REPORT.md`：`preview.html` 的逐項修正與驗證矩陣。
 - `SECTION3_SECTION4_DETAILED_COMPARISON_REPORT.md`：Section 3/4 紅刪綠增中英比較。
 - `TRUSTEPISODE_V2_COMPLETION_REPORT.md`：v2 計畫需求矩陣與驗證結果。
 - `trustepisode_figures/README_zh-TW.md`：九張來源圖的語意、位置與限制。
