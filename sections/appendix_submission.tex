@@ -109,7 +109,8 @@ $U$ precedence & coverage & unknown $>$ unavailable $>$ degraded $>$ complete & 
 \end{table*}
 
 Feature Extractor emits only \path{detected}, \path{examined_none}, or \path{not_examined}.
-Scope Resolver combines that observation with the unique covering SourceCoverage interval and
+At \path{EpisodeRevision.event_time_end}, Scope Resolver combines that observation with exactly
+one content-distinct covering SourceCoverage interval per expected instance and
 emits \path{available}, \path{no_detection}, \path{collector_unavailable},
 \path{parser_invalid}, or \path{unknown}; the first two are health-support states, but zero
 eligible detector values still force out-of-support. CR1 is an
@@ -149,10 +150,12 @@ Equation~\ref{eq:match-weight}, and Table~\ref{tab:malicious-scenarios}. It pins
 \texttt{dd22d543...}, peeled commit \texttt{b24f6e7a...}, and OCSF 1.8.0; missing manifest fields
 fail closed; each card/mode requires 10 valid runs with achieved counts \texttt{pending}; and
 M5-ID remains post-inference only.
-Each M/B card closes image key and digest, ordered ability IDs, executor plus exact command
-templates, monotonic offsets, marker ID/content/path preimage, success/failure predicates,
-cleanup commands and digest check, and allowed mode. Template variables resolve only from the
-frozen run manifest. Malicious modes are attack-only or one hash-selected B1--B8 workload begun
+Each Linux-only M/B card closes image key and digest, ordered ability IDs, no-profile Bash
+executor plus exact command templates, monotonic offsets, fixed target paths, offline receipt
+preimage, success/failure predicates, cleanup commands and digest check, and allowed mode.
+Target commands cannot receive run/card/ability/operation/receipt identifiers or values;
+orchestrator-only receipts remain in Ground Truth Store. Template variables resolve only from
+the frozen run manifest. Malicious modes are attack-only or one hash-selected B1--B8 workload begun
 60 s earlier; benign cards also run standalone. EB1 uses run-start-anchored 300 s bins; EB2 uses
 exact shared-entity components within those bins. SB1 takes maximum root-deduplicated finite
 native severity; SB2 uses the binary SB3 cohort, unconstrained intercept, nonnegative $D$ weight,
@@ -173,7 +176,10 @@ failure rates over the all-outcome denominator. The stream
 population includes both terminal outcome types. RP2--RP7 instantiate every EDR/NDR source by
 dose cell. RP0--RP7 use the domain-separated HMAC function $U(d,k)$, canonical event/source
 order, explicit RP3 interval index, exact RP5 buffer width, and byte-level RP7 duplicate-ID
-preimage specified in Section~\ref{sec:partial-telemetry}. PO1 fixes anchor, ready, 1800 s
+preimage specified in Section~\ref{sec:partial-telemetry}. Formal RT4 instantiates 41 children
+for each of 28 malicious locked-test roots (1,148 bundles); non-locked roots are not read. PO1 is a dedicated locked-test cohort
+of exactly 40 traces (two sources by two durations by 10 repetitions), balanced over
+M1/M3/M4/M7; both comparators reuse each immutable trace. It fixes anchor, ready, 1800 s
 follow-up, and detection/recovery censoring; RT6 worker/repetition measurements are normative as
 written in Section~\ref{sec:partial-telemetry}.
 Populations, split, interventions, metrics, and uncertainty are exactly Sections
@@ -182,5 +188,5 @@ Table~\ref{tab:dataset-roles}. Table~\ref{tab:formation-results} is the only RT1
 The required supplementary \path{TrustEpisode_reproducibility_companion_v1.zip} contains the
 closed Draft 2020-12 schema, examples, detector/card/baseline/perturbation/result registries, and
 17-entry SHA-256 manifest. Its archive SHA-256 is
-\texttt{5c226ba73667d628\allowbreak{}058538ede2adbbb1\allowbreak{}74cdd9986b9e58ea\allowbreak{}2bf082b75bcf7e83}; a missing or
+\texttt{6298bd2e89bd50a7\allowbreak{}8a890b62750dcca2\allowbreak{}bcee34906fd6dd73\allowbreak{}a4a77f2a19c81205}; a missing or
 mismatched upload makes the machine-contract claim unverified.

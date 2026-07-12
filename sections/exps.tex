@@ -51,13 +51,24 @@ survivorship bias.
 \subsection{Controlled Laboratory and Frozen Split}
 \label{sec:datasets}
 
-Formal claims use only the controlled Caldera v5.3.0 laboratory~\cite{caldera}; public
-provenance datasets are related-work context, not an evaluation tier. The lab contains isolated
-Windows/Linux targets, a benign service, EDR/NDR collectors, Health Monitor, the production-like
-online pipeline, a separate Ground Truth Store, and an offline Evaluation Harness. The release
-pin is annotated tag object \texttt{dd22d543...} peeled to commit
-\texttt{b24f6e7a...}; every formal run additionally records target, collector, configuration,
-topology, parser, and schema digests. Missing manifest fields fail closed into RT1 only.
+Formal claims use only a manifest-pinned controlled Linux laboratory; public provenance datasets
+are related-work context, not an evaluation tier. Its four-service primary topology is Caldera
+v5.3.0~\cite{caldera}, two isolated Ubuntu 22.04 targets, and one inline Suricata gateway. Each
+target command passes through an instrumented EDR wrapper that records generic process start/exit
+observations to an internal append-only spool; an independently stoppable forwarder emits
+label-free events and authenticated health. This is container instrumentation, not a native
+commercial endpoint product. A host monotonic orchestrator executes frozen no-profile Bash card
+templates. Sandcat is disabled during formal evidence windows, retaining the pinned Caldera
+control-plane topology without admitting agent identifiers or control traffic into primary
+telemetry. The single NDR adapter must pass canonical-byte, digest, event-ID, direction, and
+protected-IP conformance against the pinned \texttt{sensel-ot-edge-sensor} implementation.
+Wazuh, \texttt{guacamole-ai}, and \texttt{Aristaconnector-Control-Plane} may inspect only a
+post-seal copy and cannot affect RT1--RT7. The Caldera release pin is annotated tag object
+\texttt{dd22d543...} peeled to commit \texttt{b24f6e7a...}; each run also records image,
+configuration, topology, parser, schema, source, and hardware digests. Missing fields fail closed
+into RT1 only. Before a non-outage run is sealed, the harness waits until every event-time point
+has exactly one covering interval from both EDR instances and the NDR instance; PO1 omits this
+gate by design so its authenticated coverage gap remains observable.
 
 Table~\ref{tab:dataset-roles} fixes the split unit, deterministic assignment, descendant
 inheritance, and the fail-closed registry fields used by every result table.
@@ -74,7 +85,7 @@ inheritance, and the fail-closed registry fields used by every result table.
 Independent unit & base campaign, stratified by scenario family and benign mode & no event/episode random split \\
 Order & ascending SHA-256 of \texttt{20260710:base\_campaign\_id} per stratum & freeze IDs before label release \\
 10-run cycle & ranks 0--4 train; 5--6 development; 7 calibration; 8--9 locked test & exact 50/20/10/20 percent; all partitions nonempty \\
-Descendants & replay/outage children inherit partition and bootstrap cluster & any mismatch invalidates the complete cluster \\
+Descendants & replay children inherit partition and bootstrap cluster; dedicated PO1 cells are locked-test-only independent clusters & any mismatch or PO1 reuse in fitting invalidates the complete cluster \\
 Registry & run, base/parent/pair IDs, scenario, benign mode, seed, partition, cluster, role, manifest digest & missing field excludes RT2--RT7 \\
 \bottomrule
 \end{tabular}
@@ -89,12 +100,12 @@ primary RQs.
 \label{sec:ground-truth}
 
 Allowlist schemas reject \path{operation_id}, \path{ability_id}, adversary/technique labels,
-attack markers/windows, scenario class, malicious label, and split assignment from every online
+action receipts/windows, scenario class, malicious label, and split assignment from every online
 object~\cite{kaufman2012leakage}. Each ground-truth group $g$ registers a nonempty set of
 required action tokens $A_g$; each run registers benign/background tokens $B_r$. For predicted
 episode $p$, $A_{cov}(p,g)=|A_p\cap A_g|/|A_g|$, where $A_p$ is its root-deduplicated attributed
 action set. Offline matching constructs the threshold-qualified edge graph $E_q$. An edge first
-requires temporal IoU $\ge0.10$, entity Jaccard $\ge0.50$, and one exact harmless marker or
+requires temporal IoU $\ge0.10$, entity Jaccard $\ge0.50$, and one exact offline action receipt or
 registered action. Its weight is
 \begin{equation}
 w=0.5A_{cov}+0.3J_{entity}+0.2\operatorname{IoU}_{time};
@@ -114,7 +125,7 @@ $B_{cont}\ge\theta_{contam}=0.25$; positive if coverage passes and contamination
 threshold; negative if $A_{cov}=0$, at least one registered benign token is present, and no
 conflict exists; otherwise ambiguous, including undefined contamination. A truth conflict exists
 iff overlapping registered groups assign one root/action token to different group IDs, or the
-same root is both malicious and benign, or duplicate marker IDs disagree on card/window; any
+same root is both malicious and benign, or duplicate receipt IDs disagree on card/window; any
 conflict forces ambiguous before assignment. Labels are joined only after terminal
 AssemblyOutcome insertion; the join resolves EpisodeRevision independently of whether assembly
 succeeded, and an unresolved revision is counted as ambiguous. Sensitivity varies $\theta_{mal}\in\{.25,.50,.75\}$,
@@ -144,30 +155,32 @@ execution counts, not achieved observations.
 \toprule
 \textbf{ID} & \textbf{Ordered family} & \textbf{Stressor} & \textbf{Primary evidence} \\
 \midrule
-M1 & Windows discovery $\rightarrow$ share $\rightarrow$ remote marker & lateral chain & EDR lineage + NDR connection \\
-M2 & script $\rightarrow$ marker transfer $\rightarrow$ temporary task & weak-to-strong & EDR lineage + NDR transfer \\
-M3 & Linux discovery $\rightarrow$ test SSH $\rightarrow$ file marker & cross-platform & Linux EDR + NDR session \\
-M4 & low-rate connections $\rightarrow$ local marker & sparse sequence & NDR cadence + EDR action \\
-M5 & test-account endpoint action $\rightarrow$ endpoint marker & Identity-independent primary card & EDR/NDR only \\
-M6 & dual-use admin tool $\rightarrow$ remote marker & tool-name shortcut & contextual EDR/NDR \\
-M7 & discovery $\rightarrow$ fixed pauses $\rightarrow$ remote marker & 300/3600 s boundaries & fragmentation/stabilization \\
+M1 & discovery $\rightarrow$ peer inventory $\rightarrow$ SSH write & lateral chain & EDR lineage + NDR connection \\
+M2 & stage $\rightarrow$ archive $\rightarrow$ SCP $\rightarrow$ delayed local action & weak-to-strong & EDR file/process + NDR transfer \\
+M3 & discovery $\rightarrow$ temporary-key SSH write & remote execution & Linux EDR + NDR session \\
+M4 & five-request 60 s cadence $\rightarrow$ local action & sparse sequence & NDR cadence + EDR action \\
+M5 & discovery $\rightarrow$ local configuration action & source-asymmetric hard case & EDR; valid NDR no-detection \\
+M6 & matched-tool SSH $\rightarrow$ remote write & tool-name shortcut & contextual EDR/NDR \\
+M7 & actions at 0/300/3900 s & 300/3600 s boundaries & fragmentation/stabilization \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-B1--B8 respectively cover inventory, patching, file synchronization, vulnerability scanning,
-helpdesk administration, log collection, configuration management, and declared unscheduled
-maintenance. The protocol requires 10 valid pure-benign repetitions per card; achieved counts
-remain \texttt{pending}. Every card fixes preconditions, harmless
-markers, expected observations, cleanup, and card-specific failure. Collection failure remains
+B1--B8 respectively cover Linux inventory, manifest-pinned package installation, file
+synchronization, registered service scanning, read-only SSH administration, log collection,
+configuration management, and supervisor-backed maintenance. The protocol requires 10 valid
+pure-benign repetitions per card; achieved counts
+remain \texttt{pending}. Every card fixes preconditions, fixed-path postconditions, offline-only
+action receipts, expected observations, cleanup, and card-specific failure. Collection failure remains
 in RT1/failure logs but leaves RT2--RT7; action failure with healthy collectors enters only the
 sensitivity cohort; cleanup failure blocks image reuse. This paragraph and
 Table~\ref{tab:malicious-scenarios} are the normative card contract for this PDF.
 
 Each M1--M7/B1--B8 card is additionally a closed execution tuple: image-manifest key; ordered
-ability IDs bound to executor and exact command template; monotonic start offsets; marker path,
-content, and SHA-256 preimage; success and failure predicates; cleanup commands and post-cleanup
-digest check; and allowed mode. The malicious modes are attack-only and one deterministic
+ability IDs bound to a no-profile Bash executor and exact command template; monotonic start
+offsets; fixed target paths; offline receipt SHA-256 preimage; success and failure predicates;
+cleanup commands and post-cleanup digest check; and allowed mode. Target commands cannot receive
+run/card/ability/operation/receipt IDs or their values. The malicious modes are attack-only and one deterministic
 concurrent B1--B8 card starting 60 s earlier; benign cards also run standalone. Unresolved
 template variables, command/image digest mismatch, offset error $>1$ s, or cleanup failure
 invalidates the run. These tuples are frozen before formal collection.
@@ -225,8 +238,11 @@ the baseline registry.
 \subsection{Replay Perturbations and Physical Outage}
 \label{sec:partial-telemetry}
 
-Every M1--M7 base run has deterministic children. RP2--RP7 instantiate the Cartesian product of
-source $\in\{\mathrm{EDR},\mathrm{NDR}\}$ and registered dose; RP1 explicitly uses
+The operators define deterministic children for every M1--M7 base run, but formal RT4 instantiates
+only the 28 malicious locked-test roots (seven cards, two modes, two locked repetitions). Each
+root has 41 RP0--RP7 children, for 1,148 sealed replay bundles; non-locked roots are never read by
+RT4. RP2--RP7 instantiate the Cartesian product of source
+$\in\{\mathrm{EDR},\mathrm{NDR}\}$ and registered dose; RP1 explicitly uses
 EDR-only/NDR-only and RP0 has no source. Let
 \begin{equation*}
 \begin{aligned}
@@ -253,21 +269,28 @@ the concatenation of UTF-8 \texttt{RP7}, separator \texttt{0x1f}, raw $S_{32}$, 
 separator, UTF-8 event ID, a final separator, and $\operatorname{uint32be}(1)$, with ingest
 time increased by one microsecond; collision invalidates the child.
 
-For every base-run$\times$source$\times\{120,600\}$ s PO1 cell, $t_{anchor}$ begins after two
+PO1 is a separate locked-test-only cohort, not a child of all 220 base runs. It expands
+$\{\mathrm{EDR},\mathrm{NDR}\}\times\{120,600\}$ s $\times$ 10 repetitions into exactly 40
+physical traces. With card order M1/M3/M4/M7, source index EDR/NDR $=0/1$, duration index
+120/600 $=0/1$, and repetition $r\in[0,9]$, the card index is
+$(r+2i_{source}+i_{duration})\bmod4$, assigning exactly 10 traces per card. TrustEpisode and OB1
+reuse the same immutable trace and health journal. For each cell, $t_{anchor}$ begins after two
 healthy heartbeats with valid parser, live transport, and backlog $\le120$ s. Continuous health
-for 120 s gives $t_{stop}=t_{anchor}+120$ s; the collector is stopped until
-$t_{restore}=t_{stop}+d$. The registry records $t_{detect}$, $t_{h1}$, $t_{h2}$, and first
+for 120 s gives $t_{stop}=t_{anchor}+120$ s. After authenticated collector stop, the allocated
+card begins and at least one ability executes during the outage; the collector remains stopped
+until $t_{restore}=t_{stop}+d$. The registry records $t_{detect}$, $t_{h1}$, $t_{h2}$, and first
 $t_{ready}$ beginning two consecutive parser-valid, live, backlog-$\le120$ heartbeat intervals;
 $t_{stable}\ge\max(t_{h2},t_{ready})$ is followed by 900 s without a revision. Detection is
 right-censored at restore if absent; recovery is right-censored at
 $t_{censor}=t_{restore}+1800$ s if ready/stable is absent. Uncensored durations are
-$t_{detect}-t_{stop}$ and $t_{stable}-t_{restore}$. Pair descendants inherit split and cluster.
+$t_{detect}-t_{stop}$ and $t_{stable}-t_{restore}$. Each PO1 trace is its own bootstrap cluster
+and is excluded from fitting and base-run RT2/RT3 populations.
 Figure~\ref{fig:telemetry-perturbation-design} summarizes the non-pooled designs.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig07_partial_telemetry_perturbations.pdf}
-  \caption{Paired replay changes events while health stays fixed; physical outage changes authenticated health and is evaluated separately.}
+  \caption{Paired replay changes events with fixed health; the separate 40-trace PO1 cohort changes authenticated health and reuses each trace for both outage comparators.}
   \label{fig:telemetry-perturbation-design}
 \end{figure*}
 
@@ -285,7 +308,7 @@ $G_r$ or $P_r$ makes the corresponding metric undefined, never zero. One-to-one 
 used only for episode F1, so neither graph metric is forced to zero.
 
 RQ2 uses $\mathcal C_{dec}^{binary}$ only: AUPRC and recall among the top
-$\max(1,\lceil0.05|\mathcal C_{dec,r}^{binary}|\rceil)$ per run are primary ranking metrics; Brier, NLL,
+$\max(1,\lceil0.10|\mathcal C_{dec,r}^{binary}|\rceil)$ per run are primary ranking metrics; Brier, NLL,
 and ten-bin reliability use that same positive/negative population only. AUROC and precision@$k$ are secondary
 ~\cite{saito2015pr}. RQ3 reports paired run-macro changes and all $U$ transitions; RT5 reports
 outage detection/recovery. RQ4 checks byte equality and measured cost. RT6 replays frozen RP0
@@ -319,7 +342,7 @@ RT1 & partition $\times$ population & runs; $C_{dec}^{all}/C_{dec}^{score}/C_{de
 RT2 & EB1, EB2, EB3, EB3-H & action coverage; fragmentation; over-merge; contamination; episode F1 & pending \\
 RT3a & SB1, SB2, SB3 & all/score/binary denominators; score/binary coverage; AUPRC; recall@budget; AUROC; precision@$k$ & pending \\
 RT3b & SB4, SB5, SB6 & all/score/binary denominators; Brier; NLL; reliability bins; supported/OOS/failure rates & pending \\
-RT4 & RP0--RP7 $\times$ level & formation/$z$/Brier/NLL changes; coverage; $U$ transitions; revisions; stabilization & pending \\
+RT4 & RP0--RP7 $\times$ source $\times$ level & formation/$z$/Brier/NLL changes; coverage; $U$ transitions; revisions; stabilization & pending \\
 RT5 & source $\times$ duration $\times$ method/OB1 & health detection; eligibility; OOS; recovery; stable revision time & pending \\
 RT6 & worker count 1/2/4/8 & manifest; repeats; hash equality; throughput; p50/p95/p99; peak RSS; canonical bytes/event/outcome; replay time; failure fraction & pending \\
 RT7 & error category & count; run/candidate fraction; representative revision; adjudication & pending \\
@@ -336,6 +359,6 @@ machine-readable registry must exactly preserve the table's RT keys, rows, colum
 
 The controlled lab cannot establish field generalization or every evasion/base rate.
 Calibration applies only to exact supported manifests. Identity remains offline. Formal runs
-use isolated hosts, test accounts, harmless markers, cleanup gates, and recorded failures. The
+use isolated hosts, test accounts, offline-only action receipts, cleanup gates, and recorded failures. The
 evaluation does not study CTI, agents, impact, priority, OT/ICS, or autonomous response, and
 reports no empirical result until the locked pipeline executes.

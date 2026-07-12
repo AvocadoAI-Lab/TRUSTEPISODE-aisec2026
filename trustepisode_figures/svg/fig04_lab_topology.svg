@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+  <defs>
+    <style>
+      .title { font: 700 34px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
+      .zone { font: 700 21px Arial, DejaVu Sans, sans-serif; letter-spacing: 1.1px; fill: #475569; }
+      .h { font: 700 25px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
+      .b { font: 400 20px Arial, DejaVu Sans, sans-serif; fill: #334155; }
+      .s { font: 400 18px Arial, DejaVu Sans, sans-serif; fill: #475569; }
+      .mono { font: 600 18px 'DejaVu Sans Mono', monospace; fill: #334155; }
+      .gray { stroke: #334155; stroke-width: 3.0; fill: none; marker-end: url(#a); }
+      .blue { stroke: #2563eb; stroke-width: 3.3; fill: none; marker-end: url(#ab); }
+      .teal { stroke: #0f766e; stroke-width: 3.3; fill: none; marker-end: url(#at); }
+      .amber { stroke: #b45309; stroke-width: 3.1; stroke-dasharray: 10 8; fill: none; marker-end: url(#aa); }
+      .optional { stroke-dasharray: 7 6; }
+    </style>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#334155"/></marker>
+    <marker id="ab" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#2563eb"/></marker>
+    <marker id="at" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#0f766e"/></marker>
+    <marker id="aa" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#b45309"/></marker>
+  </defs>
+
+  <rect width="1800" height="1050" fill="#ffffff"/>
+  <text x="55" y="58" class="title">Controlled Caldera laboratory and production-like telemetry path</text>
+
+  <!-- Control plane -->
+  <rect x="40" y="90" width="390" height="555" rx="24" fill="#fff7ed" stroke="#d97706" stroke-width="2.5"/>
+  <text x="70" y="130" class="zone" fill="#92400e">CONTROL PLANE</text>
+  <rect x="80" y="175" width="310" height="125" rx="16" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+  <text x="235" y="216" text-anchor="middle" class="h">Caldera Server</text>
+  <text x="235" y="251" text-anchor="middle" class="s">planner / abilities / run manifest</text>
+  <text x="235" y="279" text-anchor="middle" class="s">isolated adversary emulation</text>
+
+  <rect x="80" y="345" width="310" height="145" rx="16" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+  <text x="235" y="383" text-anchor="middle" class="h">
+    <tspan x="235">Benign Workload</tspan>
+    <tspan x="235" dy="30">Controller</tspan>
+  </text>
+  <text x="235" y="449" text-anchor="middle" class="s">B1-B8 replayable manifests</text>
+  <text x="235" y="476" text-anchor="middle" class="s">pure benign + concurrent runs</text>
+
+  <rect x="80" y="540" width="310" height="72" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="235" y="569" text-anchor="middle" class="b" fill="#b91c1c">No operation IDs, abilities,</text>
+  <text x="235" y="596" text-anchor="middle" class="b" fill="#b91c1c">or labels enter online objects.</text>
+
+  <!-- Isolated targets -->
+  <rect x="475" y="90" width="475" height="555" rx="24" fill="#f8fafc" stroke="#64748b" stroke-width="2.5"/>
+  <text x="505" y="130" class="zone">ISOLATED TARGET NETWORK</text>
+  <rect x="520" y="175" width="180" height="105" rx="15" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+  <text x="610" y="216" text-anchor="middle" class="h">Windows 1</text>
+  <text x="610" y="250" text-anchor="middle" class="s">endpoint</text>
+  <rect x="725" y="175" width="180" height="105" rx="15" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+  <text x="815" y="216" text-anchor="middle" class="h">Windows 2</text>
+  <text x="815" y="250" text-anchor="middle" class="s">endpoint</text>
+  <rect x="520" y="325" width="180" height="105" rx="15" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+  <text x="610" y="366" text-anchor="middle" class="h">Linux</text>
+  <text x="610" y="400" text-anchor="middle" class="s">endpoint / server</text>
+  <rect x="725" y="325" width="180" height="105" rx="15" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+  <text x="815" y="366" text-anchor="middle" class="h">Benign Service</text>
+  <text x="815" y="400" text-anchor="middle" class="s">file / web service</text>
+  <rect x="520" y="490" width="385" height="105" rx="15" fill="#ecfdf5" stroke="#0f766e" stroke-width="2"/>
+  <text x="713" y="530" text-anchor="middle" class="h">Clock + Run Controls</text>
+  <text x="713" y="565" text-anchor="middle" class="s">time sync / harmless markers / cleanup</text>
+
+  <path d="M390 235 H475" class="amber"/>
+  <text x="432" y="218" text-anchor="middle" class="s" fill="#92400e">actions</text>
+  <path d="M390 418 H475" class="amber"/>
+  <text x="432" y="401" text-anchor="middle" class="s" fill="#92400e">benign tasks</text>
+
+  <!-- Production-like data plane -->
+  <rect x="995" y="90" width="765" height="555" rx="24" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="1025" y="130" class="zone" fill="#1d4ed8">PRODUCTION-LIKE DATA PLANE</text>
+
+  <rect x="1035" y="165" width="215" height="90" rx="15" fill="#ffffff" stroke="#0284c7" stroke-width="2.3"/>
+  <text x="1143" y="203" text-anchor="middle" class="h">EDR</text>
+  <text x="1143" y="234" text-anchor="middle" class="s">endpoint telemetry</text>
+  <rect x="1035" y="315" width="215" height="90" rx="15" fill="#ffffff" stroke="#0284c7" stroke-width="2.3"/>
+  <text x="1143" y="353" text-anchor="middle" class="h">NDR</text>
+  <text x="1143" y="384" text-anchor="middle" class="s">mirrored traffic</text>
+  <text x="1143" y="503" text-anchor="middle" class="h" fill="#b91c1c">Identity excluded</text>
+  <text x="1143" y="534" text-anchor="middle" class="s" fill="#b91c1c">no online input or candidate effect</text>
+
+  <rect x="1430" y="175" width="280" height="135" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="2.4"/>
+  <text x="1570" y="216" text-anchor="middle" class="h">Evidence Fabric</text>
+  <text x="1570" y="252" text-anchor="middle" class="s">normalized event stream</text>
+  <text x="1570" y="282" text-anchor="middle" class="s">label-blind inputs only</text>
+
+  <rect x="1430" y="355" width="280" height="115" rx="16" fill="#ffffff" stroke="#0f766e" stroke-width="2.4"/>
+  <text x="1570" y="396" text-anchor="middle" class="h">Health Monitor</text>
+  <text x="1570" y="430" text-anchor="middle" class="s">heartbeat / lag / status</text>
+  <text x="1570" y="456" text-anchor="middle" class="s">not inferred from event silence</text>
+
+  <rect x="1300" y="515" width="410" height="105" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
+  <text x="1505" y="554" text-anchor="middle" class="h">TrustEpisode Online Pipeline</text>
+  <text x="1505" y="586" text-anchor="middle" class="s">Episode Synthesis / Scorer / Calibrator / P</text>
+  <text x="1505" y="611" text-anchor="middle" class="s">Sufficiency Evaluator / U / Append-only Audit</text>
+
+  <path d="M950 210 H1035" class="blue"/>
+  <text x="985" y="195" class="s" fill="#1d4ed8">EDR</text>
+  <path d="M950 360 H1035" class="blue"/>
+  <text x="985" y="345" class="s" fill="#1d4ed8">NDR</text>
+
+  <path d="M1250 210 H1360 V225 H1430" class="blue"/>
+  <path d="M1250 360 H1360 V260 H1430" class="blue"/>
+  <path d="M1570 310 V515" class="blue"/>
+  <path d="M1640 470 V515" class="teal"/>
+  <text x="1035" y="635" class="s" fill="#1d4ed8">Primary S* = {EDR, NDR}; K = 2</text>
+
+  <!-- Ground Truth Firewall -->
+  <line x1="520" y1="680" x2="1760" y2="680" stroke="#dc2626" stroke-width="3.6" stroke-dasharray="9 7"/>
+  <text x="1745" y="668" text-anchor="end" class="s" fill="#b91c1c">Ground Truth Firewall: no upward path into online inference</text>
+
+  <!-- Offline evaluation -->
+  <rect x="40" y="720" width="1720" height="285" rx="24" fill="#fffbeb" stroke="#d97706" stroke-width="2.5" stroke-dasharray="12 9"/>
+  <text x="70" y="760" class="zone" fill="#92400e">OFFLINE EVALUATION PLANE - JOIN ONLY AFTER INFERENCE</text>
+
+  <rect x="90" y="805" width="420" height="145" rx="16" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+  <text x="300" y="847" text-anchor="middle" class="h">Ground Truth Store</text>
+  <text x="300" y="883" text-anchor="middle" class="s">Caldera + benign manifests</text>
+  <text x="300" y="914" text-anchor="middle" class="mono">operation_id / labels / M5-ID annotation</text>
+  <text x="300" y="940" text-anchor="middle" class="s">never stored in online objects</text>
+
+  <rect x="690" y="805" width="420" height="145" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
+  <text x="900" y="847" text-anchor="middle" class="h">Online Outputs</text>
+  <text x="900" y="883" text-anchor="middle" class="s">EpisodeRevision + AuditRecord</text>
+  <text x="900" y="916" text-anchor="middle" class="s">already emitted; immutable</text>
+
+  <rect x="1285" y="805" width="420" height="145" rx="16" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+  <text x="1495" y="847" text-anchor="middle" class="h">Evaluation Harness</text>
+  <text x="1495" y="883" text-anchor="middle" class="s">offline label join + metrics</text>
+  <text x="1495" y="916" text-anchor="middle" class="s">no feedback to online pipeline</text>
+
+  <path d="M80 235 H25 V700 H300 V805" class="amber"/>
+  <path d="M80 418 H25" class="amber"/>
+  <path d="M1505 620 V700 H900 V805" class="gray"/>
+  <path d="M300 950 V980 H1495 V950" class="amber"/>
+  <path d="M1110 878 H1285" class="gray"/>
+</svg>

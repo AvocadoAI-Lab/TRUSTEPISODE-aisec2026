@@ -194,8 +194,9 @@ same root observation are ineligible. The primary corroboration feature remains
 $C=q_{\mathrm{EDR}}q_{\mathrm{NDR}}$ with fixed $K=2$.
 
 Feature Extractor emits only health-independent \texttt{detected},
-\texttt{examined\_none}, or \texttt{not\_examined}, together with $m$. Scope Resolver combines
-these with the unique covering SourceCoverage interval to emit \texttt{available},
+\texttt{examined\_none}, or \texttt{not\_examined}, together with $m$. At
+\path{EpisodeRevision.event_time_end}, Scope Resolver combines these with exactly one
+content-distinct covering SourceCoverage interval per expected instance to emit \texttt{available},
 \texttt{no\_detection}, \texttt{collector\_unavailable}, \texttt{parser\_invalid}, or
 \texttt{unknown}. Only the first two are support eligible; missing states force out-of-support
 and are never interpreted as negative evidence.
@@ -426,8 +427,8 @@ Caldera v5.3.0 annotated tag object
 \texttt{b24f6e7a99cab19cbf417009bda9b9c6c81abc31}; target image SHA-256 hashes;
 VM and network topology versions;
 EDR/NDR collector images and configuration hashes; Health Monitor version; parser/schema
-versions; clock source and maximum observed skew; random seed; start/end times; harmless
-marker IDs; cleanup status; and any collection incident. Formal evaluation has no public-data
+versions; clock source and maximum observed skew; random seed; start/end times; offline action
+receipt IDs; cleanup status; and any collection incident. Formal evaluation has no public-data
 tier: provenance datasets remain related-work context because they do not implement the frozen
 EDR/NDR collection contract. Formal results group by this run ID, not by Caldera ability or
 individual episode. The complete machine contract is
@@ -444,22 +445,22 @@ individual episode. The complete machine contract is
 \subsection{Scenario Cards and Failure Rules}
 
 \begin{table*}[!t]
-\caption{Malicious scenario-card registry. Actions use only isolated targets and harmless
-per-run markers.}
+\caption{Linux-only malicious scenario-card registry. Actions use two isolated EDR targets;
+success receipts remain offline.}
 \label{tab:scenario-cards}
 \centering
 \scriptsize
 \begin{tabular}{p{0.05\textwidth}p{0.34\textwidth}p{0.28\textwidth}p{0.23\textwidth}}
 \toprule
-\textbf{ID} & \textbf{Precondition and ordered actions} & \textbf{Marker and expected observations} & \textbf{Cleanup and card-specific failure} \\
+\textbf{ID} & \textbf{Precondition and ordered actions} & \textbf{Expected observations} & \textbf{Cleanup and card-specific failure} \\
 \midrule
-M1 & two Windows targets and test share; discovery $\rightarrow$ share access $\rightarrow$ test-account remote execution & unique process/file marker; EDR lineage plus NDR remote connection & remove marker/session/service; abort if either primary collector fails \\
-M2 & Windows target; script execution $\rightarrow$ staged marker transfer $\rightarrow$ temporary scheduled-task persistence & script/process/file marker; EDR lineage and NDR transfer & delete task and marker; record inability to remove persistence as cleanup failure \\
-M3 & Linux targets; discovery $\rightarrow$ test-account SSH $\rightarrow$ marker file action & shell/file marker; Linux EDR lineage and NDR SSH flow & terminate shell, revoke key, remove marker; abort on namespace mismatch \\
-M4 & instrumented service; low-rate periodic connections $\rightarrow$ local marker action & seeded connection cadence plus EDR local action & stop client and remove marker; fail card if cadence manifest is not replayed \\
-M5 & test-account endpoint action $\rightarrow$ endpoint marker & EDR/NDR primary evidence independent of Identity & revoke credential and marker; fail if either primary collector is unhealthy \\
-M6 & dual-use administration tool also present in benign cards; contextual misuse $\rightarrow$ remote marker action & identical tool name in both classes; sequence/context plus EDR/NDR distinguish use & remove marker/session; preserve unsuccessful execution as declared failure \\
-M7 & extended schedule; discovery $\rightarrow$ frozen pauses $\rightarrow$ remote action $\rightarrow$ marker & weak observations across $W_{\mathrm{gap}}$/$W_{\max}$ boundaries & terminate sessions/markers; report any schedule-bound violation \\
+M1 & two Linux EDR targets; discovery $\rightarrow$ peer inventory $\rightarrow$ SSH write & EDR lineage plus NDR SSH session & remove remote action/session/key; abort if either primary collector fails \\
+M2 & two Linux EDR targets; stage $\rightarrow$ deterministic archive $\rightarrow$ SCP $\rightarrow$ delayed local action & EDR file/process sequence plus NDR transfer & remove stage/archive/remote copy; baseline-digest mismatch is cleanup failure \\
+M3 & two Linux EDR targets; discovery $\rightarrow$ temporary-key SSH write & Linux EDR lineage and NDR SSH flow & terminate shell, revoke key, remove remote action; abort on namespace mismatch \\
+M4 & instrumented service; five requests 60 s apart $\rightarrow$ local action & registered NDR cadence plus EDR local action & stop client and remove action; fail on cadence error over 1 s \\
+M5 & discovery $\rightarrow$ local configuration action & EDR-only hard case; NDR no-detection is valid & remove configuration; fail if Identity/receipt value reaches online objects \\
+M6 & same SSH/admin family as B5; discovery $\rightarrow$ remote write & identical tool family in both classes; context plus EDR/NDR distinguish use & remove action/session/key; retain declared action failure \\
+M7 & discovery at 0 s $\rightarrow$ SSH write at 300 s $\rightarrow$ local action at 3900 s & observations across $W_{\mathrm{gap}}$/$W_{\max}$ boundaries & remove actions/sessions; report any schedule-bound violation \\
 \bottomrule
 \end{tabular}
 \vspace{8pt}
@@ -471,22 +472,22 @@ M7 & extended schedule; discovery $\rightarrow$ frozen pauses $\rightarrow$ remo
 \toprule
 \textbf{ID} & \textbf{Precondition and ordered actions} & \textbf{Expected observations} & \textbf{Cleanup and card-specific failure} \\
 \midrule
-B1 & approved PowerShell/bash inventory over registered targets & process, query, and normal connection evidence & remove output; fail if command leaves target state changed \\
-B2 & signed test patch deployment and verification & installer lineage, package writes, repository flow & uninstall/revert snapshot; record reboot or rollback failure \\
-B3 & seeded file-share synchronization of benign fixtures & burst file operations and SMB/NFS flows & remove synchronized fixtures; verify checksums \\
+B1 & approved Linux OS/package inventory & process and query evidence & remove output; fail if command leaves target state changed \\
+B2 & digest-pinned local fixture-package installation & package-manager lineage and writes & purge package/revert snapshot; record dependency or rollback failure \\
+B3 & checksum-pinned \texttt{rsync} over registered SSH & burst file operations and transfer flow & remove synchronized fixtures; verify checksums \\
 B4 & authorized vulnerability scan against isolated service & high fan-out NDR flows and expected service logs & stop scanner; fail if target leaves healthy state \\
-B5 & helpdesk test-account remote administration & same remote/admin tools used in M1/M6 without malicious marker & terminate session and revoke temporary grant \\
+B5 & read-only SSH service/status check & same SSH/admin family used in M6 without remote write & terminate session and revoke temporary grant \\
 B6 & scheduled log collection and forwarding & repeated reads, compression, and collector-bound network flow & remove bundle; verify no collector backlog \\
-B7 & configuration-management convergence to a known benign state & remote orchestration, file/service updates, expected restart & restore baseline; fail on manifest drift \\
-B8 & unscheduled but declared maintenance with a frozen work order & realistic administrative sequence with healthy EDR/NDR & verify service state; retain timing as hard-negative context \\
+B7 & registered configuration install and restore & benign file/configuration update & restore baseline; fail on manifest drift \\
+B8 & \texttt{supervisorctl} maintenance with a frozen work order & administrative sequence with healthy EDR/NDR & verify service state; retain timing as hard-negative context \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 Every card records its version, target images, benign mode, repetition ID, and seed. Each
-malicious family has exactly 10 successful attack-only repetitions and 10 successful
-concurrent-benign repetitions; B1--B8 each have exactly 10 successful pure-benign repetitions.
-The machine-readable ordered actions, markers, observations, cleanup, and failure rules are in
+malicious family requires 10 valid attack-only repetitions and 10 valid concurrent-benign
+repetitions; B1--B8 each require 10 valid pure-benign repetitions. Achieved counts remain
+\texttt{pending}. The machine-readable ordered actions, offline receipts, observations, cleanup, and failure rules are in
 \path{artifacts/contracts/scenario_cards.v1.json}. A collection failure excludes the run from
 primary metrics but remains in RT1 and the failure log. A failed scenario action
 with healthy primary collectors remains in the registered sensitivity view but not the
@@ -506,14 +507,14 @@ cannot change the EDR/NDR candidate universe or $K=2$ contract.
 
 \subsection{Ground Truth Store and Offline Join}
 
-The Ground Truth Store uses a separate database role. Join keys are run ID, harmless marker
+The Ground Truth Store uses a separate database role. Join keys are run ID, offline action receipt
 ID, target entity namespace, and versioned time interval. The Evaluation Harness first verifies
 that online inference and AuditRecord insertion have completed, then performs the join under
 the frozen label-policy digest. A two-reviewer adjudication resolves disagreements; unresolved
 cases become ambiguous rather than being forced into the binary cohort.
 
 Offline matching first requires temporal IoU at least $.10$, entity Jaccard at least $.50$,
-and one exact harmless marker or registered action. Within one run, maximum-weight bipartite
+and one exact offline receipt or registered action. Within one run, maximum-weight bipartite
 assignment uses
 $w=.5A_{cov}+.3J_{entity}+.2\operatorname{IoU}_{time}\ge\theta_{match}=.50$;
 ties use entity overlap, absolute time difference, then lexical IDs. A revision is positive
@@ -611,9 +612,12 @@ Every replay child seed is HMAC-SHA256 over base-run ID, intervention, and level
 \texttt{20260710}; descendants retain the base label, split, and cluster. The exact registry is
 \path{artifacts/contracts/perturbations.v1.json}.
 
-Physical outage uses the same scenario/seed pair as a normal run. After a 120-second steady
-state, the selected EDR or NDR collector is stopped or network-isolated for 120 or 600 seconds,
-then restored. The procedure records last healthy heartbeat, first degraded/down
+PO1 is a dedicated locked-test-only cohort with
+$2$ sources $\times2$ durations $\times10$ repetitions, exactly 40 physical traces, balanced
+over M1/M3/M4/M7 by the registered modular allocation. After a 120-second steady state, all
+registered collector-egress processes for the selected EDR or NDR family are stopped for 120
+or 600 seconds, then restored; targets, packet capture, and network interfaces remain live.
+TrustEpisode and OB1 reuse each immutable trace. The procedure records last healthy heartbeat, first degraded/down
 SourceCoverage interval, watermark movement, emitted revisions, $\kappa$, eligibility,
 recovery heartbeat, and stable revision. Recovery requires two healthy heartbeats, a valid
 parser, backlog no greater than 120 s, and no new revision for 900 s. Safety aborts the run if
@@ -622,7 +626,7 @@ isolation affects the control plane or a non-laboratory route.
 \subsection{Matching and Metric Formulas}
 
 Before primary assignment, a $\mathcal C_{form}$ terminal revision is match eligible only with
-temporal IoU at least $.10$, entity Jaccard at least $.50$, and one exact marker or registered
+temporal IoU at least $.10$, entity Jaccard at least $.50$, and one exact offline receipt or registered
 action. For eligible pairs,
 \begin{equation}
 w=.5A_{cov}+.3J_{entity}+.2\operatorname{IoU}_{time};\qquad
@@ -655,7 +659,7 @@ For supported records $i=1,\ldots,n_{\mathrm{sup}}$,
 Out-of-support records are absent from both sums. Reliability uses ten fixed equal-width bins
 on $[0,1]$ and always reports bin counts. Supported decision coverage is
 $|\mathcal C_{\mathrm{sup}}|/|\mathcal C_{dec}|$. Ranking reports AUPRC and recall among the
-top $\max(1,\lceil0.05|\mathcal C_{dec,r}|\rceil)$ revisions in each run; AUROC and precision
+top $\max(1,\lceil0.10|\mathcal C_{dec,r}^{binary}|\rceil)$ revisions in each run; AUROC and precision
 at the same budget are secondary. All primary summaries are run-macro means; pooled micro
 results are supplemental.
 

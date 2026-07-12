@@ -1,0 +1,66 @@
+% TrustEpisode figure insertion blocks.
+% Copy the required blocks into the paper and adjust the relative path.
+% These wide diagrams are intended for ACM two-column figure* placement.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig01_final_architecture.pdf}
+  \caption{TrustEpisode online and offline boundaries. Solid arrows denote the label-blind online path from telemetry and source health to episode revisions, raw scores, scoped calibrated probabilities $P_\epsilon$, structured sufficiency profiles $U_\epsilon$, and append-only audit records. Dashed arrows denote offline-only training, calibration, and evaluation; ground-truth fields never enter the online path.}
+  \label{fig:method-architecture}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig02_episode_revision_lifecycle.pdf}
+  \caption{Deterministic episode-synthesis and revision lifecycle. Event time governs linking under $W_{\mathrm{gap}}$ and $W_{\max}$, whereas ingest time governs watermarks and late-arrival handling. Accepted late evidence creates a successor without extending the fixed deadline; beyond-horizon evidence creates only an immutable LateEvidenceRecord.}
+  \label{fig:episode-revision-lifecycle}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig03_calibration_and_sufficiency.pdf}
+  \caption{Separation between probability calibration and evidence sufficiency. The affine calibrator maps the stateless raw logit to $P_\epsilon$ only within a manifest-supported telemetry regime, while the deterministic sufficiency evaluator independently derives the multi-axis profile $U_\epsilon$. The sufficiency profile records evidence conditions but does not modify or relabel $P_\epsilon$.}
+  \label{fig:probability-sufficiency-boundary}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig04_lab_topology.pdf}
+  \caption{Controlled laboratory topology and trust boundaries. The Caldera control plane executes isolated attack runs against instrumented hosts; endpoint and network collectors feed the production-like label-blind pipeline, source-health monitoring supplies coverage state, and run metadata is written to an offline Ground Truth Store used only by the evaluation harness.}
+  \label{fig:lab-topology}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig05_ground_truth_firewall.pdf}
+  \caption{Ground Truth Firewall and offline label-join workflow. Automated schema checks reject evaluation-only fields from all online objects before the label-blind pipeline emits episode revisions and their immutable AuditRecords. Versioned ground truth is joined only in the offline evaluation harness to assign positive, negative, mixed, or ambiguous episode labels.}
+  \label{fig:ground-truth-firewall}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig06_split_and_freeze_workflow.pdf}
+  \caption{Campaign-level partitioning and artifact-freeze workflow. Runs, rather than individual events or episodes, are assigned to training, development, calibration, and locked test partitions. Episode-policy and model selection use only training and development data; the affine calibrator is fitted on the natural-prevalence calibration split; the locked test split is accessed only after all artifacts and analysis procedures are frozen.}
+  \label{fig:run-split-freeze}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig07_partial_telemetry_perturbations.pdf}
+  \caption{Paired telemetry-perturbation design. Each frozen base run is replayed under pre-registered source masking, event dropping, delay, reordering, and clock-skew conditions while labels and base-run identity remain fixed. Physical collector outages are evaluated separately and are not pooled with replay perturbations.}
+  \label{fig:telemetry-perturbation-design}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig08_episode_linking_decision.pdf}
+  \caption{Frozen label-blind attach--merge--start procedure for a normalized event. Candidate episodes must satisfy the temporal limits and at least one permitted non-temporal relation before dependency deduplication, hub suppression, giant-component guards, and deterministic tie-breaking are applied. Episode Synthesis is the sole owner of membership and revision.}
+  \label{fig:episode-linking-decision}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig09_calibration_validity_state_machine.pdf}
+  \caption{Calibration scope resolution and probability eligibility. An episode receives a supported global or pre-registered group calibrator only when its source mask and pipeline manifest match the calibrator artifact. Group calibration additionally requires the frozen sample-support and miscalibration gates. Unsupported regimes are marked \texttt{out\_of\_support} with \texttt{decision\_eligible=false}; this status is recorded in $U_\epsilon$ and never numerically modifies $P_\epsilon$.}
+  \label{fig:calibration-validity}
+\end{figure*}

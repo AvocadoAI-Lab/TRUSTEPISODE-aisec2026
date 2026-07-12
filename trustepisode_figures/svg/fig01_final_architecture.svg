@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1040" viewBox="0 0 1800 1040">
+  <defs>
+    <style>
+      .title { font: 700 34px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
+      .zone { font: 700 22px Arial, DejaVu Sans, sans-serif; letter-spacing: 1.3px; fill: #475569; }
+      .h { font: 700 27px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
+      .h2 { font: 700 22px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
+      .b { font: 400 22px Arial, DejaVu Sans, sans-serif; fill: #334155; }
+      .s { font: 400 19px Arial, DejaVu Sans, sans-serif; fill: #475569; }
+      .tiny { font: 400 16px Arial, DejaVu Sans, sans-serif; fill: #475569; }
+      .owner { font: 700 14px Arial, DejaVu Sans, sans-serif; fill: #64748b; letter-spacing: .2px; }
+      .node { stroke-width: 2.4; }
+      .online { stroke: #2563eb; stroke-width: 3.5; fill: none; marker-end: url(#blue); }
+      .suff { stroke: #0f766e; stroke-width: 3.5; fill: none; marker-end: url(#teal); }
+      .status { stroke: #7c3aed; stroke-width: 2.8; stroke-dasharray: 5 7; fill: none; marker-end: url(#violet); }
+      .offline { stroke: #b45309; stroke-width: 3.0; stroke-dasharray: 10 8; fill: none; marker-end: url(#amber); }
+      .record { stroke: #475569; stroke-width: 3.0; fill: none; marker-end: url(#gray); }
+    </style>
+    <marker id="blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#2563eb"/></marker>
+    <marker id="teal" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#0f766e"/></marker>
+    <marker id="violet" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#7c3aed"/></marker>
+    <marker id="amber" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#b45309"/></marker>
+    <marker id="gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#475569"/></marker>
+  </defs>
+
+  <rect width="1800" height="1040" fill="#ffffff"/>
+  <text x="55" y="58" class="title">TrustEpisode online and offline boundaries</text>
+
+  <!-- Online label-blind boundary -->
+  <rect x="40" y="88" width="1720" height="620" rx="25" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2.5"/>
+  <text x="70" y="128" class="zone">ONLINE LABEL-BLIND PATH</text>
+
+  <!-- Primary EDR/NDR probability path. Identity is deliberately absent. -->
+  <rect x="60" y="185" width="170" height="140" rx="17" class="node" fill="#ffffff" stroke="#64748b"/>
+  <text x="145" y="222" text-anchor="middle" class="h2">Telemetry</text>
+  <text x="145" y="258" text-anchor="middle" class="b">EDR + NDR</text>
+  <text x="145" y="288" text-anchor="middle" class="tiny">raw telemetry only</text>
+  <text x="145" y="313" text-anchor="middle" class="owner">SOURCE RECORDS</text>
+
+  <rect x="270" y="185" width="210" height="140" rx="17" class="node" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="375" y="222" text-anchor="middle" class="h2">Evidence Fabric</text>
+  <text x="375" y="258" text-anchor="middle" class="tiny">NormalizedEvent</text>
+  <text x="375" y="308" text-anchor="middle" class="owner">OWNS: NormalizedEvent</text>
+
+  <rect x="520" y="185" width="230" height="140" rx="17" class="node" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="635" y="222" text-anchor="middle" class="h2">Episode Synthesis</text>
+  <text x="635" y="258" text-anchor="middle" class="tiny">EpisodeRevision</text>
+  <text x="635" y="308" text-anchor="middle" class="owner">OWNS: EpisodeRevision</text>
+
+  <rect x="790" y="185" width="200" height="140" rx="17" class="node" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="890" y="222" text-anchor="middle" class="h2">Feature Extractor</text>
+  <text x="890" y="250" text-anchor="middle" class="tiny">FeatureVector</text>
+  <text x="890" y="278" text-anchor="middle" class="tiny">[D, C, m, o_det]</text>
+  <text x="890" y="308" text-anchor="middle" class="owner">OWNS: D, C, m, o_det</text>
+
+  <rect x="1030" y="185" width="200" height="140" rx="17" class="node" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="1130" y="222" text-anchor="middle" class="h2">Stateless Scorer</text>
+  <text x="1130" y="258" text-anchor="middle" class="tiny">raw logit z</text>
+  <text x="1130" y="308" text-anchor="middle" class="owner">OWNS: z</text>
+
+  <rect x="1270" y="185" width="240" height="140" rx="17" class="node" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="1390" y="222" text-anchor="middle" class="h2">Affine Calibrator</text>
+  <text x="1390" y="258" text-anchor="middle" class="tiny">z + supported kappa</text>
+  <text x="1390" y="308" text-anchor="middle" class="owner">OWNS: P</text>
+
+  <rect x="1580" y="202" width="100" height="106" rx="18" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.6"/>
+  <text x="1630" y="266" text-anchor="middle" class="h">P</text>
+
+  <path d="M230 255 H270" class="online"/>
+  <path d="M480 255 H520" class="online"/>
+  <path d="M750 255 H790" class="online"/>
+  <path d="M990 255 H1030" class="online"/>
+  <path d="M1230 255 H1270" class="online"/>
+  <path d="M1510 255 H1580" class="online"/>
+
+  <!-- Scope/status and independent sufficiency path. -->
+  <rect x="60" y="470" width="270" height="155" rx="17" class="node" fill="#ecfeff" stroke="#0f766e"/>
+  <text x="195" y="508" text-anchor="middle" class="h2">Health Monitor</text>
+  <text x="195" y="542" text-anchor="middle" class="tiny">heartbeat / lag / parser</text>
+  <text x="195" y="571" text-anchor="middle" class="tiny">SourceCoverage intervals</text>
+  <text x="195" y="608" text-anchor="middle" class="owner">OWNS: SourceCoverage</text>
+
+  <rect x="370" y="455" width="290" height="180" rx="18" class="node" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="515" y="495" text-anchor="middle" class="h2">Scope Resolver</text>
+  <text x="515" y="530" text-anchor="middle" class="tiny">m, o_det, health + exact manifest</text>
+  <text x="515" y="562" text-anchor="middle" class="tiny">a_det / kappa / group / eligible</text>
+  <text x="515" y="610" text-anchor="middle" class="owner">OWNS: SupportDecision</text>
+
+  <rect x="720" y="455" width="360" height="180" rx="18" class="node" fill="#ecfdf5" stroke="#0f766e"/>
+  <text x="900" y="495" text-anchor="middle" class="h2">Sufficiency Evaluator</text>
+  <text x="900" y="530" text-anchor="middle" class="tiny">coverage / provenance / lateness</text>
+  <text x="900" y="562" text-anchor="middle" class="tiny">contradiction / calibration support</text>
+  <text x="900" y="610" text-anchor="middle" class="owner">OWNS: U</text>
+
+  <rect x="1120" y="485" width="120" height="120" rx="18" fill="#d1fae5" stroke="#0f766e" stroke-width="2.6"/>
+  <text x="1180" y="535" text-anchor="middle" class="h">U</text>
+  <text x="1180" y="568" text-anchor="middle" class="s">5 axes</text>
+  <text x="1180" y="592" text-anchor="middle" class="tiny">not scalar</text>
+
+  <rect x="1280" y="445" width="300" height="195" rx="18" class="node" fill="#ffffff" stroke="#475569"/>
+  <text x="1430" y="485" text-anchor="middle" class="h2">AuditRecord Assembler</text>
+  <text x="1430" y="520" text-anchor="middle" class="tiny">revision + D, C, m, z, P, U</text>
+  <text x="1430" y="552" text-anchor="middle" class="tiny">SupportDecision + health</text>
+  <text x="1430" y="585" text-anchor="middle" class="tiny">versions + evidence references</text>
+  <text x="1430" y="620" text-anchor="middle" class="owner">OWNS: AssemblyOutcome</text>
+
+  <rect x="1610" y="480" width="120" height="130" rx="18" class="node" fill="#f8fafc" stroke="#475569"/>
+  <text x="1670" y="525" text-anchor="middle" class="h2">Append-only</text>
+  <text x="1670" y="552" text-anchor="middle" class="h2">Store</text>
+  <text x="1670" y="585" text-anchor="middle" class="owner">SINK ONLY</text>
+
+  <path d="M330 530 H370" class="suff"/>
+  <path d="M330 505 H345 V435 H700 V520 H720" class="suff"/>
+  <path d="M330 585 H350 V420 H1255 V585 H1280" class="record"/>
+  <text x="1080" y="412" text-anchor="middle" class="tiny">referenced SourceCoverage / health snapshot</text>
+  <path d="M890 325 V395 H515 V455" class="suff"/>
+  <path d="M660 325 V415 H900 V455" class="suff"/>
+  <path d="M660 545 H720" class="status"/>
+  <path d="M515 455 V350 H1390 V325" class="status"/>
+  <text x="920" y="340" class="tiny" fill="#6d28d9">kappa from Scope Resolver</text>
+  <path d="M1080 545 H1120" class="suff"/>
+  <path d="M1240 545 H1280" class="suff"/>
+  <path d="M690 325 V380 H1260 V485 H1280" class="record"/>
+  <text x="980" y="372" text-anchor="middle" class="tiny">audit bus: revision, feature, z, SupportDecision + versions</text>
+  <path d="M1630 308 V420 H1500 V445" class="online"/>
+  <path d="M1580 545 H1610" class="record"/>
+
+  <rect x="560" y="654" width="680" height="36" rx="10" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="900" y="678" text-anchor="middle" class="tiny" fill="#b91c1c">PRIMARY CANDIDATE UNIVERSE: EDR + NDR ONLY; IDENTITY IS NOT AN ONLINE INPUT.</text>
+
+  <!-- Offline-only boundary -->
+  <rect x="40" y="735" width="1720" height="260" rx="24" fill="#fffbeb" stroke="#d97706" stroke-width="2.5" stroke-dasharray="12 9"/>
+  <text x="70" y="777" class="zone" fill="#92400e">OFFLINE TRAINING, CALIBRATION, AND EVALUATION</text>
+
+  <rect x="90" y="825" width="360" height="115" rx="17" class="node" fill="#fff7ed" stroke="#d97706"/>
+  <text x="270" y="867" text-anchor="middle" class="h">Ground Truth Store</text>
+  <text x="270" y="902" text-anchor="middle" class="s">labels / run IDs / scenario metadata</text>
+  <text x="270" y="928" text-anchor="middle" class="owner">OFFLINE ONLY</text>
+
+  <rect x="590" y="825" width="420" height="115" rx="17" class="node" fill="#fff7ed" stroke="#d97706"/>
+  <text x="800" y="867" text-anchor="middle" class="h">Training + Calibration</text>
+  <text x="800" y="902" text-anchor="middle" class="s">frozen model, calibrator, and manifests</text>
+  <text x="800" y="928" text-anchor="middle" class="owner">NO TEST-SELECTED ARTIFACTS</text>
+
+  <rect x="1230" y="825" width="430" height="115" rx="17" class="node" fill="#fff7ed" stroke="#d97706"/>
+  <text x="1445" y="867" text-anchor="middle" class="h">Evaluation Harness</text>
+  <text x="1445" y="902" text-anchor="middle" class="s">offline label join after inference</text>
+  <text x="1445" y="928" text-anchor="middle" class="owner">NO FEEDBACK TO ONLINE OBJECTS</text>
+
+  <path d="M450 872 H590" class="offline"/>
+  <path d="M270 940 V978 H1445 V940" class="offline"/>
+  <path d="M1670 610 V800 H1600 V825" class="record"/>
+  <text x="1010" y="965" text-anchor="middle" class="s" fill="#92400e">Ground-truth fields never enter online schemas.</text>
+
+  <text x="750" y="724" text-anchor="middle" class="s" fill="#6d28d9">Only frozen, version-matched model and calibrator artifacts are deployable online.</text>
+</svg>

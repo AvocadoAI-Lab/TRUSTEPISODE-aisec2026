@@ -96,7 +96,9 @@ Feature Extractor is the sole producer of $m$ and health-independent observation
 $o^{det}_{\epsilon,s}\in\{\texttt{detected},\texttt{examined\_none},
 \texttt{not\_examined}\}$. It reads EpisodeRevision and detector outputs, but never
 SourceCoverage. Scope Resolver is the sole producer of resolved availability $a^{det}$ and
-applies, in order: missing or conflicting covering intervals $\mapsto\texttt{unknown}$;
+selects coverage at $t_{sup}=\texttt{EpisodeRevision.event\_time\_end}$, not the later
+watermark or assembly wall time. It requires exactly one content-distinct covering interval per
+expected source instance and applies, in order: missing or conflicting intervals $\mapsto\texttt{unknown}$;
 unexpected/down source $\mapsto\texttt{collector\_unavailable}$; invalid parser
 $\mapsto\texttt{parser\_invalid}$; unknown health or \texttt{not\_examined}
 $\mapsto\texttt{unknown}$; otherwise \texttt{detected}$\mapsto\texttt{available}$ and
@@ -324,7 +326,7 @@ source, and OT/ICS generalization. Appendix~\ref{app:data-contracts} and the tab
 main text are normative. The required supplementary
 \path{TrustEpisode_reproducibility_companion_v1.zip} contains the executable JSON Schema and
 registries; its SHA-256 is
-\texttt{5c226ba73667d628\allowbreak{}058538ede2adbbb1\allowbreak{}74cdd9986b9e58ea\allowbreak{}2bf082b75bcf7e83}. A missing or
+\texttt{6298bd2e89bd50a7\allowbreak{}8a890b62750dcca2\allowbreak{}bcee34906fd6dd73\allowbreak{}a4a77f2a19c81205}. A missing or
 mismatched upload makes the machine-contract claim unverified. The contribution is limited to
 deterministic EDR/NDR episode construction, manifest-scoped probability, structured sufficiency,
 and replayable append-only provenance.

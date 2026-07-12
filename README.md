@@ -14,7 +14,7 @@ TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿�
 
 `main_full.pdf` 只屬於可選的內部審查輸出，不是投稿交付物，也不再封裝於 reproducibility companion。
 
-`main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact，並綁定 SHA-256 `5c226ba73667d628058538ede2adbbb174cdd9986b9e58ea2bf082b75bcf7e83`。正式投稿時必須上傳完全相同的 ZIP；缺件或 hash 不符均使 machine-readable contract 主張失效。
+`main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact，並綁定 SHA-256 `6298bd2e89bd50a78a890b62750dcca2bcee34906fd6dd73a4a77f2a19c81205`。正式投稿時必須上傳完全相同的 ZIP；缺件或 hash 不符均使 machine-readable contract 主張失效。
 
 [ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。`main.pdf` 目前為 12 頁，正文 Conclusion 位於第 9 頁；`Use of Generative AI` 尾段已依本次稿件決策移除，正式投稿前仍應由作者依當時 submission policy 自行確認 disclosure 欄位或文字要求。
 
@@ -103,6 +103,7 @@ tools/generate_eps_figures.py    # 只重建 figs/ 內的舊版 EPS/PDF
 AISEC_PAGE_LIMIT_OPTIMIZATION_REPORT.md
 SECTION3_SECTION4_DETAILED_COMPARISON_REPORT.md
 TRUSTEPISODE_V2_COMPLETION_REPORT.md
+TRUSTEPISODE_EXPERIMENT_ENVIRONMENT_PLAN.md
 ```
 
 ## 圖片使用方式
@@ -265,7 +266,7 @@ main.pdf       12 pages, 4 figures, 7 tables, no overfull hbox/undefined referen
 
 ```text
 main.pdf       aca9399f0a2721ef6d69111eacbf27d590f3b1bc1d9eebf5ee6542a6eeac5f3b
-companion zip  5c226ba73667d628058538ede2adbbb174cdd9986b9e58ea2bf082b75bcf7e83
+companion zip  6298bd2e89bd50a78a890b62750dcca2bcee34906fd6dd73a4a77f2a19c81205
 ```
 
 ## 結果與投稿狀態
@@ -301,4 +302,5 @@ companion zip  5c226ba73667d628058538ede2adbbb174cdd9986b9e58ea2bf082b75bcf7e83
 - `HTML_REVIEW_REMEDIATION_REPORT.md`：`preview.html` 的逐項修正與驗證矩陣。
 - `SECTION3_SECTION4_DETAILED_COMPARISON_REPORT.md`：Section 3/4 紅刪綠增中英比較。
 - `TRUSTEPISODE_V2_COMPLETION_REPORT.md`：v2 計畫需求矩陣與驗證結果。
+- `TRUSTEPISODE_EXPERIMENT_ENVIRONMENT_PLAN.md`：兩個 Linux EDR containers、一個 NDR gateway 與四專案整合的實驗落地路線圖。
 - `trustepisode_figures/README_zh-TW.md`：九張來源圖的語意、位置與限制。

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980">
+  <defs>
+    <style>
+      .title{font:700 34px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.h{font:700 24px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.b{font:400 20px Arial,DejaVu Sans,sans-serif;fill:#334155}.s{font:400 18px Arial,DejaVu Sans,sans-serif;fill:#475569}.mono{font:600 18px 'DejaVu Sans Mono',monospace;fill:#334155}.a{stroke:#334155;stroke-width:3.1;fill:none;marker-end:url(#a)}.v{stroke:#7c3aed;stroke-width:3.3;fill:none;marker-end:url(#av)}.r{stroke:#dc2626;stroke-width:3.1;fill:none;marker-end:url(#ar)}.d{stroke-dasharray:8 7}
+    </style>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#334155"/></marker>
+    <marker id="av" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#7c3aed"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#dc2626"/></marker>
+  </defs>
+  <rect width="1800" height="980" fill="#fff"/>
+  <text x="55" y="58" class="title">Calibration validity, group eligibility, and artifact invalidation</text>
+
+  <rect x="55" y="110" width="330" height="150" rx="18" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="220" y="152" text-anchor="middle" class="h">Current revision</text>
+  <text x="220" y="184" text-anchor="middle" class="mono">z · m · h · detector state</text>
+  <text x="220" y="214" text-anchor="middle" class="s">exact pipeline versions</text>
+  <text x="220" y="241" text-anchor="middle" class="s">raw scorer already frozen</text>
+
+  <rect x="55" y="330" width="330" height="180" rx="18" fill="#faf5ff" stroke="#7c3aed" stroke-width="2.5"/>
+  <text x="220" y="372" text-anchor="middle" class="h">Calibrator manifest</text>
+  <text x="220" y="408" text-anchor="middle" class="s">episode / feature / detector versions</text>
+  <text x="220" y="440" text-anchor="middle" class="s">label policy · prevalence · source masks</text>
+  <text x="220" y="473" text-anchor="middle" class="s">global + preregistered groups</text>
+
+  <polygon points="630,160 805,260 630,360 455,260" fill="#fffbeb" stroke="#d97706" stroke-width="2.6"/>
+  <text x="630" y="242" text-anchor="middle" class="h">Exact manifest match?</text>
+  <text x="630" y="277" text-anchor="middle" class="s">mask 11 + health + detector + exact versions</text>
+  <path d="M385 185 H420 V260 H455" class="a"/><path d="M385 420 H430 V300 H525" class="v"/>
+
+  <polygon points="1040,160 1215,260 1040,360 865,260" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.6"/>
+  <text x="1040" y="242" text-anchor="middle" class="h">Group gate passed?</text>
+  <text x="1040" y="277" text-anchor="middle" class="s">5 folds; support 50 pos / 50 neg / 10 runs</text>
+  <text x="1040" y="306" text-anchor="middle" class="s">Brier/NLL gain ≥ .01; lower 95% &gt; 0</text>
+  <path d="M805 260 H865" class="v"/>
+  <text x="830" y="243" class="s" fill="#6d28d9">yes</text>
+
+  <rect x="1310" y="115" width="360" height="135" rx="18" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.6"/>
+  <text x="1490" y="157" text-anchor="middle" class="h">Use group calibrator</text>
+  <text x="1490" y="193" text-anchor="middle" class="mono">P = σ(a_g z + b_g)</text>
+  <text x="1490" y="222" text-anchor="middle" class="s">supported_group</text>
+  <path d="M1215 220 H1310" class="v"/>
+  <text x="1255" y="202" class="s" fill="#6d28d9">yes</text>
+
+  <rect x="1310" y="315" width="360" height="135" rx="18" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.6"/>
+  <text x="1490" y="357" text-anchor="middle" class="h">Use global calibrator</text>
+  <text x="1490" y="393" text-anchor="middle" class="mono">P = σ(a_global z + b_global)</text>
+  <text x="1490" y="422" text-anchor="middle" class="s">supported_global</text>
+  <path d="M1040 360 V382 H1310" class="v"/>
+  <text x="1080" y="402" class="s" fill="#6d28d9">no / insufficient support</text>
+
+  <rect x="500" y="535" width="600" height="180" rx="18" fill="#fef2f2" stroke="#dc2626" stroke-width="2.6"/>
+  <text x="800" y="576" text-anchor="middle" class="h">Out of support</text>
+  <text x="800" y="613" text-anchor="middle" class="mono">calibration_status=out_of_support</text>
+  <text x="800" y="646" text-anchor="middle" class="mono">decision_eligible=false</text>
+  <text x="800" y="678" text-anchor="middle" class="s">P = canonical null; raw z may be shown only</text>
+  <text x="800" y="704" text-anchor="middle" class="s">with explicit raw-logit wording</text>
+  <path d="M630 360 V535" class="r"/>
+  <text x="650" y="455" class="s" fill="#b91c1c">no</text>
+
+  <rect x="1215" y="550" width="505" height="145" rx="18" fill="#ecfdf5" stroke="#0f766e" stroke-width="2.6"/>
+  <text x="1468" y="592" text-anchor="middle" class="h">Record status in structured U</text>
+  <text x="1468" y="610" text-anchor="middle" class="s">U.calibration = supported_global /</text>
+  <text x="1468" y="640" text-anchor="middle" class="s">supported_group / out_of_support</text>
+  <text x="1468" y="674" text-anchor="middle" class="s">status does not numerically modify P</text>
+  <path d="M1490 250 V550" class="v d"/>
+  <path d="M1490 450 V550" class="v d"/>
+  <path d="M1100 625 H1215" class="r d"/>
+
+  <!-- Group gate detail -->
+  <rect x="60" y="535" width="385" height="180" rx="16" fill="#fff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="253" y="576" text-anchor="middle" class="h">Frozen group gate</text>
+  <text x="95" y="614" class="s">50 pos / 50 neg / 10 runs</text>
+  <text x="95" y="646" class="s">5 run folds; all nonnegative</text>
+  <text x="95" y="678" class="s">tie or undefined → global</text>
+  <text x="95" y="707" class="s">calibration split only; never locked test</text>
+
+  <!-- Invalidation -->
+  <rect x="80" y="780" width="1640" height="150" rx="20" fill="#fff7ed" stroke="#d97706" stroke-width="2.6" stroke-dasharray="10 8"/>
+  <text x="900" y="820" text-anchor="middle" class="h">Calibrator invalidation</text>
+  <text x="900" y="858" text-anchor="middle" class="b">episode policy / feature semantics / upstream detector contract / label policy</text>
+  <text x="900" y="892" text-anchor="middle" class="b">candidate policy/population or supported telemetry regime</text>
+  <text x="900" y="920" text-anchor="middle" class="s">material changes require refit; prevalence drift triggers audit, not per-record out-of-support</text>
+  <path d="M800 715 V750 H900 V780" class="r d"/>
+
+  <rect x="210" y="945" width="1380" height="25" rx="8" fill="#f1f5f9"/>
+  <text x="900" y="965" text-anchor="middle" class="s">Never choose the nearest source-mask calibrator; never fit a low-support group to the locked test.</text>
+</svg>

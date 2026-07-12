@@ -106,9 +106,9 @@
 
 | 位置 | 紅色刪除／Removed | 綠色新增／Added | 中文說明 | English explanation |
 |---|---|---|---|---|
-| Three-tier setting | <span style="color:red">Tier 1, Tier 2, Tier 3 all appear as empirical evaluation pillars</span> | <span style="color:green">Tier 1 is formation-only; Tier 2 is primary; Tier 3 is optional external-validity study if data exist</span> | 明確每個 tier 可回答與不可回答的問題。 | Each tier now has explicit allowed and forbidden claims. |
-| Tier 1 | <span style="color:red">Attack reports and labels excluded from RAG corpus</span> | <span style="color:green">Labels joined only after episode revisions are emitted</span> | 因 RAG 已刪除，改成 ground-truth firewall 語意。 | Since RAG was removed, the text now focuses on label-leakage prevention. |
-| Tier 2 | <span style="color:red">EDR, NDR, Syslog, identity, asset inventory, curated CTI, scoring service</span> | <span style="color:green">First frozen scope uses endpoint and network telemetry; identity is pilot-gated</span> | Lab 範圍縮小且可驗證。 | Lab scope is smaller and verifiable. |
+| Evaluation tiers | <span style="color:red">Tier 1, Tier 2, Tier 3 all appear as empirical evaluation pillars</span> | <span style="color:green">Formal claims use only the controlled Caldera v5.3.0 laboratory; public provenance datasets remain related-work context</span> | 移除不具 frozen EDR/NDR contract 的 formal Tier 1。 | Removed the formal Tier 1 because it does not implement the frozen EDR/NDR contract. |
+| Ground truth scope | <span style="color:red">Attack reports and labels excluded from RAG corpus</span> | <span style="color:green">Labels join immutable AuditRecords only after online inference and insertion</span> | 因 RAG 已刪除，改成可驗證的 ground-truth firewall。 | Replaced the RAG boundary with an enforceable offline label firewall. |
+| Controlled Lab | <span style="color:red">EDR, NDR, Syslog, identity, asset inventory, curated CTI, scoring service</span> | <span style="color:green">Frozen endpoint/network telemetry only; Identity is an offline M5-ID annotation</span> | Lab 範圍縮小且可驗證。 | Lab scope is smaller and verifiable. |
 | Implementation | <span style="color:red">normalization service, graph store, scoring service, retrieval index, analyst-facing case interface</span> | <span style="color:green">Caldera control plane separated from telemetry data plane; source-health monitoring; offline Ground Truth Store</span> | 從產品服務敘事改為實驗拓樸與資料隔離。 | Replaced product-service narrative with experiment topology and data isolation. |
 
 ---
@@ -119,7 +119,7 @@
 |---|---|---|---|---|
 | Ground truth | <span style="color:red">Attack reports and scenario labels used only as ground truth</span> | <span style="color:green">Forbidden fields: operation_id, ability_id, adversary_profile, technique_label, attack_marker, scenario_class, label, split</span> | 新增具體 forbidden-field list 和 integration test 要求。 | Added a concrete forbidden-field list and integration-test requirement. |
 | Label policy | <span style="color:red">No explicit episode-level positive/negative/mixed/ambiguous policy</span> | <span style="color:green">positive, negative, mixed, ambiguous labels with versioned policy</span> | 補上 episode-level label semantics。 | Added episode-level label semantics. |
-| Scenarios | <span style="color:red">Scenario families described broadly in prose</span> | <span style="color:green">M1--M7 malicious scenario table and B1--B8 benign/hard-negative suite; M8 is only a replay perturbation family</span> | 場景改成最小可執行目錄，且不把 replay intervention 誤列為第八個攻擊場景。 | Scenarios became an executable minimum catalogue without misclassifying replay interventions as an eighth attack family. |
+| Scenarios | <span style="color:red">Scenario families described broadly in prose；M8 混入 replay 命名</span> | <span style="color:green">M1--M7 malicious scenario table、B1--B8 benign/hard-negative suite；replay 僅使用 RP0--RP7</span> | 場景改成最小可執行目錄，M8 已完全移除，不再與 replay interventions 混用。 | Scenarios became an executable minimum catalogue; M8 was removed and replay interventions use RP0--RP7 only. |
 | Splits | <span style="color:red">Any analyst feedback used for recalibration logged separately</span> | <span style="color:green">split by campaign/run/time block; train/development/calibration/test isolated</span> | split policy 從敘述補強為硬規則。 | Split policy became a hard rule. |
 
 ---
@@ -139,18 +139,18 @@
 
 | 位置 | 紅色刪除／Removed | 綠色新增／Added | 中文說明 | English explanation |
 |---|---|---|---|---|
-| Result tables | <span style="color:red">Direct LLM/RAG triage row and trace-completeness column</span> | <span style="color:green">R2 formation shell for EB1/EB2/EB3/EB3-H plus R3a ranking and R3b supported-calibration shells for SB1--SB6</span> | 結果表拆開 formation、ranking 與 calibration，且所有未執行欄位明確為 pending。 | Result tables now separate formation, ranking, and calibration, with every unexecuted cell explicitly pending. |
-| Case studies | <span style="color:red">APT lateral movement with contextual CTI; false positive reduced by assurance layer narrative</span> | <span style="color:green">Additional reporting artifacts: Table R1-R4, reliability plots, error-analysis taxonomy</span> | 刪除尚未支撐的 narrative case studies，改成預註冊結果表。 | Removed unsupported narrative case studies and added pre-registered reporting artifacts. |
-| Discussion | <span style="color:red">Beyond adaptive provenance detection; Why Agentic RAG does not score; asset criticality and CTI quality limitations</span> | <span style="color:green">Limitations and Safety: controlled lab scope, Tier 1 formation limits, optional field deployment, non-destructive isolated emulation</span> | 討論改成範圍限制與安全邊界。 | Discussion now focuses on scope limits and safety boundaries. |
+| Result tables | <span style="color:red">Direct LLM/RAG triage row and trace-completeness column</span> | <span style="color:green">RT1--RT7 registries separate formation, ranking, calibration, replay, outage, cost, and errors</span> | 未執行欄位為 pending，結構不適用才是 N/A。 | Unexecuted cells are pending; only structural inapplicability is N/A. |
+| Case studies | <span style="color:red">APT lateral movement with contextual CTI; false positive reduced by assurance layer narrative</span> | <span style="color:green">Registered RT1--RT7 schemas and absent plots until locked outputs exist</span> | 刪除尚未支撐的 narrative case studies，改成預註冊結果契約。 | Removed unsupported case studies and added pre-registered result contracts. |
+| Discussion | <span style="color:red">Beyond adaptive provenance detection; Why Agentic RAG does not score; asset criticality and CTI quality limitations</span> | <span style="color:green">Limitations and Safety: controlled-lab scope, manifest-specific calibration, isolated non-destructive emulation</span> | 討論改成範圍限制與安全邊界。 | Discussion now focuses on scope limits and safety boundaries. |
 
 ### L.1 Submission Appendix and Ownership Follow-up
 
 | 位置 | 紅色刪除／Removed | 綠色新增／Added | 中文說明 | English explanation |
 |---|---|---|---|---|
-| Appendix A.1 | <span style="color:red">Prose summary claiming versioned objects</span> | <span style="color:green">Five-object schema registry plus types, canonical JSON/null, digest, append-only, and firewall rules</span> | 將摘要換成可核對的線上資料契約。 | Replaced the summary with an auditable online data contract. |
+| Appendix A.1 | <span style="color:red">Prose summary claiming versioned objects</span> | <span style="color:green">Eight-object schema registry plus producer, canonical JSON/null, digest, late-record, assembly-outcome, and firewall rules</span> | 將摘要換成可核對且 producer 閉合的線上資料契約。 | Replaced the summary with an auditable, producer-closed online data contract. |
 | Appendix A.2--A.4 | <span style="color:red">Narrative-only synthesis, parameter, and calibration summaries</span> | <span style="color:green">Candidate total order and IDs; parameter/threshold ownership; eight-row calibrator invalidation matrix</span> | 補齊正文逐項承諾的演算法與 matrix。 | Added the algorithm and matrix explicitly promised by the main text. |
-| Appendix A.5 | <span style="color:red">Claim that every complete scenario card appears in the submission appendix</span> | <span style="color:green">Family-level admission/failure contract; complete ordered cards explicitly assigned to the companion appendix</span> | 不再以兩頁附錄假稱容納所有逐卡 SOP。 | The submission no longer claims to contain every full scenario SOP. |
-| Appendix A.6 | <span style="color:red">Result-contract summary only</span> | <span style="color:green">Matching rule, formulas, bootstrap seed, full RQ matrix, and R3a/R3b pending shells</span> | 公式、matching 與結果殼現在確實存在。 | Formulas, matching, and result shells now actually appear. |
+| Appendix A.5 | <span style="color:red">Claim that reviewers received external scenario-card files</span> | <span style="color:green">In-PDF Lab/card/label contract with required counts and achieved counts pending</span> | PDF 不再把未附的 machine files 當成已交付證據。 | The PDF no longer treats unavailable machine files as delivered evidence. |
+| Appendix A.6 | <span style="color:red">Result-contract summary only</span> | <span style="color:green">Three populations, deterministic split, exact interventions/metrics, and RT1--RT7 pending schema</span> | Population、matching 與結果 registry 現在確實存在。 | Populations, matching, and result registries now exist. |
 | Identity | <span style="color:red">Pilot-gated Identity could share the primary path</span> | <span style="color:green">Offline post-inference annotation only; EDR/NDR candidate universe is invariant</span> | gate passage 也不能改變 primary candidate。 | Even a passed gate cannot alter the primary candidate universe. |
 
 ---
@@ -161,12 +161,12 @@
 |---|---:|---|---|
 | Section 3/4 禁用詞掃描 | 通過 | 指定禁用詞與舊公式在 `sections/arch.tex`、`sections/exps.tex` 無命中。 | The forbidden-term and obsolete-formula scan has no hits in Section 3/4 files. |
 | Citation key 存在性 | 通過 | Section 3/4 使用的 citation keys 均存在於 `bib/references.bib`。 | All Section 3/4 citation keys exist in `bib/references.bib`. |
-| Scope Freeze | 通過 | 未修改 Section 1、Section 2、Title、Abstract、Conclusion。 | Section 1, Section 2, Title, Abstract, and Conclusion were not modified. |
-| Submission appendix substance | 通過 | A.1--A.6 實際包含 schemas、total order、parameter registry、invalidation matrix、formulas/matching、RQ matrix 與 R3a/R3b shells。 | A.1--A.6 now contain the artifacts promised by the main text. |
-| PDF compile | 通過 | 已用可攜 Tectonic 編譯 12 頁 `main.pdf` 投稿版與 20 頁 `main_full.pdf` 完整版；投稿版 12/12 頁均已渲染檢查。 | Portable Tectonic compiled the 12-page submission and 20-page full version; all 12 submission pages were rendered and inspected. |
-| AISec page limit | 通過 | 投稿版主文於第 10 頁結束、全文 12 頁，符合 AISec 2026 的 10-page main / 12-page overall 規則。 | The submission body ends on page 10 and the PDF has 12 pages, satisfying the official AISec 2026 limit. |
-| Generative AI declaration | 通過 | 依 AISec 2026 CFP 在 references/appendices 後加入使用範圍與責任聲明。 | The required disclosure appears after the references/appendices. |
-| Submission figures | 通過 | 投稿版保留 Figures 1--4；完整重現版另保留 linking-decision Figure 5。 | The submission retains Figures 1--4, while the full reproducibility version additionally retains linking-decision Figure 5. |
+| Whole-paper scope | 通過 | Title、Abstract、Sections 1/2/5 已同步改為 EDR/NDR formation 與 scoped calibration。 | Title, abstract, and Sections 1/2/5 now match the final method boundary. |
+| Submission appendix substance | 通過 | A.1--A.6 包含 schema、algorithm、threshold/U、calibration、Lab/labels 與 population/split/intervention/RT contracts。 | A.1--A.6 contain the artifacts promised by the main text. |
+| PDF compile | 通過 | 已編譯 12 頁 `main.pdf`；投稿版 12/12 頁均已渲染檢查。`main_full.pdf` 不屬投稿驗證基準。 | Tectonic compiled the 12-page submission and all submission pages were inspected; `main_full.pdf` is outside the submission baseline. |
+| AISec page limit | 通過 | Conclusion 位於第 9 頁、全文 12 頁，符合 10-page main / 12-page overall，但無剩餘頁數。 | The conclusion is on page 9 and the PDF reaches the 12-page overall limit. |
+| Generative AI declaration | 已移除 | 依本次稿件決策刪除 PDF 尾段；正式投稿前須另核對 submission-system disclosure 規則。 | The trailing declaration was removed for this manuscript; submission-system disclosure rules still require a final author check. |
+| Submission figures | 通過 | 投稿版保留 Figures 1--4；Figure 1/2 已同步 sole-producer、fixed-deadline 與 LateEvidenceRecord 契約。 | The submission retains Figures 1--4; Figures 1/2 now match sole-producer, fixed-deadline, and LateEvidenceRecord contracts. |
 
 ---
 
@@ -174,7 +174,7 @@
 
 | 風險 | 中文說明 | English explanation |
 |---|---|---|
-| Scope-locked old text | `main.tex`、`intro.tex`、`related.tex`、`conc.tex` 仍可能保留舊 CTI／Agent／impact 敘述；這是最終改稿計畫明確鎖定不改的範圍。 | `main.tex`, `intro.tex`, `related.tex`, and `conc.tex` may still contain older CTI/Agent/impact framing because the final plan explicitly froze those areas. |
+| Empirical results | RT1--RT7 尚未執行，因此真實數值、intervals 與 plots 仍為 pending。 | RT1--RT7 have not been executed; real values, intervals, and plots remain pending. |
 | Figure assets | 舊 figure 檔仍存在，但新版 Section 3/4 不再引用含 removed-module 語意的圖。 | Old figure assets remain, but revised Section 3/4 no longer references figures that imply removed modules. |
 | TeX build | 已用專案內可攜 Tectonic 完成；若要改用 `latexmk`，仍需另外安裝完整 TeX toolchain。 | Completed with the portable Tectonic binary in the project; using `latexmk` would still require a full TeX toolchain. |
 
@@ -186,7 +186,108 @@
 |---|---:|---|---|
 | 完整改稿初版 | 22 / 9 | 方法、實驗與完整附錄均在單一 PDF，超過 AISec 全文限制。 | Method, evaluation, and the full appendix were in one PDF and exceeded the AISec overall limit. |
 | 圖量收斂版 | 18 / 5 | 刪除四張重複流程圖，但完整 Appendix A--F 仍占主要篇幅。 | Four redundant workflow figures were removed, but the full Appendix A--F still dominated the page count. |
-| 最終投稿版 | 12 / 4 | `appendix_submission.tex` 不只保留 labels，也放入正文承諾的可稽核 artifacts；主文第 10 頁結束。 | The submission appendix now includes the promised auditable artifacts, and the body ends on page 10. |
-| 完整重現版 | 20 / 5 | `main_full.tex` 保留完整 schema、threshold、scenario、formula 與 result-shell 資料。 | `main_full.tex` retains all schemas, thresholds, scenarios, formulas, and result-shell material. |
+| 最終投稿版 | 12 / 4 | 投稿附錄提供可稽核 contracts；Conclusion 位於第 9 頁。 | The auditable submission is 12 pages, and the conclusion is on page 9. |
+| 歷史完整重現版 | 20 / 9 | 只作內部歷史基準，不是投稿交付物，也不封裝於 companion。 | Historical internal baseline only; it is neither submitted nor packaged in the companion. |
 
-頁數合規已完成，但投稿成熟度仍受兩項高風險限制：locked-test 結果尚未產生，以及 scope-locked Title／Abstract／Sections 1、2、5 仍保留與新版方法邊界不完全一致的 CTI/RAG/Agentic/impact 敘事。
+頁數與全篇 scope 一致性已完成；目前唯一主要研究限制是 locked-test 結果尚未產生，RT1--RT7 仍維持 `pending`。
+
+---
+
+## P. Section 3 契約閉合補遺／Contract-Closure Addendum
+
+| 原缺口 | 紅色刪除／Removed | 綠色新增／Added | 最終判定 |
+|---|---|---|---|
+| `m` ownership | <span style="color:red">由多段文字隱含計算</span> | <span style="color:green">Feature Extractor 單獨產生 health-independent `m`</span> | 已閉合 |
+| Detector availability | <span style="color:red">Feature Extractor 無 health input 卻產生 health-dependent state</span> | <span style="color:green">Feature Extractor 產生 `o_det`；Scope Resolver 依固定 precedence 產生 resolved `a_det`</span> | 已閉合 |
+| Eligibility | <span style="color:red">Assembler 隱含序列化 `decision_eligible`</span> | <span style="color:green">Scope Resolver 以 SupportDecision 單獨產生 `a_det,kappa,g,e`</span> | 已閉合 |
+| Late revision | <span style="color:red">finalized episode 如何接受 late evidence 未定義</span> | <span style="color:green">首次 finalization 固定 `t_f+900s`；獨立 revisable index；late successor 不 reopen、不延長 deadline</span> | 已閉合 |
+| Figure 2 | <span style="color:red">Late-store / drop</span> | <span style="color:green">closed successor + LateEvidenceRecord；late-store only</span> | 已閉合 |
+| Conditional group | <span style="color:red">無 group key、final refit、exclusive resolver</span> | <span style="color:green">RFC 8785/SHA-256 key、calibration-partition final refit、duplicate-key rejection、group/global/OOS resolver</span> | 已閉合 |
+| `u_contradiction` | <span style="color:red">frozen online rule 未實體化</span> | <span style="color:green">CR1 endpoint binding、CR2 normalized flow direction、CR3 process lineage</span> | 已閉合 |
+| `horizon_exceeded` | <span style="color:red">不可在 immutable AuditRecord 中合法出現</span> | <span style="color:green">從 `U.lateness` 移除；beyond-horizon evidence 改由 LateEvidenceRecord 表達</span> | 已閉合 |
+| Assembly failure | <span style="color:red">one AuditRecord per revision 與 fail-closed 衝突</span> | <span style="color:green">每個 revision 恰有一個 terminal AssemblyOutcome：AuditRecord 或 AssemblyFailureRecord</span> | 已閉合 |
+
+---
+
+## Q. Section 4 附件、重複次數、引用與表格補遺／Artifact, Repetition, Reference, and Table Addendum
+
+| 原缺口 | 紅色刪除／Removed | 綠色新增／Added | 中文說明 | English explanation | 最終判定 |
+|---|---|---|---|---|---:|
+| Companion availability | <span style="color:red">Machine-readable contracts were described without a submission-bound artifact.</span> | <span style="color:green">The exact companion ZIP and SHA-256 are required supplementary material; a missing or mismatched upload invalidates the claim.</span> | PDF 已綁定必要 ZIP 與 digest；投稿時必須實際上傳完全相同的附件。 | The PDF binds a required ZIP and digest; the exact artifact must be uploaded with the submission. | PDF 已閉合；投稿動作必須完成 |
+| Table 4 repetitions | <span style="color:red">10 successful repetitions per card/mode</span> | <span style="color:green">requires 10 valid repetitions per card/mode; achieved counts pending</span> | 將 protocol requirement 與尚未產生的實驗結果分離，避免虛構成功次數。 | Separates the protocol requirement from unexecuted achieved counts. | 已閉合 |
+| CALDERA metadata | <span style="color:red">CALDERA v5.3.0 year inconsistent with its official release</span> | <span style="color:green">Year 2025; release 2025-04-24; annotated tag object and peeled commit retained separately</span> | 依官方 release 修正年份，保留正確的 tag object／peeled commit 區分。 | Corrected the release year while preserving the distinct tag-object and peeled-commit identifiers. | 已閉合 |
+| OCSF metadata | <span style="color:red">Unverified version/commit concern</span> | <span style="color:green">OCSF 1.8.0, commit 6fa6499a0f8c9f449d342816e90e5f687c224b0a retained</span> | 對照官方 release 後確認原資料正確，無需改動。 | Official release metadata confirms the existing version and commit. | 已驗證 |
+| Reference [14] | <span style="color:red">Incorrect author list and primary category</span> | <span style="color:green">Renjie Wu, Hu Wang, Hsiang-Ting Chen, Gustavo Carneiro; primaryClass=cs.CV</span> | 依 arXiv 正式條目修正作者與主要分類。 | Corrected the author list and primary category from the official arXiv record. | 已閉合 |
+| Table callouts | <span style="color:red">Tables introduced without body callouts</span> | <span style="color:green">Every submission table label has an explicit `Table~\\ref{...}` callout before the float</span> | 投稿版目前共有 Tables 1--7；舊 Table 8 已合併進 Appendix A.6／Table 6 契約，不再是獨立浮動表。 | All seven current submission tables have explicit callouts; the former Table 8 contract is merged into Appendix A.6/Table 6 rather than remaining a separate float. | 已閉合 |
+| Float placement | <span style="color:red">Tables 7/8 float into the References section</span> | <span style="color:green">`placeins` + `\\FloatBarrier` before bibliography; Table 7 renders before References</span> | 浮動表在 bibliography 前被清空；PDF 文字座標亦確認 Table 7 位於 References 標題之前。 | Floats are flushed before the bibliography, and PDF coordinates confirm Table 7 precedes the References heading. | 已閉合 |
+
+本補遺的「已閉合」只適用於論文敘述、metadata、callout 與版面契約。RT1--RT7 的實際執行結果仍為 `pending`；若投稿系統沒有 companion 附件或有效匿名連結，artifact availability 仍不得標為已驗證。
+
+---
+
+## R. Conditional Fail 最終修正判定／Final Remediation Verdict
+
+| 原判定缺口 | 紅色刪除／Removed | 綠色新增／Added | 最終判定 |
+|---|---|---|---:|
+| Split 無法執行 | <span style="color:red">每個 10-run stratum 套用 20-run 10/4/3/3 cycle，導致非 train partitions 為空</span> | <span style="color:green">每個 card-by-mode stratum 依 hash rank 執行 5/2/1/2；train/development/calibration/locked-test 全部非空</span> | PASS |
+| Formation metrics 恆為零 | <span style="color:red">fragmentation/over-merge 使用 one-to-one assigned edges</span> | <span style="color:green">coverage/fragmentation/over-merge 使用 unassigned threshold-qualified graph；one-to-one assignment 只計 episode F1</span> | PASS |
+| Late event 雙重 dispatch | <span style="color:red">先 start/attach/merge open candidate，再檢查 revisable lineage</span> | <span style="color:green">先查 revisable/closed indexes；命中後產生唯一 successor/side record 並 return；無命中才處理 open candidates</span> | PASS |
+| Closed lineage 未定義 | <span style="color:red">無 lookup key、retention 或過期行為</span> | <span style="color:green">保存 canonical relation keys 與 latest revision 至 deadline+86400 s；過期 ingress 進 RT7 且不得新建 episode</span> | PASS |
+| Health snapshot ownership | <span style="color:red">Assembler 需要 health，但 Table 1/Figure 1 無完整輸入</span> | <span style="color:green">Table 1 加入 Assembler consumer；Figure 1 畫出 referenced SourceCoverage path；snapshot 只能 dereference SupportDecision references</span> | PASS |
+| Health/provenance predicates | <span style="color:red">degraded 與 required/optional 未凍結</span> | <span style="color:green">30 s heartbeat、120/600 s lag、miss-count/down 規則，以及 required membership/link/score/coverage/version roots 全部固定</span> | PASS |
+| Assembly schema | <span style="color:red">deadline、failure enum、types、nullability、digest sets 不完整</span> | <span style="color:green">watermark+120 s、七個 failure codes、closed types/maps、P/group-key nullability、三種 record digest include sets</span> | PASS |
+| Figure 2 outcomes | <span style="color:red">只畫 r 與 r+2 outcome</span> | <span style="color:green">r、r+1、r+2、r+3 各自具有 immutable terminal AssemblyOutcome</span> | PASS |
+| Stream survivorship bias | <span style="color:red">C_stream 只包含 AuditRecord，decision cohort 排除 OOS/failure</span> | <span style="color:green">C_dec_all 包含 supported/OOS AuditRecord 與 AssemblyFailureRecord；C_dec_score 僅供 score metrics；C_stream 保留所有 revision outcomes</span> | PASS |
+| Labels/matching | <span style="color:red">A_cov、contamination 與 label precedence 未閉合</span> | <span style="color:green">action-token formulas、zero-denominator handling、mixed→positive→negative→ambiguous precedence</span> | PASS |
+| Replay/outage/cost | <span style="color:red">RP operators、PO1 timestamps、RT6 measurement 不完整</span> | <span style="color:green">RP0--RP7 exact operators；t_stop/t_detect/t_restore/t_h1/t_h2/t_ready/t_stable；1/2/4/8 workers、warm-up+5 repeats</span> | PASS |
+| Group calibration | <span style="color:red">fold assignment 與 improvement sign 不明，單純 hash modulo 5 也不能保證 class-balanced folds</span> | <span style="color:green">完整 run 保持不可分；依 binary class counts 排序後，以 seed/hash tie-break 的 greedy normalized-load assignment；Delta Brier/NLL = global minus group</span> | PASS |
+| Serialization claim/references | <span style="color:red">machine-readable claim 超過 PDF 證據；RFC 8785/Draft 2020-12 無正式引用</span> | <span style="color:green">改為 schema-ready in-PDF contract；新增 RFC 8785 與 JSON Schema Draft 2020-12 references</span> | PASS |
+| AI 尾段 | <span style="color:red">Use of Generative AI paragraph</span> | <span style="color:green">依本次稿件決策完全移除；PDF 文字層掃描無命中</span> | 已移除 |
+
+### R.1 最終總判定
+
+| 範圍 | 原判定 | 最終判定 | 證據 |
+|---|---:|---:|---|
+| Agentic RAG／CTI 移除 | Pass | **PASS** | 僅存在 scope exclusion，不在架構或方法 path |
+| Section 3 | 4 Pass / 4 Partial | **8 Pass / 0 Partial / 0 Fail** | Ownership、late dispatch、closed index、health、assembly、calibration 均閉合 |
+| Section 4 | 2 Pass / 4 Partial / 2 Fail | **8 Pass / 0 Partial / 0 Fail** | Split 與 formation metrics 兩個 P0 已修正；其餘 protocols 完整化 |
+| Appendix A.1--A.6 | Partial | **PASS** | A.1 schema-ready contract；A.6 executable split/metrics/interventions/cost |
+| References | Partial | **PASS** | CALDERA、OCSF、Ref. [14]、RFC 8785、JSON Schema 已核對或補齊 |
+| PDF 視覺與交叉引用 | Pass | **PASS** | 12/12 頁檢查；4 figures；7 tables；0 hbox/undefined/out-of-page；1.17pt final output vbox 無裁切 |
+| Empirical results | pending，不扣分 | **pending，不扣分** | RT1--RT7 未填入虛構數據 |
+
+**最終判定：PASS。** 原本造成 Conditional Fail 的兩個 Section 4 P0，以及 Section 3、Appendix、references 的 partial 缺口均已關閉。此 PASS 表示投稿稿件的 specification 與 PDF 完整性通過，不表示 empirical evaluation 已執行。
+
+---
+
+## S. D/C、Denominator、Label、RP 與 Schema 最終閉合／Final Closure Addendum
+
+| 項目 | <span style="color:red">紅色刪除／Removed</span> | <span style="color:green">綠色新增／Added</span> | 中文說明 | English explanation | 判定 |
+|---|---|---|---|---|---:|
+| Detector registry | <span style="color:red">D/C 僅有概念式定義；detector IDs、方向、合法值與 tie 未固定</span> | <span style="color:green">三個 EDR + 三個 NDR IDs；finite binary64 [0,1]；higher-more-suspicious；mid-rank CDF；top-min(3,n)；exact dedup key</span> | 不同實作者對同一 detector stream 會得到相同 normalized D。 | Independent implementations now derive the same normalized D from the same detector stream. | PASS |
+| Raw scorer | <span style="color:red">Eq. (7) 只有未封閉的線性 logit 與一般 NLL 敘述，且可能把 intercept 一併限制為非負</span> | <span style="color:green">lambda=1e-4 L2 objective；b in R、w_D/w_C nonnegative；deterministic L-BFGS-B；tolerances、cohort、iteration cap、artifact digest</span> | Training 已從敘述性公式變成唯一可重現的 frozen model artifact，且不再強制所有 logits 非負。 | Training is uniquely reproducible and no longer forces all logits to be nonnegative. | PASS |
+| Decision denominator | <span style="color:red">C_dec 只收 decision-eligible AuditRecord，OOS/failure 可從母體消失；mixed/ambiguous 可能污染 binary metrics</span> | <span style="color:green">C_dec_all 收所有 outcomes；C_dec_score 收可評分 records；C_dec_binary 只收 post-outcome joined positive/negative labels</span> | OOS/failure 不會結構性為零，AUPRC/AUROC/Brier/NLL 不再使用 mixed/ambiguous。 | OOS/failure remain visible, while binary metrics exclude mixed and ambiguous labels. | PASS |
+| Labels and coverage | <span style="color:red">g* 無 no-edge 定義；ID tie、truth conflict、run aggregation 與空分母未封閉</span> | <span style="color:green">UTF-8 ordering；g*=null；三種 iff conflict；run max-coverage mean；defined-contamination mean + undefined count；empty=undefined</span> | Ground truth 與 run summaries 對所有邊界條件只有一種結果。 | Ground truth and run summaries have one result for every boundary case. | PASS |
+| RP0--RP7 | <span style="color:red">只有 seeded/level 敘述；Figure 4 殘留 M8、stochastic lag、stop-or-isolate</span> | <span style="color:green">canonical base order；HMAC child seed；domain-separated U；每個 object/source/interval/permutation/duplicate mapping；Figure 4 同步 RP0--RP7 + PO1</span> | Paired replay children 可由 base run 唯一重建。 | Every paired-replay child can be uniquely reconstructed from its base run. | PASS |
+| Support/schema ownership | <span style="color:red">SupportDecision 沒有 exact health references；reference/input/failure/version/number 規則不完整</span> | <span style="color:green">coverage_ref_ids + health_snapshot_digest；canonical reference/input order；failure precedence；closed VersionSet；LateEvidence reason enum；finite-number rejection</span> | Assembler 不可自行重選 health，且同一輸入衝突只會得到一個 terminal outcome。 | The Assembler cannot reselect health, and identical conflicts yield one terminal outcome. | PASS |
+
+**本輪最終判定：PASS。** Detector、baseline、scenario、perturbation 與 schema contracts 已納入 17-entry manifest；`main.pdf` 為 12 頁、4 figures、7 tables，12/12 頁最終視覺檢查已通過。Empirical RT1--RT7 仍維持 `pending`，不在此 specification-completion PASS 中偽裝為已執行結果。
+
+---
+
+## T. n=0、Binary Metrics、Executable Cards 與 Digest 最終補遺／Final Addendum
+
+| 項目 | <span style="color:red">紅色刪除／Removed</span> | <span style="color:green">綠色新增／Added</span> | 中文說明 | English explanation | 判定 |
+|---|---|---|---|---|---:|
+| `n=0` eligibility | <span style="color:red">`no_detection` could yield supported kappa even when no legal detector value existed.</span> | <span style="color:green">`n=0` has precedence: kappa=out_of_support, e=false, reason=no_eligible_detector_value, and P=null.</span> | 沒有合法 detector value 時絕不進入 score cohort，無論 resolved state 是否為 `no_detection`。 | A revision with no legal detector value can never enter the score cohort, even when its resolved state is `no_detection`. | PASS |
+| Eq. (7) intercept | <span style="color:red">`b,w_D,w_C >= 0`, which implied every raw logit was nonnegative.</span> | <span style="color:green">`b in R`; only `w_D,w_C >= 0`; the fixed L2 objective and solver contract remain.</span> | intercept 可為負，因此模型不再被迫輸出 sigmoid 至少 0.5。 | The intercept may be negative, so the model is no longer forced to emit a sigmoid score of at least 0.5. | PASS |
+| Binary metric population | <span style="color:red">Class metrics used all scorable records and could include mixed/ambiguous labels.</span> | <span style="color:green">C_dec_binary contains only positive/negative records after terminal-outcome label join.</span> | AUPRC、AUROC、Brier、NLL 與 reliability 只在 binary cohort 計算。 | All class-dependent ranking and calibration metrics use only the binary cohort. | PASS |
+| Failure-bias audit | <span style="color:red">Offline labels joined only successful AuditRecords.</span> | <span style="color:green">Labels join by EpisodeRevision digest after every terminal AssemblyOutcome, including AssemblyFailureRecord.</span> | RT1 可檢查 positive/negative 的 assembly failure rate 是否不同。 | RT1 can detect class-dependent assembly-failure bias. | PASS |
+| Lab cards | <span style="color:red">M1--M7/B1--B8 listed names and expected observations without a unique executor contract.</span> | <span style="color:green">Each card binds image keys, exact ability/command templates, offsets, marker preimage, success/failure predicates, cleanup, and mode matrix.</span> | 相同 card 現在只能導出一種可執行 run definition。 | Each card now derives one executable run definition. | PASS |
+| Baselines | <span style="color:red">EB1/EB2/SB1/SB2 were named but their event grouping, severity parsing, cohort, and optimizer were open.</span> | <span style="color:green">A frozen baseline registry fixes 300-second bins, within-bin entity components, root-deduplicated native severity, and SB2 training.</span> | Baseline 比較不再依實作者自行猜測。 | Baseline results no longer depend on implementer interpretation. | PASS |
+| RP source×dose | <span style="color:red">Seeded perturbations omitted the RP3 index, RP5 width, RP7 ID preimage, and complete source×dose matrix.</span> | <span style="color:green">RP2--RP7 use a full source×dose Cartesian design; RP3/RP5/RP7 mappings and byte preimages are exact.</span> | 每個 replay child 可由 base run、source、dose 與 seed 唯一重建。 | Every replay child is uniquely reconstructed from its base run, source, dose, and seed. | PASS |
+| PO1 and balanced folds | <span style="color:red">Outage anchor/readiness/censoring and group-fold balance were underspecified.</span> | <span style="color:green">PO1 fixes anchor through censor timestamps and 1800-second follow-up; group folds use deterministic greedy normalized class/run loads.</span> | Outage latency與 group gate 都有唯一且不漏 class 的計算方式。 | Outage latency and group gating now have unique, class-aware procedures. | PASS |
+| Digest and ordering | <span style="color:red">Audit digest omitted detector observation; LateEvidence digest, sentinel, VersionSet, and array order were incomplete.</span> | <span style="color:green">Audit digest includes o_det/count/reason; LateEvidence has its own digest and ordered refs; every version has a digest; optional absence uses a closed sentinel.</span> | 應用層先按明定 key 排 reference arrays，再執行 JCS；不能假設 RFC 8785 會重排 array。 | The application sorts reference arrays by the specified keys before JCS; RFC 8785 is not assumed to reorder arrays. | PASS |
+| Required companion | <span style="color:red">The PDF claimed machine-readable completeness without binding the exact submitted files.</span> | <span style="color:green">The PDF binds the required ZIP SHA-256 `6298bd2e...c81205`; missing or mismatched supplementary material invalidates the claim.</span> | 本機 contract 驗證完成不等於投稿完成；實際上傳是最後人工 gate。 | Local validation is not submission delivery; uploading the exact ZIP remains a mandatory human gate. | PASS in repository; upload pending |
+
+**T 節判定：repository specification PASS。** 唯一仍需投稿者執行的非程式工作，是在 submission system 上傳完全相同的 companion ZIP；唯一仍未完成的研究工作，是使用這些 frozen contracts 執行真實 experiments 並取代 `pending`。
