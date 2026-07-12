@@ -1,41 +1,30 @@
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Provenance and Graph-Based Intrusion Detection}
+\paragraph{Alert correlation and provenance.}
+Classical alert-correlation methods connect observations into attack scenarios using temporal,
+causal, and prerequisite relations~\cite{ning2002attackscenarios}. Provenance-based intrusion
+detection preserves process and information-flow context; HOLMES, NODLINK, and KAIROS show how
+causal graphs support multi-stage reconstruction and investigation
+~\cite{holmes2019,nodlink2024,kairos2024}. CAPTAIN further demonstrates that a lightweight,
+interpretable rule system can adapt deployment-specific parameters~\cite{captain2025}.
+\trustepisode differs by treating deterministic cross-source candidate construction,
+revision ownership, and candidate-conditioned probability calibration as one versioned
+contract rather than presenting a new graph detector.
 
-Provenance-based intrusion detection systems (PIDS) construct causal graphs in which nodes represent system entities and edges capture information-flow or execution relations. This structure is effective for reconstructing attack paths and preserving causal context. Existing methods range from graph embeddings and neural detectors to rule-based propagation and graph matching. CAPTAIN positions itself in the latter family, adapting rule-based PIDS by optimizing node initialization, edge propagation, and alarm thresholds while retaining low overhead and interpretability~\cite{captain2025}. However, many provenance detectors remain host-centric and issue alarms at the node, edge, or subgraph level. They do not directly produce calibrated, cross-source, episode-level operational risk scores.
+\paragraph{Calibration and incomplete telemetry.}
+Ranking and calibration answer different questions: a high AUPRC does not imply reliable
+probabilities~\cite{guo2017calibration,gneiting2007proper}. Platt-style affine calibration is
+compact and ranking-preserving when its slope is positive, but only for a fixed candidate
+population and support regime~\cite{platt1999probabilistic}. Missing-modality research likewise
+shows that absent inputs require explicit handling rather than silent zero imputation
+~\cite{missingmodality2024}. \trustepisode therefore separates observed source masks,
+authenticated health, detector availability, calibration status, and sufficiency. The raw
+scorer cannot read health or labels, and unsupported records retain a diagnostic logit but no
+numeric probability.
 
-\subsection{Adaptive Correlation and Risk-Based Security Operations}
-
-Alert aggregation, SIEM correlation, attack-path prioritization, and XDR risk scoring aim to reduce analyst load. Yet alert counts and vendor severity labels are not synonymous with operational risk. A high-confidence indicator match can be irrelevant to the affected asset; conversely, several low-severity events can become significant when they form a coherent sequence. \trustepisode therefore models risk at the episode level and separates maliciousness likelihood from operational impact. The model learns locally appropriate contributions while preserving explicit semantic factors and policy constraints.
-
-\subsection{CTI, Retrieval-Augmented Analysis, and Security Agents}
-
-CTI can enrich detection through indicators, technique mappings, and adversary context, but intelligence is heterogeneous in freshness and reliability. Retrieval-augmented generation (RAG) improves the grounding of language-model outputs by augmenting generation with retrieved evidence~\cite{rag2020}. In a security setting, however, direct LLM scoring can lead to uncalibrated risk judgments and overly confident explanations. \trustepisode treats CTI as a bounded, corroborative input and uses Agentic RAG only for assurance: evidence retrieval, contradiction discovery, gap identification, and citation-aware reporting. The agent is read-only with respect to the primary score and enforcement actions.
-
-
-\subsection{Calibration, Robustness, and Explanation}
-
-Risk ranking and risk calibration solve different problems. A model can rank malicious episodes near the top while systematically overestimating or underestimating their probability. This distinction matters when a score determines escalation thresholds, analyst attention, and the amount of evidence demanded before a potentially disruptive response. \trustepisode therefore uses calibration loss and reliability analysis as first-class evaluation targets rather than treating an anomaly value as a probability by default.
-
-Robustness is similarly distinct from raw classification performance. In real operations, a network sensor may be absent, identity events may arrive late, asset inventory may be stale, and CTI may contain weak or contradictory indicators. We design the model so that absence of evidence changes the evidence-sufficiency state rather than being treated as proof of benignness or as a direct maliciousness penalty. The final score can therefore be accompanied by a caveat such as ``high priority, but reduced confidence because NDR corroboration is unavailable.'' This is a more actionable output than a single opaque anomaly score.
-
-\begin{table*}[t]
-\caption{Positioning of \trustepisode relative to representative approach families.}
-\label{tab:positioning}
-\centering
-\small
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Capability} & \textbf{Static correlation} & \textbf{PIDS / graph detection} & \textbf{LLM/RAG triage} & \textbf{CAPTAIN} & \textbf{\trustepisode} \\
-\midrule
-Heterogeneous telemetry fusion & Partial & Usually host-centric & Possible & Host provenance & \textbf{Yes} \\
-Episode-level risk score & Limited & Partial & Informal & Edge / alarm-focused & \textbf{Yes} \\
-Explicit probability calibration & Rare & Partial & No guarantee & Adaptive thresholds & \textbf{Yes} \\
-Bounded CTI contribution & Rare & Rare & Often unclear & N/A & \textbf{Yes} \\
-Factor-level score audit & Limited & Limited & Limited & Strong & \textbf{Strong} \\
-Agentic evidence assurance & No & No & Yes & No & \textbf{Yes} \\
-Agent directly assigns score & No & No & Often & No & \textbf{No} \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\paragraph{Scope.}
+The method does not model operational impact, response priority, autonomous response, CTI
+enrichment, or language-agent behavior. Its claims are limited to deterministic EDR/NDR episode
+formation, manifest-scoped maliciousness calibration, explicit evidence sufficiency, and
+replayable audit records.

@@ -2,213 +2,185 @@
 
 \section{Frozen Submission Contracts}
 
-\subsection{Online Data and Audit Contract}
+\subsection{Machine Schema and Audit Assembly}
 \label{app:data-contracts}
 
-All online objects are versioned, immutable after emission, and validated against an allowlist.
-Table~\ref{tab:submission-schemas} is the contract-complete registry; optional fields may be
-absent but cannot change a required field's meaning.
+The normative schema-ready in-PDF contract follows JSON Schema Draft 2020-12 closed-object
+semantics~\cite{jsonschema2020} for NormalizedEvent,
+SourceCoverage, EpisodeRevision,
+LateEvidenceRecord, FeatureVector, SupportDecision, AuditRecord, and AssemblyFailureRecord.
+FeatureVector owns $D,C,m,o^{det}$ without health input. SupportDecision owns resolved
+$a^{det},\kappa,g$, detector count $n$, eligibility reason, \path{decision_eligible}, EDR/NDR
+\path{coverage_ref_ids}, and \path{health_snapshot_digest}. Count $n=0$ forces
+out-of-support, false eligibility, and null $P$ even if both detectors report
+\path{no_detection}. AuditRecord requires those outputs, $z,P,U$,
+the revision digest, health snapshot, ordered references, exact versions, and canonical digest;
+out-of-support requires JSON null $P$ and false eligibility. For each revision key the Assembler
+atomically inserts one terminal outcome: AuditRecord after a complete exact-version join, or
+AssemblyFailureRecord after conflict or deadline. The assembly deadline is
+$\texttt{revision.watermark}+120$ s. The unique-key store is an insert/select sink
+and cannot later replace failure with success.
 
-\begin{table*}[!t]
-\caption{Canonical online schema registry.}
-\label{tab:submission-schemas}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.13\textwidth}p{0.16\textwidth}p{0.43\textwidth}p{0.18\textwidth}}
-\toprule
-\textbf{Object} & \textbf{Key} & \textbf{Required content} & \textbf{Permitted optional content} \\
-\midrule
-NormalizedEvent & \texttt{event\_id} & UTC event/ingest times; source family/instance; canonical subject, object, action; immutable raw pointer; dependency group; schema/parser versions & allowlisted source-native attributes \\
-SourceCoverage & source instance plus interval start & interval end; expected flag; health enum; lag; reason; monitor/policy versions & authenticated diagnostic reference \\
-EpisodeRevision & episode ID plus revision & ordered event IDs/link reasons; parent/merge lineage; event-time bounds; watermark; formation-policy version; membership digest & late-evidence reason; predecessor ID \\
-FeatureVector & episode ID plus revision & $D,C$; feature version; normalizer hashes; feature-input references & missing-value reason \\
-AuditRecord & episode ID plus revision & revision digest; $D,C,z,P,\kappa,U$; model/calibrator/manifest versions; health snapshot; evidence references; canonical digest & non-canonical runtime envelope \\
-\bottomrule
-\end{tabular}
-\end{table*}
+Identifiers are ASCII and sort by unsigned UTF-8 bytes. AuditRecord uses string IDs/digests,
+nonnegative integer revision, finite $D,P\in[0,1]$, $C\in\{0,1\}$,
+numeric $z$, Boolean eligibility, closed enums/maps for $\kappa,U,m,h,a^{det}$, ordered reference
+arrays, and a closed version object. Only $P$ and group key are nullable: out-of-support requires
+$P=$ JSON null; only supported-group requires a non-null key. NaN, infinities, negative zero, and
+binary64 overflow are invalid. AssemblyFailureRecord contains no
+$D,C,z,P,U$ and has exactly one of the seven failure codes in Section~\ref{sec:sufficiency}.
+Canonical bytes follow RFC 8785 JSON canonicalization~\cite{rfc8785}. JCS sorts object
+properties but preserves array order, so the application sorts every reference array first.
+SHA-256 includes each outcome's declared
+digest-field set except \path{canonical_digest}. AuditRecord includes type/schema/key/revision,
+revision digest, $D,C,z,P,\kappa,g,e,U,m,h,o^{det},a^{det}$, detector count/reason, ordered
+references, and versions;
+AssemblyFailureRecord includes type/schema/key/revision, revision digest, failure code, observed
+input types, and assembly-policy version; LateEvidenceRecord includes type/schema/episode/latest
+revision and digest/event, arrival/deadline/reason, raw pointer/root, ordered lineage references,
+and VersionSet. Host,
+PID, wall time, and duration are an optional non-canonical envelope. References sort by relation
+rank, dependency-group bytes, object-before-sentinel, object-ID-or-empty bytes, then
+digest-or-empty bytes. Optional absence uses a closed sentinel; required absence fails assembly.
+Assembly input order is revision,
+feature, logit, support, probability, $U$, then coverage. Failure precedence is schema, key,
+duplicate, digest, version, missing, then timeout. Every VersionSet component closes both a
+version identifier and content digest for schema, parser, formation, detector registry, feature,
+normalizer, model, calibrator, support, sufficiency, assembly, and manifest.
+Conforming validation must accept supported, unsupported, late,
+and assembly-failure records and reject any online record containing \path{malicious_label}.
+Online objects reject all label, scenario, marker/window, ability/operation, and split fields.
 
-Identifiers are non-empty UTF-8 strings. Times are UTC RFC~3339 at microsecond precision.
-Health is \{\path{healthy}, \path{degraded}, \path{down}, \path{unknown},
-\path{not_applicable}\}. Raw pointers contain an immutable object ID, SHA-256 digest, record
-locator, and storage-schema version. Canonical JSON uses lexical keys, domain-ordered arrays,
-shortest round-trip decimals, and no NaN/infinity; unsupported $P$ is literal \texttt{null}.
-The SHA-256 payload excludes host/time/process runtime metadata. Online allowlists reject
-labels, scenario/operation/ability IDs, attack windows/markers, and split assignments. Storage
-denies \texttt{UPDATE}/\texttt{DELETE}; a correction emits a successor revision and record.
-
-\subsection{Episode Synthesis and Replay}
+\subsection{Episode Algorithm and State Machine}
 \label{app:episode-algorithm}
 
-Eligibility uses inclusive $W_{\mathrm{gap}}$ and $W_{\max}$ bounds and requires at least one
-process-causal, authenticated-session, endpoint-mapped connection, or specific-entity relation;
-hub-only support is forbidden. Candidates use the sole total order
-\begin{equation}
-(-\rho,-n_R,\Delta_t,t_{\mathrm{start}},\mathrm{episode\_id}),
-\end{equation}
-with relation precedence process-causal, session, endpoint-mapped, then entity equality. Zero,
-one, and multiple candidates respectively start, attach, or merge only when component and
-cross-episode guards pass; otherwise the first ordered candidate receives the event. Start IDs
-hash policy version, first event ID, and namespace; merge IDs hash \texttt{merge}, sorted parent
-IDs, and policy version. Membership order is
-$(t^{event},t^{ingest},\mathrm{source\_instance},\mathrm{event\_id})$. Event time controls
-relations; ingest time controls the watermark. Accepted late evidence emits $r+1$ and one new
-AuditRecord. Replay equality covers IDs, membership, links, lineage, $D,C,z,P,\kappa,U$,
-versions, evidence references, and canonical digests.
+Fixed values are $W_{gap}=300$ s, $W_{max}=3600$ s, $L_{wm}=120$ s, $W_{rev}=900$ s, and
+$W_{ret}=86400$ s.
+Relations have $\rho=(4,3,2,1)$ for causal/session/endpoint/entity and $n_R$ counts satisfied
+classes; candidates sort by $(-\rho,-n_R,\Delta_t,t_{start},id)$. A hub has at least 25
+relations in 600 s. Merge permits at most three parents connected by causal, session, or
+endpoint relations and
+at most 500 events/200 entities; otherwise attach to the first candidate. The event order is
+\begin{equation*}
+(t^{event},t^{ingest},source\_instance,event\_id).
+\end{equation*}
+First finalization freezes $t_f$ and deadline $t_f+900$ s. The lineage then leaves the open
+index and remains in a revisable index; at closure, canonical relation keys remain in a
+closed-lineage index through deadline plus $W_{ret}$. Each event queries revisable/closed indexes
+first and returns after exactly one successor/LateEvidenceRecord; only no match permits open
+start/attach/merge. A qualifying late event before the fixed deadline creates
+a \texttt{finalized} successor without reopening or extending the horizon; the deadline creates
+a membership-identical \texttt{closed} successor. A later related event creates only a
+LateEvidenceRecord in the late store with reason \path{beyond_revision_horizon},
+\path{closed_lineage_match}, or \path{duplicate_after_terminal_outcome}. Replay equality covers every state, late record, output,
+reference, and digest.
 
-\subsection{Feature and Parameter Registry}
+\subsection{Thresholds and Sufficiency Rules}
 \label{app:parameter-registry}
 
+Table~\ref{tab:submission-thresholds} is the single numeric and precedence registry for the
+submission PDF.
+
 \begin{table*}[!t]
-\caption{Parameter, owner, fit data, and freeze registry.}
-\label{tab:submission-parameters}
+\caption{Frozen numeric registry and deterministic precedence.}
+\label{tab:submission-thresholds}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.15\textwidth}p{0.24\textwidth}p{0.08\textwidth}p{0.14\textwidth}p{0.18\textwidth}p{0.12\textwidth}}
+\begin{tabular}{p{0.18\textwidth}p{0.28\textwidth}p{0.12\textwidth}p{0.33\textwidth}}
 \toprule
-\textbf{Category} & \textbf{Content} & \textbf{Fit?} & \textbf{Owner} & \textbf{Fit/selection data} & \textbf{Freeze} \\
+\textbf{Owner} & \textbf{Fields} & \textbf{Primary value} & \textbf{Freeze / rule} \\
 \midrule
-Raw scorer & $(b,w_D,w_C)$ & yes & Stateless Scorer & training; development selects contract & before calibration \\
-Global mapping & $(a,b_{\mathrm{cal}})$ & yes & Calibrator & natural-prevalence calibration split & before locked test \\
-Group mapping & $(a_g,b_g)$ & conditional & Calibrator & calibration run folds after gate & before locked test \\
-Formation/revision & time, watermark, hub, component, merge settings & no & Episode Synthesis & training/development or pilot & before final fit \\
-Feature policy & empirical CDF hashes; top three; $K=2$ & CDF only & Feature Extractor & training-benign; P0 fixed constants & before scorer fit \\
-Runtime state & $m,h,q,\kappa,U$ & no & declared Table~\ref{tab:ownership} producers & online observations/rules & per revision \\
-Evaluation & split seed; matching; perturbations; bootstrap & no & Evaluation Harness & pilot/development preregistration & before locked test \\
+Formation & gap, span, watermark, revision, retention & 300/3600/120/900/86400 s & before final train fit \\
+Formation guards & hub/window; merge parents; component & 25/600 s; 3; 500 events/200 entities & hard rejection, not learned \\
+Feature & detector IDs; top-$k$; sources & 3+3 IDs; 3; EDR+NDR & finite [0,1], mid-rank CDF \\
+Label/match & $\theta_{mal},\theta_{contam},\theta_{match}$ & .50/.25/.50 & before label release \\
+Match predicates & time IoU; entity Jaccard & .10/.50 & plus exact marker/action \\
+Group gate & positives; negatives; runs; folds & 50; 50; 10; 5 & deterministic balanced run folds \\
+Gate improvement & Brier; NLL; uncertainty & .01; .01; lower 95\% $>0$ & all folds nonnegative; tie/undefined fallback \\
+Uncertainty & bootstrap repetitions/seed & 2000/20260710 & complete run clusters \\
+\midrule
+$U$ precedence & coverage & unknown $>$ unavailable $>$ degraded $>$ complete & first matching health/parser predicate \\
+ & provenance & missing $>$ partial $>$ complete & required root missing before optional reference \\
+ & lateness & late\_accepted $>$ revisable $>$ stable & accepted successor; before deadline; closed \\
+ & contradiction & present $>$ unevaluable $>$ none & first match over CR1--CR3 \\
+ & calibration & exact $\kappa$ enum & out\_of\_support, supported\_group, supported\_global \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-The single threshold registry assigns $W_{\mathrm{gap}},W_{\max},f_{\mathrm{hub}},
-n_{\mathrm{component}}$ to formation policy; $W_{\mathrm{rev}},L_{\mathrm{wm}}$ to revision
-policy; $\theta_{\mathrm{mal}},\theta_{\mathrm{contam}}$ to label policy;
-$n_{\mathrm{pos}}^{\min},n_{\mathrm{neg}}^{\min},n_{\mathrm{run}}^{\min},
-\Delta_{\mathrm{miscal}}^{\min}$ to the calibration gate; and
-$\theta_{\mathrm{match}}$ to evaluation policy. Formation values freeze before final training,
-revision and calibration gates before calibration, and label/matching rules before locked-test
-access. The unconditional method has five fitted scalars; empirical CDFs are fitted artifacts,
-not constants.
+Feature Extractor emits only \path{detected}, \path{examined_none}, or \path{not_examined}.
+Scope Resolver combines that observation with the unique covering SourceCoverage interval and
+emits \path{available}, \path{no_detection}, \path{collector_unavailable},
+\path{parser_invalid}, or \path{unknown}; the first two are health-support states, but zero
+eligible detector values still force out-of-support. CR1 is an
+overlapping endpoint-to-host binding conflict, CR2 is canonical EDR/NDR flow-direction conflict,
+and CR3 is conflicting parent/root lineage for one process key. Health is healthy for zero missed
+30 s heartbeats, lag $\le120$ s, valid parser, and live transport; degraded for one missed
+heartbeat or lag $(120,600]$ s; and down for two misses or authenticated stop. Required
+provenance is every membership/root, selected link, scored input, coverage object, and version;
+diagnostics are optional. Any later executable threshold file must exactly match
+Table~\ref{tab:submission-thresholds}.
 
-\subsection{Calibration Manifest and Eligibility}
+\subsection{Calibration Resolver and Invalidation}
 \label{app:calibration-manifest}
 
-The manifest binds formation/candidate/label policy; feature and detector contracts; CDF,
-raw-model, coefficient, train-split, calibration-split, and calibrator digests; exact source
-masks and health regimes; schema/parser/pipeline versions; support counts; gate evidence; and
-reliability bins. No nearest-mask or nearest-version match is allowed. A group is enabled only
-after pre-registered positive, negative, and independent-run minima and held-out run-fold
-improvement in both Brier and NLL without direction reversal. Gate failure falls back to
-\path{supported_global}; any required contract mismatch yields \path{out_of_support},
-canonical-null $P$, and \path{decision_eligible=false}.
+The global fit uniquely minimizes natural-prevalence NLL plus $10^{-6}(a^2+b^2)$ with
+$a\ge10^{-6}$. A registered group key is the RFC~8785/SHA-256 digest of deployment profile and
+EDR/NDR detector versions; labels, scenario, run, and identity are forbidden. Five-fold
+calibration-partition cross-fitting keeps each run intact. For each group, runs with binary
+counts $(p_r,n_r)$ sort by decreasing $p_r+n_r$, then SHA-256 of seed/group/run. Each run is
+greedily assigned to the fold minimizing the resulting maximum normalized positive, negative,
+and run loads, then total normalized load and fold ID; the assignment map is sealed and hashed.
+The gate uses positive improvements $\Delta B=B_{global}-B_{group}$ and
+$\Delta N=NLL_{global}-NLL_{group}$. It evaluates the gate, after which a passing group is refit on
+all calibration records for that key and sealed with its coefficients. Manifest validation
+rejects duplicate keys. Runtime resolution first checks exact mask \texttt{11}, health, parser,
+resolved detector states, and formation/feature/model/label/schema/pipeline versions; mismatch
+yields out-of-support. Otherwise one enabled exact group yields \path{supported_group}, and no
+enabled key falls back to \path{supported_global}. Scope Resolver alone emits the key, status,
+and eligibility; Calibrator only emits $P$. Episode/candidate, feature/normalizer, raw-model, or
+label changes invalidate calibration; additive unused fields require equivalence proof.
 
-\begin{table*}[!t]
-\caption{Calibrator invalidation matrix.}
-\label{tab:submission-invalidation}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.28\textwidth}p{0.24\textwidth}p{0.39\textwidth}}
-\toprule
-\textbf{Change} & \textbf{Immediate status} & \textbf{Required action} \\
-\midrule
-Episode/candidate policy & invalid & rebuild candidates; refit scorer and calibrator \\
-Feature, normalizer, or missing rule & invalid & refit scorer and calibrator \\
-Detector contract or parser semantics & out of support & revalidate features; refit if meaning/distribution changes \\
-Raw model or training population & invalid & refit calibrator \\
-Label policy & invalid supervised claim & regenerate labels; repeat fit/evaluation \\
-Source mask or health regime & out of support & collect support; register new manifest \\
-Additive schema field excluded from features & compatibility pending & prove canonical equivalence before amendment \\
-Candidate-prevalence drift & revalidation signal & audit reliability; do not alter per-revision output automatically \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\subsection{Laboratory and Offline Labels}
+\subsection{Lab, Cards, and Offline Labels}
 \label{app:lab-label-policy}
 
-Every run manifest freezes run/pair IDs; scenario/workload versions; Caldera commit; target,
-collector, and container hashes; topology; EDR/NDR/Health Monitor configuration; parser/schema
-versions; clock source/skew; seed; harmless marker; cleanup; and incidents. M1--M7 run alone and
-with B1--B8; each card fixes repetition before locked collection. Collection failure remains in
-R1/failure logs but leaves primary metrics; action failure with healthy collectors enters only
-the sensitivity cohort; cleanup failure blocks reuse of that image. Ground truth is stored
-under a separate role and joins only after AuditRecord insertion by run ID, harmless marker,
-entity namespace, time interval, and label-policy digest. The companion reproducibility
-appendix retains each card's ordered actions, expected observations, and cleanup procedure.
+The lab, card, and label contract is exactly Sections~\ref{sec:datasets}--\ref{sec:scenarios},
+Equation~\ref{eq:match-weight}, and Table~\ref{tab:malicious-scenarios}. It pins CALDERA tag
+\texttt{dd22d543...}, peeled commit \texttt{b24f6e7a...}, and OCSF 1.8.0; missing manifest fields
+fail closed; each card/mode requires 10 valid runs with achieved counts \texttt{pending}; and
+M5-ID remains post-inference only.
+Each M/B card closes image key and digest, ordered ability IDs, executor plus exact command
+templates, monotonic offsets, marker ID/content/path preimage, success/failure predicates,
+cleanup commands and digest check, and allowed mode. Template variables resolve only from the
+frozen run manifest. Malicious modes are attack-only or one hash-selected B1--B8 workload begun
+60 s earlier; benign cards also run standalone. EB1 uses run-start-anchored 300 s bins; EB2 uses
+exact shared-entity components within those bins. SB1 takes maximum root-deduplicated finite
+native severity; SB2 uses the binary SB3 cohort, unconstrained intercept, nonnegative $D$ weight,
+and the registered L-BFGS-B contract. Missing values and malformed inputs are counted, not
+zero-filled.
 
-Identity is excluded from NormalizedEvent, Episode Synthesis, candidate IDs/membership,
-$D,C,z$, every calibrator manifest, and all primary RQs. A timestamp/provenance/health/support
-pilot gate may permit only an offline, separately labeled exploratory annotation after primary
-inference; it cannot alter the EDR/NDR candidate universe or $K=2$ contract.
-
-\subsection{Experimental and Result Contract}
+\subsection{Populations, Splits, Interventions, Metrics, and RT Schemas}
 \label{app:experimental-contract}
 \label{app:result-shells}
 
-A predicted stabilized revision is match-eligible only inside the registered time/entity scope
-and above $\theta_{\mathrm{match}}$. Maximum-weight bipartite assignment maximizes covered
-malicious actions; ties use entity overlap, absolute time difference, then lexical IDs. For
-malicious-action set $A$ and assigned covered actions $\widehat A$,
-\begin{align}
-\mathrm{ActionCoverage}&=|A\cap\widehat A|/|A|,\\
-\mathrm{Fragmentation}&=|G|^{-1}\!\sum_{g\in G}\max(0,n_g-1).
-\end{align}
-Over-merge is the fraction of revisions eligible for multiple runs; contamination is the
-unrelated-benign event fraction in revisions assigned to malicious runs. For supported records,
-\begin{align}
-\mathrm{Brier}&=n_{\mathrm{sup}}^{-1}\sum_i(P_i-Y_i)^2,\\
-\mathrm{NLL}&=-n_{\mathrm{sup}}^{-1}\sum_i[Y_i\log P_i+(1-Y_i)\log(1-P_i)].
-\end{align}
-Unsupported records are excluded from both. Reliability uses ten fixed equal-width bins with
-counts; supported coverage is $|\mathcal C_{\mathrm{sup}}|/|\mathcal C|$; fixed-budget recall
-uses the top $\max(1,\lceil0.05|\mathcal C_{\mathrm{run}}|\rceil)$ revisions per run. Primary
-intervals use 2,000 complete-run cluster-bootstrap resamples with seed 20260710; replay/outage
-contrasts resample base-run pairs.
-
-\begin{table*}[!t]
-\caption{Frozen RQ matrix and R3 result shells. Every unexecuted cell is \texttt{pending}, never zero.}
-\label{tab:submission-rq-results}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.07\textwidth}p{0.26\textwidth}p{0.45\textwidth}p{0.13\textwidth}}
-\toprule
-\textbf{RQ} & \textbf{Comparison/intervention} & \textbf{Primary outcomes} & \textbf{Unit} \\
-\midrule
-RQ1 & EB1, EB2, EB3, EB3-H & action coverage; fragmentation; over-merge & campaign/run \\
-RQ2 & SB1--SB5; SB6 conditional & AUPRC; fixed-budget recall; Brier; NLL; reliability & campaign/run \\
-RQ3 & paired replay grid; separate outage pairs & formation/$z$/support/$U$/revision changes; outage detection/recovery & base-run pair \\
-RQ4 & unchanged replay; frozen hardware & canonical digest equality; throughput; latency; memory; storage; replay time & campaign/run \\
-\bottomrule
-\end{tabular}
-
-\vspace{3pt}
-\begin{minipage}[t]{0.46\textwidth}
-\centering
-\textbf{R3a: ranking over common candidates}\\[-2pt]
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Scorer} & \textbf{AUPRC} & \textbf{R@budget} & \textbf{AUROC} & \textbf{P@$k$} \\
-\midrule
-SB1 severity & \tbd & \tbd & \tbd & \tbd \\
-SB2 $D$ only & \tbd & \tbd & \tbd & \tbd \\
-SB3 $D+C$ & \tbd & \tbd & \tbd & \tbd \\
-\bottomrule
-\end{tabular}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.46\textwidth}
-\centering
-\textbf{R3b: supported calibration only}\\[-2pt]
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Map} & \textbf{Brier} & \textbf{NLL} & \textbf{Rel.} & \textbf{Cov.} & \textbf{OOS} \\
-\midrule
-SB4 $\sigma(z)$ & \tbd & \tbd & pending & \tbd & \tbd \\
-SB5 global & \tbd & \tbd & pending & \tbd & \tbd \\
-SB6 group & \tbd & \tbd & pending & \tbd & \tbd \\
-\bottomrule
-\end{tabular}
-\end{minipage}
-\end{table*}
+The split is executable in every 10-run card-by-mode stratum: hash ranks 0--4/5--6/7/8--9 map to
+train/development/calibration/locked-test. Formation coverage, fragmentation, and over-merge use
+the threshold-qualified graph; one-to-one assignment is restricted to episode F1. Decision
+counts use $\mathcal C_{dec}^{all}$; scorable coverage uses $\mathcal C_{dec}^{score}$; all
+class-dependent metrics use positive/negative $\mathcal C_{dec}^{binary}$. Outcome and failure
+labels are joined only after terminal insertion and report supported-group/global, OOS, and
+failure rates over the all-outcome denominator. The stream
+population includes both terminal outcome types. RP2--RP7 instantiate every EDR/NDR source by
+dose cell. RP0--RP7 use the domain-separated HMAC function $U(d,k)$, canonical event/source
+order, explicit RP3 interval index, exact RP5 buffer width, and byte-level RP7 duplicate-ID
+preimage specified in Section~\ref{sec:partial-telemetry}. PO1 fixes anchor, ready, 1800 s
+follow-up, and detection/recovery censoring; RT6 worker/repetition measurements are normative as
+written in Section~\ref{sec:partial-telemetry}.
+Populations, split, interventions, metrics, and uncertainty are exactly Sections
+~\ref{sec:research-questions}, \ref{sec:partial-telemetry}, and \ref{sec:metrics} plus
+Table~\ref{tab:dataset-roles}. Table~\ref{tab:formation-results} is the only RT1--RT7 registry.
+The required supplementary \path{TrustEpisode_reproducibility_companion_v1.zip} contains the
+closed Draft 2020-12 schema, examples, detector/card/baseline/perturbation/result registries, and
+17-entry SHA-256 manifest. Its archive SHA-256 is
+\texttt{5c226ba73667d628\allowbreak{}058538ede2adbbb1\allowbreak{}74cdd9986b9e58ea\allowbreak{}2bf082b75bcf7e83}; a missing or
+mismatched upload makes the machine-contract claim unverified.
