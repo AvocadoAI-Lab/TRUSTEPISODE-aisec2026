@@ -1,30 +1,41 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Alert correlation and provenance.}
+\paragraph{Alert correlation, provenance, and revision semantics.}
 Classical alert-correlation methods connect observations into attack scenarios using temporal,
 causal, and prerequisite relations~\cite{ning2002attackscenarios}. Provenance-based intrusion
 detection preserves process and information-flow context; HOLMES, NODLINK, and KAIROS show how
 causal graphs support multi-stage reconstruction and investigation
 ~\cite{holmes2019,nodlink2024,kairos2024}. CAPTAIN further demonstrates that a lightweight,
-interpretable rule system can adapt deployment-specific parameters~\cite{captain2025}.
-\trustepisode differs by treating deterministic cross-source candidate construction,
-revision ownership, and candidate-conditioned probability calibration as one versioned
-contract rather than presenting a new graph detector.
+interpretable rule system can adapt deployment-specific parameters~\cite{captain2025}. HOLMES,
+NODLINK, KAIROS, and CAPTAIN are also the Tier-Public comparators in
+Section~\ref{sec:results}, where reported output grains stay explicit rather than being forced
+into one metric. Separately, stream-processing research formalizes event time, watermarks, and
+out-of-order records~\cite{akidau2015dataflow}, but does not define security-episode membership or
+revision-scoped probability semantics. These lines of work motivate individual components of
+\trustepisode; our focus is the combined EDR/NDR contract for deterministic candidate
+construction, single-owner immutable revision semantics, manifest-scoped calibration, and
+replay, rather than a new provenance-graph detector.
 
-\paragraph{Calibration and incomplete telemetry.}
-Ranking and calibration answer different questions: a high AUPRC does not imply reliable
-probabilities~\cite{guo2017calibration,gneiting2007proper}. Platt-style affine calibration is
-compact and ranking-preserving when its slope is positive, but only for a fixed candidate
-population and support regime~\cite{platt1999probabilistic}. Missing-modality research likewise
-shows that absent inputs require explicit handling rather than silent zero imputation
-~\cite{missingmodality2024}. \trustepisode therefore separates observed source masks,
-authenticated health, detector availability, calibration status, and sufficiency. The raw
-scorer cannot read health or labels, and unsupported records retain a diagnostic logit but no
-numeric probability.
+\paragraph{Calibration, support, and incomplete telemetry.}
+Ranking and probability calibration answer different questions: strong discrimination does not
+imply reliable probabilities~\cite{guo2017calibration,gneiting2007proper}. Cybersecurity-specific
+calibration research likewise treats arbitrary threat scores as inputs that must be mapped and
+evaluated as probabilities~\cite{threatcalibration2023}. Platt-style affine calibration provides
+a compact monotone mapping~\cite{platt1999probabilistic}, while stable reliability diagrams and
+proper-score decomposition support reproducible calibration diagnostics
+~\cite{reliabilitydiag2021}. More broadly, missing-modality research studies predictive behavior
+when inputs are absent~\cite{missingmodality2024}, and network-telemetry work shows that
+abstraction can remove evidence required for forensic inference
+~\cite{vaseghipanah2026blindspots}. These studies motivate explicit treatment of missing or
+unsupported evidence, but they do not by themselves define \trustepisode's detector-health and
+support contract, in which the raw scorer reads neither health nor labels and out-of-support
+revisions keep a diagnostic logit while their probability field stays null
+(Section~\ref{sec:method}).
 
 \paragraph{Scope.}
-The method does not model operational impact, response priority, autonomous response, CTI
-enrichment, or language-agent behavior. Its claims are limited to deterministic EDR/NDR episode
-formation, manifest-scoped maliciousness calibration, explicit evidence sufficiency, and
-replayable audit records.
+The present method does not estimate enterprise-wide risk, operational impact, or response
+priority, and does not use CTI, RAG/agents, Identity as an online source, autonomous response, or
+OT/ICS-specific generalization. Its claims are limited to deterministic EDR/NDR episode
+formation and revision, manifest-scoped candidate-conditioned maliciousness calibration,
+structured evidence sufficiency, and replayable audit records.

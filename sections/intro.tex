@@ -1,39 +1,50 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Multi-step attacks rarely produce one conclusive alert. A remote connection, script execution,
-file transfer, or administrative action can be benign alone yet material when connected by
-time, entity, session, and process relations. Endpoint detection and response (EDR) and network
-detection and response (NDR) also fail differently: an event may be absent because no action
-was observed, because no detector fired, or because a collector or parser was unavailable.
-Treating all three states as zero evidence silently changes both correlation and probability
-semantics.
+Multi-step attacks may not produce a single conclusive alert. A remote connection, script
+execution, file transfer, or administrative action can be benign alone yet material when linked
+by time, entity, session, and process relations. Endpoint detection and response (EDR) and
+network detection and response (NDR) evidence may also be absent for distinct reasons: no
+matching event was observed, a detector examined the evidence but returned no detection, the
+evidence was not examined, or required collector/parser coverage was unavailable or unknown. Telemetry
+abstraction can likewise remove evidence needed to support an inference without showing that the
+underlying behavior did not occur~\cite{vaseghipanah2026blindspots}. \trustepisode therefore
+preserves event observation, detector observation, and authenticated source health as separate
+states rather than encoding absence as zero evidence.
 
-Existing alert correlation and provenance systems reconstruct causal context, but their
-candidate boundaries, late-data behavior, and calibration contracts are often not explicit
-enough for byte-identical replay~\cite{ning2002attackscenarios,holmes2019,nodlink2024,kairos2024}.
-Conversely, an anomaly or severity score is not automatically a probability, and calibration
-is meaningful only for the candidate population and pipeline version on which it was
-validated~\cite{guo2017calibration,gneiting2007proper}. These gaps are coupled: changing
-episode membership changes the scored population, while hiding source failure behind a zero
-feature can make an unsupported mapping appear confidently benign.
+Existing alert-correlation and provenance systems reconstruct causal
+context~\cite{ning2002attackscenarios,holmes2019,nodlink2024,kairos2024}. To our knowledge,
+prior work does not jointly specify deterministic candidate boundaries, bounded immutable
+successor revisions under late evidence, manifest-scoped calibration support, and byte-identical
+replay as one versioned contract. Separately, a classifier score is not automatically a
+calibrated probability, and probabilistic outputs require calibration diagnostics and strictly
+proper scoring rules~\cite{guo2017calibration,gneiting2007proper}. These gaps interact: changing
+episode membership changes the candidate population to which a probability applies, while
+zero-imputing unavailable telemetry can turn an unsupported case into an ordinary scorer input.
 
-\trustepisode addresses this problem with a deliberately narrow contract. It transforms only
-EDR/NDR observations into deterministic EpisodeRevisions, computes a compact raw logit from
-detector deviation and independent corroboration, emits a calibrated probability only under
-an exact manifest match, reports evidence sufficiency independently, and assembles one
-        canonical terminal assembly outcome per revision. Ground truth is unavailable to every online producer and
-is joined only after inference.
+\trustepisode addresses this problem with a deliberately narrow, label-blind contract limited to
+EDR/NDR observations. Formation, scoring, calibration, and evidence sufficiency are strictly
+separated: a health-blind score drives a calibrated probability only within registered manifest
+support, canonical null is emitted otherwise, and sufficiency is reported independently without
+altering that probability. Each revision resolves to exactly one auditable terminal outcome,
+successful or not, and ground truth is joined only after inference.
+
+\paragraph{Scope.}
+The contract is deliberately narrow: enterprise risk, response priority, CTI or agentic
+reasoning, and OT/ICS generalization are out of scope, detailed fully in
+Section~\ref{sec:related}. Section~4 evaluates formation, ranking/calibration, partial
+telemetry, and deterministic replay without feeding labels back into the online path.
 
 \paragraph{Contributions.}
 This paper makes four contributions:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
   \item a single-owner online object model and deterministic episode state machine with fixed
-        guards, total ordering, watermark, and revision policy;
-  \item a compact scorer plus manifest-scoped affine calibration that returns canonical null
-        outside validated support;
-  \item explicit detector-availability and five-axis sufficiency truth tables, together with a
-        schema-ready AuditRecord contract with closed types, nullability, and digest sets; and
+        guards, total ordering, a watermark, and a bounded immutable successor-revision policy;
+  \item a compact health-blind scorer over $[D,C]$ and manifest-scoped affine calibration that
+        emits probability only under registered global or group support, and null otherwise;
+  \item deterministic detector-availability and five-axis sufficiency rules, plus a closed
+        terminal assembly contract with explicit nullability, digest-linked provenance, and
+        exactly one immutable AuditRecord or AssemblyFailureRecord per revision; and
   \item a preregistered controlled-lab protocol with fixed populations, splits, thresholds,
-        perturbations, matching, statistics, and RT1--RT7 result schemas.
+        perturbations, matching, statistics, and pending RT1--RT7 result schemas.
 \end{enumerate}
