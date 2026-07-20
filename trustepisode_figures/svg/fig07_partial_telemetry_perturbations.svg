@@ -1,71 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1020" viewBox="0 0 1800 1020">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="670" viewBox="0 0 1800 670">
   <defs>
     <style>
-      .title{font:700 34px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.zone{font:700 22px Arial,DejaVu Sans,sans-serif;letter-spacing:1px;fill:#475569}.h{font:700 23px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.b{font:400 21px Arial,DejaVu Sans,sans-serif;fill:#334155}.s{font:400 18px Arial,DejaVu Sans,sans-serif;fill:#475569}.xs{font:400 16px Arial,DejaVu Sans,sans-serif;fill:#475569}.mono{font:600 18px 'DejaVu Sans Mono',monospace;fill:#334155}.a{stroke:#334155;stroke-width:3.2;fill:none}.blue{stroke:#2563eb;stroke-width:3.2;fill:none}.teal{stroke:#0f766e;stroke-width:3.2;fill:none}
+      .title{font:700 40px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.zone{font:700 27px Arial,DejaVu Sans,sans-serif;letter-spacing:1px;fill:#475569}.h{font:700 28px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.b{font:400 25px Arial,DejaVu Sans,sans-serif;fill:#334155}.s{font:400 22px Arial,DejaVu Sans,sans-serif;fill:#475569}.blue{stroke:#2563eb;stroke-width:4;fill:none}.teal{stroke:#0f766e;stroke-width:4;fill:none}
     </style>
   </defs>
-  <rect width="1800" height="1020" fill="#fff"/>
-  <text x="55" y="58" class="title">Paired partial-telemetry perturbations and separate physical-outage validation</text>
+  <rect width="1800" height="670" fill="#fff"/>
+  <text x="55" y="45" class="title">Partial telemetry: paired replay vs. physical outage</text>
 
-  <rect x="55" y="105" width="360" height="190" rx="20" fill="#f8fafc" stroke="#475569" stroke-width="2.7"/>
-  <text x="235" y="150" text-anchor="middle" class="h">Frozen base run R_i</text>
-  <text x="235" y="190" text-anchor="middle" class="b">one M1-M7 run</text>
-  <text x="235" y="224" text-anchor="middle" class="s">immutable raw events + health stream</text>
-  <text x="235" y="258" text-anchor="middle" class="s">fixed label / split / campaign cluster</text>
+  <rect x="55" y="78" width="285" height="156" rx="18" fill="#f8fafc" stroke="#475569" stroke-width="3"/>
+  <text x="198" y="122" text-anchor="middle" class="h">Frozen base run</text>
+  <text x="198" y="160" text-anchor="middle" class="b">events + health</text>
+  <text x="198" y="198" text-anchor="middle" class="s">fixed label / split / cluster</text>
 
-  <rect x="500" y="90" width="1245" height="440" rx="24" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <text x="530" y="130" class="zone" fill="#1d4ed8">PAIRED REPLAY VARIANTS - EVENT-STREAM INTERVENTIONS</text>
-  <text x="530" y="165" class="s">RP2-RP7 instantiate EDR/NDR x every dose; RP1 is explicit; RP0 is control.</text>
-
+  <rect x="380" y="72" width="1365" height="338" rx="22" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+  <text x="415" y="112" class="zone">PAIRED REPLAY - EVENT STREAM CHANGES, HEALTH FIXED</text>
   <g>
-    <rect x="545" y="210" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="670" y="244" text-anchor="middle" class="h">RP1 Source mask</text><text x="670" y="271" text-anchor="middle" class="xs">retain EDR-only / NDR-only</text><text x="670" y="291" text-anchor="middle" class="xs">SourceCoverage unchanged</text>
-    <rect x="825" y="210" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="950" y="246" text-anchor="middle" class="h">RP2 Event drop</text><text x="950" y="278" text-anchor="middle" class="s">each source x 5 / 10 / 25%</text>
-    <rect x="1105" y="210" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="1230" y="246" text-anchor="middle" class="h">RP3 Burst drop</text><text x="1230" y="278" text-anchor="middle" class="s">exact PRF index; half-open</text>
-    <rect x="1385" y="210" width="310" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="1540" y="246" text-anchor="middle" class="h">RP4 Fixed ingest delay</text><text x="1540" y="278" text-anchor="middle" class="s">30 / 120 / 600 s; one source</text>
-
-    <rect x="545" y="340" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="670" y="376" text-anchor="middle" class="h">RP5 Reorder</text><text x="670" y="408" text-anchor="middle" class="xs">30 / 120 / 600 s anchored width</text>
-    <rect x="825" y="340" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="950" y="376" text-anchor="middle" class="h">RP6 Clock skew</text><text x="950" y="408" text-anchor="middle" class="s">fixed event-time shift</text>
-    <rect x="1105" y="340" width="250" height="90" rx="14" fill="#fff" stroke="#2563eb" stroke-width="2"/>
-    <text x="1230" y="374" text-anchor="middle" class="h">RP7 Duplicate roots</text><text x="1230" y="401" text-anchor="middle" class="xs">PRF-selected dependency group</text><text x="1230" y="421" text-anchor="middle" class="xs">byte preimage ID; +1 microsecond</text>
-    <rect x="1385" y="340" width="310" height="90" rx="14" fill="#ecfdf5" stroke="#0f766e" stroke-width="2"/>
-    <text x="1540" y="376" text-anchor="middle" class="h">RP0 Unchanged replay</text><text x="1540" y="408" text-anchor="middle" class="s">byte-identical determinism control</text>
+    <rect x="420" y="142" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="563" y="178" text-anchor="middle" class="h">RP1 Source mask</text><text x="563" y="207" text-anchor="middle" class="s">EDR-only / NDR-only</text>
+    <rect x="745" y="142" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="888" y="178" text-anchor="middle" class="h">RP2 Event drop</text><text x="888" y="207" text-anchor="middle" class="s">5 / 10 / 25%</text>
+    <rect x="1070" y="142" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="1213" y="178" text-anchor="middle" class="h">RP3 Burst drop</text><text x="1213" y="207" text-anchor="middle" class="s">30 / 120 / 300 s</text>
+    <rect x="1395" y="142" width="310" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="1550" y="178" text-anchor="middle" class="h">RP4 Ingest delay</text><text x="1550" y="207" text-anchor="middle" class="s">30 / 120 / 600 s</text>
+    <rect x="420" y="252" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="563" y="288" text-anchor="middle" class="h">RP5 Reorder</text><text x="563" y="317" text-anchor="middle" class="s">30 / 120 / 600 s</text>
+    <rect x="745" y="252" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="888" y="288" text-anchor="middle" class="h">RP6 Clock skew</text><text x="888" y="317" text-anchor="middle" class="s">fixed event-time shift</text>
+    <rect x="1070" y="252" width="285" height="84" rx="13" fill="#fff" stroke="#2563eb" stroke-width="2.5"/><text x="1213" y="288" text-anchor="middle" class="h">RP7 Duplicate roots</text><text x="1213" y="317" text-anchor="middle" class="s">deterministic PRF</text>
+    <rect x="1395" y="252" width="310" height="84" rx="13" fill="#ecfdf5" stroke="#0f766e" stroke-width="2.5"/><text x="1550" y="288" text-anchor="middle" class="h">RP0 Control</text><text x="1550" y="317" text-anchor="middle" class="s">byte-identical replay</text>
   </g>
-  <path d="M415 200 H500" class="blue"/>
+  <path d="M340 156 H380" class="blue"/>
+  <rect x="420" y="355" width="1285" height="36" rx="9" fill="#dbeafe"/>
+  <text x="1063" y="381" text-anchor="middle" class="b">Same immutable trace, label, split, and campaign cluster</text>
 
-  <rect x="545" y="460" width="1150" height="42" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-  <text x="1120" y="488" text-anchor="middle" class="b">Replay children retain R_i's label, split, and cluster; compare as paired observations.</text>
+  <rect x="55" y="438" width="1690" height="126" rx="20" fill="#ecfdf5" stroke="#0f766e" stroke-width="3"/>
+  <text x="85" y="476" class="zone">PHYSICAL OUTAGE - AUTHENTICATED HEALTH CHANGES</text>
+  <rect x="105" y="494" width="330" height="50" rx="11" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="270" y="528" text-anchor="middle" class="h">EDR/NDR x 120/600 s</text>
+  <rect x="520" y="494" width="275" height="50" rx="11" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="658" y="528" text-anchor="middle" class="h">10 traces / cell</text>
+  <rect x="880" y="494" width="305" height="50" rx="11" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="1033" y="528" text-anchor="middle" class="h">Stop source egress</text>
+  <rect x="1270" y="494" width="420" height="50" rx="11" fill="#fff" stroke="#0f766e" stroke-width="2"/><text x="1480" y="528" text-anchor="middle" class="h">TrustEpisode + OB1, same trace</text>
+  <path d="M435 519 H520" class="teal"/><path d="M795 519 H880" class="teal"/><path d="M1185 519 H1270" class="teal"/>
 
-  <rect x="55" y="585" width="1690" height="190" rx="24" fill="#ecfdf5" stroke="#0f766e" stroke-width="2.5"/>
-  <text x="85" y="625" class="zone" fill="#047857">DEDICATED 40-TRACE PHYSICAL COLLECTOR-OUTAGE COHORT</text>
-  <rect x="100" y="655" width="300" height="85" rx="14" fill="#fff" stroke="#0f766e" stroke-width="2"/>
-  <text x="250" y="690" text-anchor="middle" class="h">PO1 allocation</text><text x="250" y="720" text-anchor="middle" class="s">EDR / NDR x 120 / 600 s x 10</text>
-  <rect x="490" y="655" width="300" height="85" rx="14" fill="#fff" stroke="#0f766e" stroke-width="2"/>
-  <text x="640" y="690" text-anchor="middle" class="h">M1 / M3 / M4 / M7</text><text x="640" y="720" text-anchor="middle" class="s">exactly 10 traces per card</text>
-  <rect x="880" y="655" width="320" height="85" rx="14" fill="#fff" stroke="#0f766e" stroke-width="2"/>
-  <text x="1040" y="690" text-anchor="middle" class="h">Stop source egress</text><text x="1040" y="720" text-anchor="middle" class="s">health / revisions / eligibility</text>
-  <rect x="1290" y="655" width="400" height="85" rx="14" fill="#fff" stroke="#0f766e" stroke-width="2"/>
-  <text x="1490" y="690" text-anchor="middle" class="h">Reuse immutable trace</text><text x="1490" y="720" text-anchor="middle" class="s">TrustEpisode + OB1; 1800 s censor</text>
-  <path d="M400 697 H490" class="teal"/><path d="M790 697 H880" class="teal"/><path d="M1200 697 H1290" class="teal"/>
-
-  <rect x="90" y="830" width="720" height="135" rx="18" fill="#fff" stroke="#475569" stroke-width="2.5"/>
-  <text x="450" y="870" text-anchor="middle" class="h">Formation outcomes</text>
-  <text x="450" y="907" text-anchor="middle" class="b">candidate count / fragmentation / merge changes</text>
-  <text x="450" y="940" text-anchor="middle" class="b">revision count / stabilization time</text>
-  <rect x="990" y="830" width="720" height="135" rx="18" fill="#fff" stroke="#475569" stroke-width="2.5"/>
-  <text x="1350" y="870" text-anchor="middle" class="h">Score and sufficiency outcomes</text>
-  <text x="1350" y="907" text-anchor="middle" class="b">z / supported P / structured U / calibration degradation</text>
-  <text x="1350" y="940" text-anchor="middle" class="b">source mask / out-of-support / decision coverage</text>
-  <path d="M1725 530 V805 H450 V830" class="a"/>
-  <path d="M1725 530 V805 H1350 V830" class="a"/>
-  <path d="M1040 740 V790 H450 V830" class="teal"/>
-  <path d="M1040 740 V790 H1350 V830" class="teal"/>
-
-  <rect x="260" y="980" width="1280" height="30" rx="8" fill="#fef2f2"/>
-  <text x="900" y="1002" text-anchor="middle" class="s" fill="#b91c1c">Replay masking and physical outage answer different questions and are never pooled.</text>
+  <rect x="55" y="595" width="1690" height="56" rx="13" fill="#fff" stroke="#475569" stroke-width="2.5"/>
+  <text x="900" y="630" text-anchor="middle" class="h">Report formation, revisions, eligibility, calibration, recovery, and decision coverage separately</text>
 </svg>

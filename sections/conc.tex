@@ -6,7 +6,9 @@ candidate-conditioned maliciousness calibration. Episode Synthesis alone owns im
 membership revisions; the scorer, support resolver, calibrator, sufficiency evaluator, and
 AuditRecord Assembler have disjoint outputs; each revision terminates in either a complete
 AuditRecord or an explicit AssemblyFailureRecord; and missing or incompatible telemetry yields an
-explicit out-of-support state rather than a fabricated probability. The accompanying protocol
-fixes implementation and evaluation decisions before locked-test access. Empirical results
-remain pending, so the present contribution is the deterministic method and preregistered
-evaluation contract, not a claim of measured superiority or deployment generalization.
+explicit out-of-support state rather than a fabricated probability. The primary evaluation
+executes frozen CALDERA attack families on isolated live Ubuntu targets and pairs each execution
+with replay perturbations or authenticated collector outages. Performance deltas are interpreted
+together with the five sufficiency-state transitions, so honest abstention under missing evidence
+is distinguished from silent confidence. These CALDERA and robustness results remain pending;
+the current draft therefore makes no claim of deployment generalization.

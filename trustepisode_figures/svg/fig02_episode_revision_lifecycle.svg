@@ -1,119 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="500" viewBox="0 0 1800 500">
   <defs>
     <style>
-      .title { font: 700 34px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
-      .lane { font: 700 25px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
-      .h { font: 700 25px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
-      .stateh { font: 700 22px Arial, DejaVu Sans, sans-serif; fill: #0f172a; }
-      .b { font: 400 22px Arial, DejaVu Sans, sans-serif; fill: #334155; }
-      .s { font: 400 19px Arial, DejaVu Sans, sans-serif; fill: #475569; }
-      .mono { font: 600 21px 'DejaVu Sans Mono', monospace; fill: #334155; }
-      .axis { stroke: #64748b; stroke-width: 3; marker-end: url(#arrow); }
-      .eventLine { stroke: #2563eb; stroke-width: 4; fill: none; }
-      .ingestLine { stroke: #0f766e; stroke-width: 4; fill: none; }
-      .revLine { stroke: #7c3aed; stroke-width: 4; fill: none; marker-end: url(#arrowViolet); }
-      .dash { stroke-dasharray: 9 7; }
+      .title{font:700 40px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.h{font:700 35px Arial,DejaVu Sans,sans-serif;fill:#0f172a}.b{font:400 34px Arial,DejaVu Sans,sans-serif;fill:#334155}.mono{font:600 34px 'DejaVu Sans Mono',monospace;fill:#334155}.axis{stroke:#64748b;stroke-width:4;marker-end:url(#a)}.violet{stroke:#7c3aed;stroke-width:5;fill:none;marker-end:url(#v)}
     </style>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
-    <marker id="arrowViolet" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"/></marker>
-    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#dc2626"/></marker>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#64748b"/></marker>
+    <marker id="v" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#7c3aed"/></marker>
   </defs>
-  <rect width="1800" height="980" fill="#ffffff"/>
-  <text x="60" y="58" class="title">Deterministic episode synthesis and immutable revision lifecycle</text>
+  <rect width="1800" height="500" fill="#fff"/>
+  <text x="55" y="42" class="title">Deterministic episode and revision lifecycle</text>
 
-  <!-- Policy legend -->
-  <rect x="60" y="85" width="1680" height="100" rx="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
-  <text x="90" y="122" class="h">Three distinct temporal controls</text>
-  <text x="90" y="158" class="b">W_gap: inactivity linkage</text>
-  <text x="470" y="158" class="b">W_max: maximum episode horizon</text>
-  <text x="1010" y="158" class="b">Revision horizon: late-evidence acceptance</text>
+  <rect x="55" y="62" width="1690" height="60" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="85" y="102" class="h">Controls:</text>
+  <text x="300" y="102" class="b">W_gap linkage</text>
+  <text x="670" y="102" class="b">W_max episode span</text>
+  <text x="1150" y="102" class="b">fixed late-evidence horizon</text>
 
-  <!-- Event-time lane -->
-  <text x="65" y="265" class="lane">Event time</text>
-  <line x1="230" y1="255" x2="1700" y2="255" class="axis"/>
-  <line x1="360" y1="235" x2="360" y2="275" class="eventLine"/>
-  <circle cx="360" cy="255" r="13" fill="#2563eb"/>
-  <text x="360" y="222" text-anchor="middle" class="mono">e1</text>
-  <line x1="590" y1="235" x2="590" y2="275" class="eventLine"/>
-  <circle cx="590" cy="255" r="13" fill="#2563eb"/>
-  <text x="590" y="222" text-anchor="middle" class="mono">e2</text>
-  <line x1="865" y1="235" x2="865" y2="275" class="eventLine"/>
-  <circle cx="865" cy="255" r="13" fill="#2563eb"/>
-  <text x="865" y="222" text-anchor="middle" class="mono">e3</text>
-  <line x1="1120" y1="235" x2="1120" y2="275" class="eventLine"/>
-  <circle cx="1120" cy="255" r="13" fill="#2563eb"/>
-  <text x="1120" y="222" text-anchor="middle" class="mono">e4</text>
-  <line x1="1500" y1="235" x2="1500" y2="275" stroke="#dc2626" stroke-width="4"/>
-  <circle cx="1500" cy="255" r="13" fill="#dc2626"/>
-  <text x="1500" y="222" text-anchor="middle" class="mono">e5</text>
+  <text x="55" y="177" class="h">Event time</text>
+  <line x1="265" y1="166" x2="1715" y2="166" class="axis"/>
+  <circle cx="430" cy="166" r="13" fill="#2563eb"/><text x="430" y="151" text-anchor="middle" class="mono">e1</text>
+  <circle cx="710" cy="166" r="13" fill="#2563eb"/><text x="710" y="151" text-anchor="middle" class="mono">e2</text>
+  <circle cx="1030" cy="166" r="13" fill="#2563eb"/><text x="1030" y="151" text-anchor="middle" class="mono">e3</text>
+  <circle cx="1340" cy="166" r="13" fill="#7c3aed"/><text x="1340" y="151" text-anchor="middle" class="mono">late e4</text>
+  <circle cx="1620" cy="166" r="13" fill="#dc2626"/><text x="1620" y="151" text-anchor="middle" class="mono">late e5</text>
+  <path d="M430 190 V213 H710 V190" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <text x="570" y="247" text-anchor="middle" class="b">within W_gap</text>
 
-  <path d="M360 305 V330 H590 V305" stroke="#2563eb" stroke-width="3" fill="none"/>
-  <text x="475" y="360" text-anchor="middle" class="s">within W_gap</text>
-  <path d="M360 290 V390 H1120 V290" stroke="#475569" stroke-width="3" fill="none" stroke-dasharray="8 6"/>
-  <text x="740" y="420" text-anchor="middle" class="s">within W_max</text>
+  <text x="55" y="292" class="h">Ingest time</text>
+  <line x1="265" y1="280" x2="1715" y2="280" class="axis"/>
+  <circle cx="450" cy="280" r="13" fill="#0f766e"/><text x="450" y="268" text-anchor="middle" class="mono">e1</text>
+  <circle cx="740" cy="280" r="13" fill="#0f766e"/><text x="740" y="268" text-anchor="middle" class="mono">e2</text>
+  <line x1="980" y1="246" x2="980" y2="314" stroke="#d97706" stroke-width="4" stroke-dasharray="8 6"/>
+  <text x="980" y="339" text-anchor="middle" class="b">watermark</text>
+  <circle cx="1340" cy="280" r="14" fill="#7c3aed"/>
+  <circle cx="1620" cy="280" r="14" fill="#dc2626"/>
 
-  <!-- Ingest-time lane -->
-  <text x="65" y="505" class="lane">Ingest time</text>
-  <line x1="230" y1="495" x2="1700" y2="495" class="axis"/>
-  <circle cx="390" cy="495" r="13" fill="#0f766e"/><text x="390" y="463" text-anchor="middle" class="mono">e1</text>
-  <circle cx="625" cy="495" r="13" fill="#0f766e"/><text x="625" y="463" text-anchor="middle" class="mono">e2</text>
-  <circle cx="900" cy="495" r="13" fill="#0f766e"/><text x="900" y="463" text-anchor="middle" class="mono">e3</text>
-  <line x1="1035" y1="445" x2="1035" y2="545" stroke="#d97706" stroke-width="4" stroke-dasharray="8 6"/>
-  <text x="1035" y="570" text-anchor="middle" class="s" fill="#92400e">watermark / finalization</text>
-  <circle cx="1250" cy="495" r="15" fill="#7c3aed"/><text x="1250" y="463" text-anchor="middle" class="mono">late e4 arrives</text>
-  <circle cx="1575" cy="495" r="15" fill="#dc2626"/><text x="1575" y="463" text-anchor="middle" class="mono">late e5 arrives</text>
-  <text x="1250" y="535" text-anchor="middle" class="s">within revision horizon</text>
-  <text x="1575" y="535" text-anchor="middle" class="s" fill="#b91c1c">beyond revision horizon</text>
+  <text x="55" y="392" class="h">State</text>
+  <rect x="265" y="350" width="285" height="64" rx="13" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+  <text x="408" y="391" text-anchor="middle" class="h">Open r</text>
+  <rect x="650" y="350" width="320" height="64" rx="13" fill="#f1f5f9" stroke="#64748b" stroke-width="3"/>
+  <text x="810" y="391" text-anchor="middle" class="h">Finalized r+1</text>
+  <rect x="1070" y="350" width="340" height="64" rx="13" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+  <text x="1240" y="391" text-anchor="middle" class="h">Late successor r+2</text>
+  <rect x="1510" y="350" width="235" height="64" rx="13" fill="#fef2f2" stroke="#dc2626" stroke-width="3"/>
+  <text x="1628" y="391" text-anchor="middle" class="h">Closed</text>
+  <path d="M550 382 H650" class="violet"/><path d="M970 382 H1070" class="violet"/><path d="M1410 382 H1510" class="violet"/>
 
-  <!-- Revision lane -->
-  <text x="65" y="665" class="lane">Episode state</text>
-  <rect x="270" y="615" width="260" height="100" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <text x="400" y="655" text-anchor="middle" class="stateh">Open / provisional</text>
-  <text x="400" y="690" text-anchor="middle" class="mono">EpisodeRevision r</text>
-
-  <rect x="690" y="615" width="280" height="100" rx="16" fill="#f1f5f9" stroke="#64748b" stroke-width="2.5"/>
-  <text x="830" y="645" text-anchor="middle" class="stateh">Finalized at watermark</text>
-  <text x="830" y="675" text-anchor="middle" class="mono">EpisodeRevision r+1</text>
-  <text x="830" y="700" text-anchor="middle" class="s">fixed deadline</text>
-
-  <rect x="1100" y="600" width="330" height="130" rx="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.8"/>
-  <text x="1265" y="640" text-anchor="middle" class="stateh">Accepted late evidence</text>
-  <text x="1265" y="675" text-anchor="middle" class="mono">EpisodeRevision r+2</text>
-  <text x="1265" y="705" text-anchor="middle" class="s">does not reopen or extend deadline</text>
-
-  <rect x="1510" y="615" width="235" height="100" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
-  <text x="1628" y="645" text-anchor="middle" class="stateh">Closed at deadline</text>
-  <text x="1628" y="675" text-anchor="middle" class="mono">EpisodeRevision r+3</text>
-  <text x="1628" y="700" text-anchor="middle" class="s">same membership</text>
-
-  <path d="M530 665 H690" class="revLine"/>
-  <path d="M970 665 H1100" class="revLine"/>
-  <path d="M1430 665 H1510" class="revLine"/>
-  <text x="1470" y="590" text-anchor="middle" class="s">fixed deadline</text>
-
-  <!-- Audit records -->
-  <text x="65" y="835" class="lane">Append-only outputs</text>
-  <rect x="245" y="785" width="245" height="105" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
-  <text x="368" y="827" text-anchor="middle" class="h">Outcome r</text>
-  <text x="368" y="861" text-anchor="middle" class="s">AuditRecord or failure</text>
-  <rect x="515" y="785" width="245" height="105" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
-  <text x="638" y="827" text-anchor="middle" class="h">Outcome r+1</text>
-  <text x="638" y="861" text-anchor="middle" class="s">immutable terminal result</text>
-  <rect x="785" y="785" width="245" height="105" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
-  <text x="908" y="827" text-anchor="middle" class="h">Outcome r+2</text>
-  <text x="908" y="861" text-anchor="middle" class="s">immutable terminal result</text>
-  <rect x="1055" y="785" width="245" height="105" rx="16" fill="#ffffff" stroke="#475569" stroke-width="2.5"/>
-  <text x="1178" y="827" text-anchor="middle" class="h">Outcome r+3</text>
-  <text x="1178" y="861" text-anchor="middle" class="s">immutable terminal result</text>
-  <path d="M400 715 V755 H368 V785" stroke="#475569" stroke-width="3" fill="none"/>
-  <path d="M830 715 V750 H638 V785" stroke="#475569" stroke-width="3" fill="none"/>
-  <path d="M1265 730 V760 H908 V785" stroke="#475569" stroke-width="3" fill="none"/>
-  <path d="M1628 715 V750 H1178 V785" stroke="#475569" stroke-width="3" fill="none"/>
-  <rect x="1415" y="785" width="330" height="105" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
-  <text x="1580" y="827" text-anchor="middle" class="h">LateEvidenceRecord</text>
-  <text x="1580" y="861" text-anchor="middle" class="s">late-store only; no revision</text>
-  <path d="M1575 545 V575 H1760 V760 H1580 V785" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" fill="none" marker-end="url(#arrowRed)"/>
-
-  <rect x="250" y="920" width="1350" height="42" rx="10" fill="#ecfdf5" stroke="#0f766e" stroke-width="2"/>
-  <text x="925" y="948" text-anchor="middle" class="b">Episode Synthesis owns revisions; scorer and calibrator only consume an emitted revision.</text>
+  <rect x="265" y="444" width="1145" height="40" rx="10" fill="#ecfdf5" stroke="#0f766e" stroke-width="2"/>
+  <text x="838" y="475" text-anchor="middle" class="b">Every revision emits one immutable terminal outcome.</text>
+  <rect x="1510" y="444" width="235" height="40" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="1628" y="475" text-anchor="middle" class="h">Late record</text>
 </svg>

@@ -37,8 +37,8 @@ v_{\mathrm{model}},v_{\mathrm{cal}}).
 \label{eq:scoped-probability}
 \end{equation}
 It is not the unconditional probability that an organization is under attack. Online schemas
-are label blind and reject scenario, split, marker, window, and label fields. Collector
-identity and health messages are authenticated; activity outside observable EDR/NDR traces is
+are label blind and reject scenario, marker, window, and label fields. Source-health
+messages are authenticated; activity outside observable EDR/NDR traces is
 outside the claim.
 
 Table~\ref{tab:ownership} assigns every online object and decision field to one producer and
@@ -53,7 +53,7 @@ forbids downstream components from silently taking over that ownership.
 \toprule
 \textbf{Object} & \textbf{Sole producer} & \textbf{Consumers} & \textbf{Forbidden behavior} \\
 \midrule
-NormalizedEvent & Evidence Fabric & Episode Synthesis & label, split, scenario, or health fields \\
+NormalizedEvent & Evidence Fabric & Episode Synthesis & label, scenario, or health fields \\
 SourceCoverage & Health Monitor & Scope Resolver; Sufficiency Evaluator; Assembler & infer outage from event silence; independently resample health \\
 EpisodeRevision / LateEvidenceRecord & Episode Synthesis & Feature Extractor; Sufficiency; Assembler / late store & rewrite a revision; admit beyond-horizon evidence \\
 FeatureVector $[D,C,m,o^{det}]$ & Feature Extractor & Scorer; Scope/Sufficiency; Assembler & SourceCoverage, inferred health, or labels \\
@@ -66,12 +66,34 @@ AssemblyOutcome & AuditRecord Assembler & Append-only store; replay; evaluation 
 \end{tabular}
 \end{table*}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig01_final_architecture.pdf}
-  \caption{Label-blind online and offline boundaries. The primary candidate path contains EDR/NDR only. Every arrow enters a declared producer; the AuditRecord Assembler owns the terminal AssemblyOutcome and the append-only store is only a sink. Identity is not an online input, and $U$ has no numerical path into the scorer or calibrator.}
+  \scriptsize
+  \setlength{\fboxsep}{5pt}
+  \begin{minipage}{\columnwidth}\centering
+  \fbox{\parbox{0.91\columnwidth}{\centering
+    \textbf{EDR/NDR events + authenticated source health}}}\\[-1pt]
+  $\downarrow$\\[-1pt]
+  \fbox{\parbox{0.91\columnwidth}{\centering
+    \textbf{Evidence Fabric / Health Monitor}\\
+    canonical events and independent coverage intervals}}\\[-1pt]
+  $\downarrow$\\[-1pt]
+  \fbox{\parbox{0.91\columnwidth}{\centering
+    \textbf{Episode Synthesis}\\
+    immutable membership and revisions}}\\[-1pt]
+  $\downarrow$\\[-1pt]
+  \fbox{\parbox{0.91\columnwidth}{\centering
+    \textbf{Independent lanes}\\
+    scorer $\rightarrow z$; scope/calibrator $\rightarrow P$; sufficiency $\rightarrow U$}}\\[-1pt]
+  $\downarrow$\\[-1pt]
+  \fbox{\parbox{0.91\columnwidth}{\centering
+    \textbf{AuditRecord Assembler}\\
+    one append-only terminal outcome per revision}}\\[2pt]
+  \textit{Offline only: training, calibration, labels, and evaluation.}
+  \end{minipage}
+  \caption{Label-blind online and offline boundaries. The primary candidate path contains EDR/NDR only. Every arrow enters a declared producer; the AuditRecord Assembler owns the terminal AssemblyOutcome and the append-only store is only a sink. $U$ has no numerical path into the scorer or calibrator.}
   \label{fig:method-architecture}
-\end{figure*}
+\end{figure}
 
 \subsection{Evidence, Health, and Detector Availability}
 \label{sec:evidence-fabric}
@@ -117,7 +139,7 @@ health snapshot.
 \subsection{Deterministic Episode Synthesis and Revisions}
 \label{sec:episode-synthesis}
 
-For event $e_i$ and open episode $E$,
+For event $e_i$ and open episode $E$, eligibility is
 \begin{equation}
 \ell(e_i,E)=\mathbf{1}[\Delta_t\le300\mathrm{s}\land R=1\land
 \operatorname{span}(E\cup\{e_i\})\le3600\mathrm{s}\land H=0].
@@ -148,7 +170,7 @@ does not reopen the lineage or extend the horizon. At the deadline a membership-
 closed-lineage index. A later related event emits an immutable LateEvidenceRecord with reason
 \texttt{beyond\_revision\_horizon}, \texttt{closed\_lineage\_match}, or
 \texttt{duplicate\_after\_terminal\_outcome} to the late store; it cannot create an EpisodeRevision or change membership, $z$, $P$, or an earlier
-AuditRecord. An event older than $W_{ret}$ is rejected to RT7 as
+AuditRecord. An event older than $W_{ret}$ is recorded as
 \texttt{closed\_index\_expired}; it cannot start a fresh episode.
 
 \paragraph{Algorithm 1: label-blind update.}
@@ -192,8 +214,6 @@ is zero. Thus corroboration is fixed to
 C_\epsilon=q_{\epsilon,\mathrm{EDR}}q_{\epsilon,\mathrm{NDR}},\qquad K=2.
 \label{eq:corroboration}
 \end{equation}
-Identity is only an offline M5-ID annotation and cannot alter candidates or features.
-
 With $\lambda=10^{-4}$, the stateless scorer is the unique frozen solution
 \begin{equation}
 \begin{aligned}
@@ -234,7 +254,7 @@ pipeline versions. Any mismatch is out-of-support.
 
 Before calibration, the manifest registers each group key as the RFC~8785/SHA-256 digest of a
 canonical object containing deployment profile and EDR/NDR detector versions; scenario, run,
-identity, and label fields are forbidden.
+and label fields are forbidden.
 Conditional groups use deterministic balanced five-fold run-level cross-fitting on the
 calibration partition. Within each group, intact runs with binary counts $(p_r,n_r)$ sort by
 decreasing $p_r+n_r$, then seeded SHA-256 and run ID. Each run goes to the fold minimizing the
@@ -304,7 +324,8 @@ with one code from \{\texttt{assembly\_timeout}, \texttt{missing\_input},
 \texttt{conflicting\_duplicate}, \texttt{key\_mismatch}, \texttt{version\_mismatch},
 \texttt{schema\_invalid}, \texttt{digest\_mismatch}\} and no fabricated score/probability fields.
 The unique-key store grants
-insert/select only and forbids a later success after terminal failure. RT1/RT7 count failures.
+insert/select only and forbids a later success after terminal failure. The evaluation reports
+failure counts separately.
 Inputs are processed in fixed type order EpisodeRevision, FeatureVector, raw logit,
 SupportDecision, $P$, $U$, SourceCoverage. When multiple failures apply, precedence is schema,
 key, duplicate, digest, version, missing-input, then timeout. Before canonicalization, references
@@ -321,12 +342,8 @@ host, PID, wall-clock, and duration form a non-canonical envelope excluded from 
 \subsection{Boundary and Reproducibility Contract}
 \label{sec:method-boundary}
 
-The method excludes CTI, RAG/agents, impact/priority, automated response, Identity as an online
-source, and OT/ICS generalization. Appendix~\ref{app:data-contracts} and the tables cited in the
-main text are normative. The required supplementary
-\path{TrustEpisode_reproducibility_companion_v1.zip} contains the executable JSON Schema and
-registries; its SHA-256 is
-\texttt{6298bd2e89bd50a7\allowbreak{}8a890b62750dcca2\allowbreak{}bcee34906fd6dd73\allowbreak{}a4a77f2a19c81205}. A missing or
-mismatched upload makes the machine-contract claim unverified. The contribution is limited to
+The method excludes CTI, RAG/agents, impact/priority, automated response, and OT/ICS
+generalization. Appendix~\ref{app:data-contracts} and the tables cited in the main text are
+normative. The contribution is limited to
 deterministic EDR/NDR episode construction, manifest-scoped probability, structured sufficiency,
 and replayable append-only provenance.

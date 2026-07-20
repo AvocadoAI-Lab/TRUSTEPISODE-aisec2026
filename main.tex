@@ -34,7 +34,7 @@
 \raggedbottom
 
 \newcommand{\trustepisode}{\textsc{TrustEpisode}\xspace}
-\newcommand{\tbd}{\texttt{pending}}
+\newcommand{\tbd}{\texttt{pending}\xspace}
 
 \begin{document}
 
@@ -59,12 +59,12 @@ profile without changing that probability. An AuditRecord Assembler creates one 
 append-only outcome per revision: a complete AuditRecord from independently produced inputs, or
 an explicit AssemblyFailureRecord without fabricated score or probability fields.
 
-We specify a frozen controlled-laboratory protocol for formation, ranking, calibration,
-partial-telemetry replay, physical collector outage, and deterministic replay. The protocol
-fixes candidate populations, split assignment, thresholds, group-calibration gates,
-interventions, matching, metrics, resampling, and empty RT1--RT7 result schemas before locked
-test access. Empirical result cells remain \texttt{pending}; no synthetic performance values
-or confidence intervals are reported.
+We specify an end-to-end validation protocol in which CALDERA executes seven multi-step attack
+families on isolated live Ubuntu systems observed through EDR/NDR collection paths. Paired
+event-loss, delay, reordering, clock-shift, duplication, source-masking, and physical-outage
+conditions test both performance degradation and transitions in the five evidence-sufficiency
+axes. The analysis table and robustness plots remain \texttt{pending} until the registered
+executions complete; no synthetic performance values or confidence intervals are reported.
 \end{abstract}
 
 \keywords{attack episode formation, probability calibration, partial telemetry, provenance, EDR, NDR}
@@ -94,5 +94,10 @@ or confidence intervals are reported.
 \FloatBarrier
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bib/references}
+
+\section*{Generative AI Use Disclosure}
+OpenAI Codex was used to assist with language editing, \LaTeX{} formatting, and consistency
+review. The authors reviewed and verified the technical claims, formulas, citations, and
+reported results and take full responsibility for the manuscript.
 
 \end{document}
