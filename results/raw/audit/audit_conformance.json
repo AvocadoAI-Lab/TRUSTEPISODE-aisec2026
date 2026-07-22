@@ -1,0 +1,36 @@
+{
+  "result_type": "trustepisode.audit-conformance.v1",
+  "scope": "synthetic forensic audit conformance; not live effectiveness",
+  "checks": [
+    {
+      "id": "A1_late_no_rewrite_of_earlier_revision_identity",
+      "pass": true,
+      "n_revisions": 5,
+      "n_late": 0,
+      "note": "Successor revisions keep predecessor pointers; earlier revision records remain in history."
+    },
+    {
+      "id": "A2_duplicate_retry_idempotent",
+      "pass": true
+    },
+    {
+      "id": "A3_conflicting_duplicate_observed",
+      "pass": true,
+      "exception": "ValueError"
+    },
+    {
+      "id": "A4_beyond_horizon_late_record",
+      "pass": true,
+      "n_late": 1,
+      "reasons": [
+        "beyond_revision_horizon"
+      ]
+    },
+    {
+      "id": "A5_revision_schema_fields_present",
+      "pass": true
+    }
+  ],
+  "pass_count": 5,
+  "fail_count": 0
+}

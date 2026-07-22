@@ -1,0 +1,53 @@
+{
+  "result_type": "trustepisode.cleanroom-reproduction.v1",
+  "generated_at": "2026-07-21T14:12:41.240513+00:00",
+  "companion_zip": "TrustEpisode_reproducibility_companion_v1.zip",
+  "companion_sha256": "ef2081c2a04c3bda0efe518f824ad28ffb0793a15ca6aeb6d08053b0ec57829b",
+  "cleanroom_root": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+  "checks": [
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/generate_tables.py"
+      ],
+      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"n_runs\": 60, \"d1_pass\": 60, \"d1_exec\": 600, \"audit_pass\": 18, \"audit_fail_codes\": 7, \"tax_pass\": 8, \"tax_total\": 8}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/verify_claims.py"
+      ],
+      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{",
+        "  \"ok\": true,",
+        "  \"failures\": [],",
+        "  \"n_failures\": 0",
+        "}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\scripts\\run_temporal_boundary_fixtures.py"
+      ],
+      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"all_pass\": true, \"n_cases\": 7, \"output\": \"C:\\\\Users\\\\admin\\\\Desktop\\\\aisec\\\\TRUSTEPISODE-aisec2026\\\\results\\\\derived\\\\temporal_boundary_conformance.json\", \"sha256\": \"27aee2b801fec0e3ffc20d6901f3f51152d1910542409c327f4a64eaee51ae30\", \"pytest_tail\": \".......                                                                  [100%]\"}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    }
+  ],
+  "all_pass": true
+}

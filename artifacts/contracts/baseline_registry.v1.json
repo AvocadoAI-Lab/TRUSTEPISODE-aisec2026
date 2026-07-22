@@ -1,0 +1,56 @@
+{
+  "contract_version": "trustepisode.baseline-registry.v1",
+  "canonical_event_order": ["event_time", "ingest_time", "source_instance", "event_id"],
+  "common_input": "the same allowlisted NormalizedEvent stream and run boundaries used by EB3; labels, health, scenario metadata, and split fields are unavailable",
+  "baselines": {
+    "EB1": {
+      "name": "time_only",
+      "window_anchor": "run_start_time from frozen run registry",
+      "window_width_microseconds": 300000000,
+      "window_index": "floor((event_time_us-run_start_time_us)/300000000)",
+      "admission": "run_start_time_us<=event_time_us<run_end_time_us",
+      "membership": "one episode per nonempty window_index; all admitted events in that window",
+      "episode_id_preimage": "UTF8('EB1')||0x1f||run_id||0x1f||decimal(window_index)",
+      "episode_id": "lowercase hex SHA-256 of episode_id_preimage",
+      "event_order": ["event_time", "ingest_time", "source_instance", "event_id"],
+      "revision_rule": "one terminal revision emitted at run_end_time+120 seconds; no late revision",
+      "failure": "missing/invalid run bounds or event outside bounds is counted in RT7 and excluded from EB1"
+    },
+    "EB2": {
+      "name": "time_plus_entity",
+      "parent_windows": "exact EB1 windows",
+      "entity_key": "UTF8(entity_type)||0x1f||UTF8(entity_id) for every nonempty canonical subject/object entity tuple",
+      "edge": "within one EB1 window, connect two events iff their exact entity-key sets intersect",
+      "component": "undirected transitive connected component; an event with no entity key is a singleton",
+      "component_order": "ascending minimum canonical event-order tuple in the component",
+      "episode_id_preimage": "UTF8('EB2')||0x1f||run_id||0x1f||decimal(window_index)||0x1f||SHA-256(JCS(ordered_event_ids))",
+      "episode_id": "lowercase hex SHA-256 of episode_id_preimage",
+      "revision_rule": "one terminal revision per component emitted at run_end_time+120 seconds; no cross-window merge or late revision",
+      "failure": "malformed entity tuple is ignored and counted; if all tuples are malformed the event is a singleton"
+    },
+    "SB1": {
+      "name": "maximum_source_native_severity",
+      "input_field": "NormalizedEvent.attributes.source_native_severity",
+      "input_contract": "finite binary64 in [0,1], produced by the manifest-pinned parser; larger is more severe",
+      "deduplication": "one value per dependency_group; conflicting values reject the candidate",
+      "candidate_score": "maximum value over root-deduplicated events in the EpisodeRevision",
+      "tie_order": "descending score, then ascending episode_id UTF-8 bytes, then revision",
+      "missing": "candidate score undefined and candidate excluded from SB1 metrics with count reported",
+      "artifact_digest_fields": ["ordered_revision_ids", "ordered_root_values", "parser_digest", "baseline_registry_digest"]
+    },
+    "SB2": {
+      "name": "constrained_D_only_logit",
+      "feature": "the exact frozen D used by SB3",
+      "objective": "mean(logaddexp(0,b+w_D*D)-y*(b+w_D*D))+0.0001/2*(b^2+w_D^2)",
+      "domains": ["b in real numbers (unconstrained)", "w_D>=0"],
+      "cohort": "the exact C_dec_binary training cohort used by SB3",
+      "solver": "deterministic_binary64_L-BFGS-B",
+      "initial_point": [0.0, 0.0],
+      "projected_gradient_infinity_tolerance": 1e-9,
+      "objective_change_tolerance": 1e-12,
+      "maximum_iterations": 10000,
+      "candidate_score": "b+w_D*D; no sigmoid or calibration for RT3a ranking",
+      "artifact_digest_fields": ["ordered_training_revision_ids", "ordered_labels", "D_binary64_vector", "lambda", "solver_contract", "coefficients", "baseline_registry_digest"]
+    }
+  }
+}

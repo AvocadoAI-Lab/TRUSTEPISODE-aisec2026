@@ -1,0 +1,164 @@
+{
+  "result_type": "trustepisode.targeted-mechanism-cards.v1",
+  "scope": "synthetic conformance only; not production effectiveness evidence",
+  "cards": [
+    {
+      "mechanism": "T1_PROCESS_CAUSAL",
+      "input_digest": "sha256:29b74f21a047a10c2308b0b63fa093a5bd2ad7e862e55795e1358384ffc9fc82",
+      "full_policy": {
+        "n_episodes": 1,
+        "digest": "sha256:66f4c396e514c2f8a4c7877c31e4e64c78a266be31b00517097b5518887ffe30"
+      },
+      "ablation": {
+        "name": "no_process_causal",
+        "n_episodes": 2,
+        "digest": "sha256:3d2d5f199156941e8be0f8d68e5b403c44b6dfe9588bf657a7afc8b4a3273b42"
+      },
+      "expected_transition": "fragment_without_causal",
+      "observed_transition": "full_eps=1, abl_eps=2",
+      "pass": true,
+      "note": "",
+      "status": "pass"
+    },
+    {
+      "mechanism": "T2_AUTH_SESSION",
+      "input_digest": "sha256:69b901bf3ab2655387dc67666c8d73e83ee398cbfbda3d65080ff6947b24eeb3",
+      "full_policy": {
+        "n_episodes": 1,
+        "digest": "sha256:3af62ebeb466f9ae8842d8754f4aa215b222da865c68b8a5501b952c4d8b9f56",
+        "enabled_relations": [
+          "authenticated_session"
+        ]
+      },
+      "ablation": {
+        "name": "no_authenticated_session_with_entity_fallback_disabled",
+        "n_episodes": 2,
+        "digest": "sha256:f64be462e89520c75705ee138d4e6b4f609b9a7710c501a21e8c9d6431672c2a"
+      },
+      "expected_transition": "session_only_links_ablation_fragments",
+      "observed_transition": "session_only=1, abl=2",
+      "pass": true,
+      "status": "pass",
+      "note": "Conformance: with specific_entity disabled, authenticated_session alone must link; removing session fragments."
+    },
+    {
+      "mechanism": "T3_ENDPOINT_MAPPING",
+      "input_digest": "sha256:95445f2f99a50a4b725e7f944dfd80be7b0c48f40b976a0bf45b0d661293de14",
+      "full_policy": {
+        "n_episodes": 1,
+        "digest": "sha256:e48efd6e9b0883bd776b8e237a82ef7c7c24a3fdef82804f16c0a7935140c9f5",
+        "enabled_relations": [
+          "endpoint_connection"
+        ]
+      },
+      "ablation": {
+        "name": "no_endpoint_with_entity_fallback_disabled",
+        "n_episodes": 2,
+        "digest": "sha256:c036fbf3f3fdb1255be806733336c76cb7f95e4b32bc3b79bb8aa21536740631"
+      },
+      "expected_transition": "endpoint_only_links_ablation_fragments",
+      "observed_transition": "endpoint_only=1, abl=2",
+      "pass": true,
+      "status": "pass",
+      "note": "Conformance: with specific_entity disabled, endpoint_connection alone must join EDR/NDR sharing a host entity."
+    },
+    {
+      "mechanism": "T4_HUB_GUARD",
+      "input_digest": "sha256:3af0540d454952880007b4c11731b1f37e84275c5f96c690a6deef42fc7c37c9",
+      "full_policy": {
+        "n_episodes": 4,
+        "n_revisions": 35,
+        "digest": "sha256:fabea63bffedd566ff5a9614c91a64723589d9dac6ba328566b000a5e2c375af"
+      },
+      "ablation": {
+        "name": "no_hub_guard",
+        "n_episodes": 1,
+        "n_revisions": 29,
+        "digest": "sha256:06c16fc684485140c3280298b9a1b3f746958ed52eb830ff97499f61338479a0"
+      },
+      "expected_transition": "hub_guard_changes_membership_or_episode_count_vs_disabled",
+      "observed_transition": "full_eps=4, no_hub_eps=1",
+      "pass": true,
+      "note": "Pass if enabling hub guard changes synthesis digest versus disabled guard.",
+      "status": "pass"
+    },
+    {
+      "mechanism": "T5_PARENT_MERGE",
+      "input_digest": "sha256:5542d68a6148274d7cf463d54e2bcc5829a7c255d67df67d6daefdbf2aa0e39d",
+      "full_policy": {
+        "n_episodes": 1,
+        "parent_merges": 3,
+        "digest": "sha256:0059293027f60058ae98b400e248da03aa24fd7c7d7320cfee7a66c3a021e09e"
+      },
+      "ablation": {
+        "name": "no_parent_merge",
+        "n_episodes": 2,
+        "parent_merges": 0,
+        "digest": "sha256:98cbda0415c8706c096ca97a0d8527d4e9de3d1a46beaf6d02de5cdba4136b39"
+      },
+      "expected_transition": "merge_enabled_creates_parent_episode_ids",
+      "observed_transition": "full_parents=3, abl_parents=0",
+      "pass": true,
+      "note": "Pass if full policy records parent merges and max_merge_parents=1 does not.",
+      "status": "pass"
+    },
+    {
+      "mechanism": "T6_LATE_SUCCESSOR",
+      "input_digest": "sha256:501d33ea43a00ec8cf5a4d53add9fb9a76bc22389371e0d63ff3d608dfa1a77e",
+      "full_policy": {
+        "max_revision": 4,
+        "n_late": 0,
+        "digest": "sha256:a0affd32521dd24930a36616d49f3a45b2cd8974a7e6b50e31b2eee1eb9cb800"
+      },
+      "ablation": {
+        "name": "no_late_successor",
+        "max_revision": 3,
+        "n_late": 0,
+        "digest": "sha256:1d2530741dec8c95fa4820a55f58919944b6cffbe02526d8884b7ff083bce050"
+      },
+      "expected_transition": "disabling_late_successor_increases_late_records_or_reduces_revisions",
+      "observed_transition": "full_rev=4, abl_rev=3, full_late=0, abl_late=0",
+      "pass": true,
+      "note": "Conformance: late-successor policy changes revision/late-store behavior.",
+      "status": "pass"
+    },
+    {
+      "mechanism": "T7_BEYOND_HORIZON",
+      "input_digest": "sha256:7f1795b5e366b898e8a05d345b1edb83b6e00c1fff0203fa65a8cc6a8788dcd0",
+      "full_policy": {
+        "n_late": 1,
+        "late_reasons": [
+          "beyond_revision_horizon"
+        ],
+        "revision_digest": "sha256:ba6afd9c0c59926e569864836396938720372063b9da9dc569e8d78373a6a9ab"
+      },
+      "ablation": {
+        "name": "n/a_beyond_horizon_is_full_policy_behavior"
+      },
+      "expected_transition": "beyond_horizon_emits_LateEvidenceRecord_without_membership_rewrite",
+      "observed_transition": "late=1, reasons=['beyond_revision_horizon']",
+      "pass": true,
+      "note": "Pass if late store receives beyond-horizon or closed-lineage evidence.",
+      "status": "pass"
+    },
+    {
+      "mechanism": "T8_TIE_BREAK",
+      "input_digest": "sha256:2d892f57f2cd05c0ce38ee67fa1b9d4a1081e211a5405a1556c29c989addf0bb",
+      "full_policy": {
+        "digest_arrival_sorted": "sha256:447907edd60892bb1ac3429c47196c9c41783939a34550fe4013858ab609ea13"
+      },
+      "ablation": {
+        "name": "reversed_then_arrival_order",
+        "digest_arrival_sorted": "sha256:447907edd60892bb1ac3429c47196c9c41783939a34550fe4013858ab609ea13"
+      },
+      "expected_transition": "canonical_arrival_order_yields_identical_digests",
+      "observed_transition": "equal=True; raw_reverse_differs=True",
+      "pass": true,
+      "note": "Distinguishes canonical replay determinism from raw delivery-order sensitivity.",
+      "status": "pass"
+    }
+  ],
+  "pass_count": 8,
+  "fail_count": 0,
+  "discriminating_pass_count": 8
+}

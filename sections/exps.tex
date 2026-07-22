@@ -1,349 +1,300 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-The primary evaluation is an end-to-end BAS validation on isolated live Linux systems, not an
-offline event-generator experiment. CALDERA executes the attack families in
-Table~\ref{tab:malicious-scenarios}; \trustepisode observes only EDR/NDR telemetry and
-authenticated source health. We evaluate whether the resulting episodes preserve attack
-evidence and whether the five evidence-sufficiency axes in Table~\ref{tab:sufficiency} respond
-faithfully under adversarial telemetry perturbations and physical collector outages. Result
-cells and plots remain \tbd until the registered executions complete; no synthetic values or
-confidence intervals are inserted.
-
-\subsection{Research Questions and Evaluation Populations}
+\subsection{Evidence Classes and Cohorts}
 \label{sec:research-questions}
 
-\textbf{RQ1 -- live-system validity.} Across the CALDERA scenarios in
-Table~\ref{tab:malicious-scenarios}, does the label-blind builder recover the required attack
-actions without excessive fragmentation, over-merge, or benign contamination?
-\textbf{RQ2 -- evidence sufficiency.} Do coverage, provenance, lateness, contradiction, and
-calibration states reflect the evidence actually available in each run without numerically
-altering the maliciousness probability?
-\textbf{RQ3 -- adversarial robustness.} Under source masking, event loss, interval removal,
-delay, reordering, clock shift, duplication, and physical outage, how rapidly does performance
-degrade, which faults cause explicit sufficiency transitions, and which remain silent because
-authenticated health does not change?
-\textbf{RQ4 -- replay and cost.} Are canonical outputs byte identical under replay, and what
-throughput, latency, memory, storage, and recovery costs are observed?
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item \textbf{RQ1} reproducibility --- sealed offline replay on all 60 primary malicious runs.
+  \item \textbf{RQ2} lifecycle auditability --- A1--A12 synthetic audit conformance covering
+        seven failure codes + late/beyond-horizon cards.
+  \item \textbf{RQ3} evidence-loss localization --- A--G taxonomy conformance + sealed M2 waterfall.
+  \item \textbf{RQ4} mechanism coverage --- live M1--M6 + synthetic T1--T8; M7 only as
+        supplemental boundary stress.
+  \item \textbf{RQ5} baseline interpretation --- sealed fair EB0--EB4 comparison on M1--M6.
+\end{itemize}
+Evidence classes used below are disjoint: (i)~primary live empirical (M1--M6 formation cells);
+(ii)~sealed offline replay on those primary seals; (iii)~synthetic conformance (A1--A12, T1--T8,
+AB0--AB3, A--G fixtures); (iv)~unit/integration boundary fixtures; (v)~supplemental partition
+artifacts (L1--L4, wall-clock, sealed M7) that are \emph{not} mixed into primary estimators.
+Synthetic cards are never mixed into primary live effectiveness. Sealed
+Table~\ref{tab:table4-amended-results} primary cells were not overwritten.
 
-The populations are disjoint views of the same registered runs. $\mathcal C_{form}$ contains
-one terminal revision per surviving episode lineage at
-$T_{form}=t_{run\_end}+L_{wm}+W_{rev}=t_{run\_end}+1020$ s; merged parents are removed.
-$\mathcal C_{dec}^{all}$ contains the first finalized AssemblyOutcome per terminal lineage,
-including supported and out-of-support AuditRecords and AssemblyFailureRecords. The scorable
-inventory is
-\begin{equation*}
-\begin{aligned}
-\mathcal C_{dec}^{score}=\{o\in\mathcal C_{dec}^{all}:&\ o\text{ is AuditRecord},\\
-&o.decision\_eligible,\ P\in[0,1]\}.
-\end{aligned}
-\end{equation*}
-After terminal insertion, the offline harness joins
-$L(o)\in\{positive,negative,mixed,ambiguous\}$ by EpisodeRevision digest. Class-dependent
-metrics use
-\begin{equation*}
-\mathcal C_{dec}^{binary}=\{o\in\mathcal C_{dec}^{score}:L(o)\in\{positive,negative\}\}.
-\end{equation*}
-$\mathcal C_{stream}$ retains every revision-keyed terminal outcome for sufficiency transitions,
-replay equality, and cost. This separation prevents late revisions from duplicating RQ1/RQ2
-candidates and prevents assembly failure from becoming hidden survivorship bias.
-
-\subsection{CALDERA-Based Live-System Validation}
+\subsection{Primary Live M1--M6 Cohort}
 \label{sec:datasets}
 
-The primary testbed uses CALDERA v5.3.0~\cite{caldera} as the BAS control plane, two isolated
-Ubuntu 22.04 targets, and an inline Suricata gateway. Scenario commands execute against the live
-process, file-system, service, and network state of the targets rather than against synthesized
-logs. An instrumented endpoint wrapper records generic process start/exit observations to an
-append-only spool; an independently stoppable forwarder emits label-free EDR events and
-authenticated health. The inline sensor supplies NDR observations. This is a controlled
-real-system validation, but it is not a production deployment or an evaluation of a commercial
-EDR product.
+CALDERA v5.3.0 executes frozen Bash abilities on two isolated Ubuntu 22.04 targets with an EDR
+wrapper and inline Suricata NDR. Online schemas reject labels and receipts. The primary sealed
+cohort has 60 malicious runs (M1--M6 $\times$ two modes $\times$ five) and 40 standalone benign
+runs. Fair sliding baselines and paired comparisons are computed on this M1--M6 set only.
 
-The BAS orchestrator executes frozen no-profile Bash abilities and records action receipts in a
-separate ground-truth store. CALDERA identifiers, ability metadata, receipts, and scenario labels
-are excluded from the online pipeline. Every run records public software versions plus image,
-configuration, parser, schema, topology, source, and hardware digests.
-
-Table~\ref{tab:caldera-analysis-plan} specifies how the primary scenarios are analyzed. The
-unchanged execution is the paired reference for each replay or outage condition. All displayed
-states are placeholders until the live-system campaign completes.
-
-\begin{table*}[t]
-\caption{Planned CALDERA live-system and adversarial-robustness analysis. Each condition is
-paired with the unchanged execution of the same scenario run. All result fields are pending.}
-\label{tab:caldera-analysis-plan}
+\begin{table*}[!t]
+\caption{Primary M1--M6 scenario families (simplified). ``Live EB1--EB4 delta?'' reports whether
+fair builders differed on the sealed primary cohort for the intended advanced mechanism.}
+\label{tab:scenario-families}
 \centering
 \scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{p{0.15\textwidth}p{0.18\textwidth}p{0.20\textwidth}p{0.30\textwidth}p{0.08\textwidth}}
+\begin{tabular}{llp{0.20\textwidth}p{0.16\textwidth}p{0.18\textwidth}}
 \toprule
-\textbf{Analysis block} & \textbf{Paired condition} & \textbf{Primary performance readout} &
-\textbf{Table~\ref{tab:sufficiency} readout} & \textbf{Status} \\
+\textbf{ID} & \textbf{Ordered activity (summary)} & \textbf{Expected EDR/NDR} & \textbf{Intended mechanism} & \textbf{Live EB1--EB4?} \\
 \midrule
-Native BAS execution & attack-only and concurrent-benign modes & action coverage; Frag.; Merge; Contam.; episode P/R/F1 & five-axis state distribution at final revision & \tbd \\
-Ranking/calibration & supported positive/negative outcomes & AUPRC; recall@10\%; Brier; NLL; eligibility rate & calibration support and provenance completeness & \tbd \\
-Replay integrity stress & delay, reorder, clock shift, duplicate & paired metric change; revision count; stabilization time & lateness/provenance transitions and contradiction rate & \tbd \\
-Partial telemetry & source mask, random drop, interval removal & retained action coverage; eligibility; out-of-support rate & coverage/calibration transitions and silent-loss rate & \tbd \\
-Physical outage & EDR/NDR stop for 120/600 s & detection, ready, and stable-recovery times & coverage, lateness, and calibration trajectories & \tbd \\
-Deterministic replay & identical input at 1/2/4/8 workers & byte equality; throughput; p50/p95/p99; peak RSS & exact equality of all five sufficiency axes & \tbd \\
+M1 & recon $\rightarrow$ local action & process; DNS/flow & entity/time & identical \\
+M2 & remote session + SCP archive & process; SSH/SCP flows & session / file\_transfer token & identical; token gap \\
+M3 & privilege / persistence steps & process; file & causal/entity & identical \\
+M4 & lateral-style dual-host steps & process; flows & session/endpoint & identical \\
+M5 & staged tooling / execution & process; file/net & entity/time & identical \\
+M6 & cleanup / cover tracks & process; file & entity/time & identical \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-Before a native run is sealed, the harness requires exactly one covering health interval from
-both EDR instances and the NDR instance at every event-time point. Physical-outage runs omit
-this gate by design so that the authenticated gap remains observable. Runs fail closed when a
-manifest field is absent, a scenario action fails, or cleanup does not restore the target image.
-
-\subsection{Ground Truth, Matching, and Labels}
+\subsection{Ground Truth and Matching}
 \label{sec:ground-truth}
 
-Allowlist schemas reject \path{operation_id}, \path{ability_id}, adversary/technique labels,
-action receipts/windows, scenario class, and malicious labels from every online
-object~\cite{kaufman2012leakage}. Each ground-truth group $g$ registers a nonempty set of required
-action tokens $A_g$; each run registers benign/background tokens $B_r$. For predicted episode
-$p$, $A_{cov}(p,g)=|A_p\cap A_g|/|A_g|$, where $A_p$ is its root-deduplicated attributed action
-set. Offline matching constructs the threshold-qualified edge graph $E_q$. An edge requires
-temporal IoU $\ge0.10$, entity Jaccard $\ge0.50$, and one exact offline receipt or registered
-action. Its weight is
+Offline matching uses temporal IoU $\ge0.10$, entity Jaccard $\ge0.50$, overlapping required
+action tokens, and weight
 \begin{equation}
 w=0.5A_{cov}+0.3J_{entity}+0.2\operatorname{IoU}_{time};
 \quad w\ge\theta_{match}=0.50.
 \label{eq:match-weight}
 \end{equation}
-Maximum-weight one-to-one assignment over $E_q$ operates within one run; ties use entity
-overlap, absolute time difference, then ascending bytes of $(episode\_id,group\_id)$. Assignment
-is used only for episode precision/recall/F1. Coverage, fragmentation, and over-merge use the
-unassigned graph.
+Exact-complete recovery requires $A_{cov}=1$. Online builders never read evaluation fields.
 
-A revision chooses the first incident edge under descending $(A_{cov},w)$ then ascending group
-ID. With no edge, $g^*=\texttt{null}$, $A_{cov}=0$, and $B_{cont}$ is undefined. Otherwise
-\begin{equation*}
-B_{cont}=\frac{|A_p\cap B_r|}{|(A_p\cap A_{g^*})\cup(A_p\cap B_r)|}.
-\end{equation*}
-First-match labels are mixed if $A_{cov}\ge\theta_{mal}=0.50$ and
-$B_{cont}\ge\theta_{contam}=0.25$; positive if coverage passes and contamination is below the
-threshold; negative if $A_{cov}=0$, a registered benign token is present, and no conflict
-exists; otherwise ambiguous. Labels join only after the terminal outcome is inserted.
-Sensitivity varies $\theta_{mal}\in\{.25,.50,.75\}$,
-$\theta_{contam}\in\{.10,.25,.50\}$, and
-$\theta_{match}\in\{.40,.50,.60\}$ without changing the primary analysis.
+\subsection{Fair Reconstruction Baselines}
+\label{sec:baselines}
 
-\begin{figure}[t]
-  \centering
-  \scriptsize
-  \setlength{\fboxsep}{5pt}
-  \begin{minipage}{\columnwidth}\centering
-  \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Online schemas reject evaluation fields}\\
-    labels, receipts, windows, and scenario metadata}}\\[-1pt]
-  $\downarrow$\\[-1pt]
-  \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Label-blind online pipeline}\\
-    EpisodeRevision $\rightarrow$ terminal AssemblyOutcome}}\\[-1pt]
-  $\downarrow$\\[-1pt]
-  \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Immutable digest join in offline harness}\\
-    versioned ground truth joins only after insertion}}\\[-1pt]
-  $\downarrow$\\[-1pt]
-  \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Evaluation labels and metrics}\\
-    positive / negative / mixed / ambiguous}}\\[2pt]
-  \textit{No evaluation field returns to inference.}
-  \end{minipage}
-  \caption{Ground Truth Firewall. Evaluation-only fields are rejected before inference and join
-  immutable outputs only inside the offline harness.}
-  \label{fig:ground-truth-firewall}
-\end{figure}
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item \textbf{EB0\_FIXED\_BIN\_300s} (legacy): fixed bins; boundary reference only.
+  \item \textbf{EB1\_SLIDING\_TIME}: same $W_{gap}=300$\,s, $W_{max}=3600$\,s; time only.
+  \item \textbf{EB2\_SLIDING\_ENTITY}: same lifecycle; entity overlap only.
+  \item \textbf{EB3\_RELATION\_NO\_ADVANCED\_GUARDS}: relations on; hub/merge/late off.
+  \item \textbf{EB4\_TRUSTEPISODE}: full production policy.
+\end{itemize}
+Primary comparison is EB1--EB4 on identical sealed streams, aliases, matching, and ground truth.
+Configuration digests are sealed in \texttt{results/derived/fair\_baselines.json}.
 
-\subsection{Primary BAS Scenarios}
-\label{sec:scenarios}
+\subsection{Primary Formation Results and Fair Negative Result}
+\label{sec:formation-results}
 
-Table~\ref{tab:malicious-scenarios} is the primary validation matrix. Each family is executed on
-the live Ubuntu targets in attack-only mode and with one deterministic concurrent benign
-workload. The protocol requires ten valid repetitions per family and mode; achieved counts and
-all measured outcomes remain \tbd.
+Table~\ref{tab:table4-amended-results} reports production-formation cells for the primary live
+M1--M6 cohort ($n=5$ per cell). Concurrent-benign mean contamination remains \ConcConcurrent{}
+for fair builders.
 
-\begin{table*}[t]
-\caption{Primary CALDERA BAS validation scenarios on live Ubuntu targets. Each card requires ten
-valid repetitions in attack-only and concurrent-benign modes; achieved counts are pending.}
-\label{tab:malicious-scenarios}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{p{0.04\textwidth}p{0.30\textwidth}p{0.17\textwidth}p{0.23\textwidth}p{0.17\textwidth}}
-\toprule
-\textbf{ID} & \textbf{Ordered CALDERA ability family} & \textbf{Stressor} &
-\textbf{Expected EDR/NDR evidence} & \textbf{Primary sufficiency axes} \\
-\midrule
-M1 & discovery $\rightarrow$ peer inventory $\rightarrow$ SSH write & lateral chain & EDR lineage + NDR connection & provenance, contradiction \\
-M2 & stage $\rightarrow$ archive $\rightarrow$ SCP $\rightarrow$ delayed local action & weak-to-strong & EDR file/process + NDR transfer & lateness, provenance \\
-M3 & discovery $\rightarrow$ temporary-key SSH write & remote execution & EDR process + NDR session & coverage, calibration \\
-M4 & five-request 60 s cadence $\rightarrow$ local action & sparse sequence & NDR cadence + EDR action & coverage, lateness \\
-M5 & discovery $\rightarrow$ local configuration action & source-asymmetric case & EDR evidence; valid NDR no-detection & coverage, calibration \\
-M6 & matched-tool SSH $\rightarrow$ remote write & benign-tool overlap & contextual EDR/NDR evidence & contradiction, provenance \\
-M7 & actions at 0/300/3900 s & gap/span boundaries & boundary revisions and late evidence & lateness, provenance \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-B1--B8 cover Linux inventory, manifest-pinned package installation, file synchronization,
-registered service scanning, read-only SSH administration, log collection, configuration
-management, and supervisor-backed maintenance. Each benign card is run alone and as the
-registered concurrent background for malicious cards. Every card fixes preconditions, exact
-command templates, monotonic start offsets, fixed target paths, offline-only receipts,
-postconditions, cleanup, and failure predicates. Collection or action failure remains in the
-failure log but is excluded from performance estimates; cleanup failure blocks image reuse.
-
-\subsection{Adversarial Perturbations and Physical Outage}
-\label{sec:partial-telemetry}
-
-Each valid Table~\ref{tab:malicious-scenarios} execution has an immutable unchanged replay and
-deterministic adversarial children. Conditions are source masking; EDR- or NDR-specific random
-drop at 5/10/25\%; removal of a 30/120/300 s interval; ingest delay of 30/120/600 s; reordering
-inside 30/120/600 s buffers; event-time shifts of $-120/-30/+30/+120$ s; and duplicate root
-groups at 5/10/25\%. Other-source events and the original SourceCoverage journal remain fixed,
-so replay isolates data-integrity stress from health-reporting stress.
-
-The perturbation seed is domain-separated by base run, operator, source, and dose. Before the
-operator is applied, base events sort by
-\begin{equation*}
-(t^{event},t^{ingest},source\_instance,event\_id).
-\end{equation*}
-Duplicate IDs are derived from the sealed seed and original event ID; collisions invalidate the
-child. These rules make every adversarial condition exactly replayable without selecting an
-outcome after observing labels.
-
-Physical outage is evaluated separately because it changes authenticated source health rather
-than only event delivery. The cohort crosses source $\in\{\mathrm{EDR},\mathrm{NDR}\}$,
-duration $\in\{120,600\}$ s, and ten repetitions, balanced over M1/M3/M4/M7. After two healthy
-heartbeats, the selected collector is stopped and at least one scenario ability executes during
-the outage. We record health detection, first parser-valid ready interval after restoration, and
-the first time followed by 900 s without another revision. Detection and recovery are
-right-censored when their registered observation windows expire.
-
-For run $r$, condition $q$, and scalar metric $m$, the paired effect is
-\begin{equation}
-\Delta m_{r,q}=m(r,q)-m(r,0),
-\label{eq:paired-robustness}
-\end{equation}
-where $q=0$ is the unchanged replay. For sufficiency axis $k$ with categorical states
-$a,b$, the transition matrix is
-\begin{equation}
-T_{k,q}(a,b)=\frac{1}{N_q}\sum_{r=1}^{N_q}
-\mathbf{1}[U_k(r,0)=a\land U_k(r,q)=b].
-\label{eq:sufficiency-transition}
-\end{equation}
-For the action-coverage metric, the silent-loss rate is
-\begin{equation}
-SL_q=\frac{1}{N_q}\sum_{r=1}^{N_q}\mathbf{1}
-[A_{cov}(r,q)<A_{cov}(r,0)\land U(r,q)=U(r,0)].
-\label{eq:silent-loss}
-\end{equation}
-Robustness is therefore not defined as score invariance alone. Event loss with an unchanged
-authenticated health journal may leave $u_{coverage}$ unchanged by construction; the analysis
-reports such cases through Equation~\ref{eq:silent-loss} rather than assigning an unsupported sufficiency
-transition. A desirable response can otherwise be
-stable episode evidence at low dose, graceful metric degradation at higher dose, or explicit
-movement to \texttt{degraded}, \texttt{unavailable}, or \texttt{out\_of\_support} when the
-probability is no longer justified. Silent confidence under missing evidence is treated as a
-failure.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig10_adversarial_robustness_template.pdf}
-  \caption{Illustrative camera-ready layout using simulated values, not experimental results.
-  Panel (a) uses paired dose-response lines with 95\% intervals; panel (b) uses a heatmap for the
-  fraction of runs moving to a worse Table~\ref{tab:sufficiency} state; panel (c) uses log-scale
-  dot-and-whisker summaries for outage detection and stable recovery. All values must be replaced
-  by registered measurements before submission; censored time-to-event curves belong in the
-  supplementary material when censoring is material.}
-  \label{fig:telemetry-perturbation-design}
-\end{figure*}
-
-\subsection{Metrics and Statistical Reporting}
-\label{sec:metrics}
-
-For run $r$, let $E_{q,r}$ be its unassigned threshold-qualified graph. For each truth group
-$g$, $n_g=|\{p:(p,g)\in E_{q,r}\}|$; for episode $p$,
-$d_p=|\{g:(p,g)\in E_{q,r}\}|$. Formation reporting uses run-macro action coverage,
-$|G_r|^{-1}\sum_g\max(0,n_g-1)$ fragmentation,
-$|P_r|^{-1}\sum_p\mathbf{1}[d_p>1]$ over-merge, mean defined contamination, and one-to-one
-episode precision/recall/F1. Empty denominators are undefined, never zero.
-
-Ranking and calibration use $\mathcal C_{dec}^{binary}$ only. AUPRC and recall among the top
-$\max(1,\lceil0.10|\mathcal C_{dec,r}^{binary}|\rceil)$ per run are primary ranking metrics;
-Brier, NLL, and ten-bin reliability are reported only for supported records. AUROC and
-precision@$k$ are secondary~\cite{saito2015pr}. For each Table~\ref{tab:sufficiency} axis we
-report state counts and proportions, the transition matrix in
-Equation~\ref{eq:sufficiency-transition}, decision-eligible coverage, revision count, and time
-to stable closure. Equation~\ref{eq:silent-loss} reports coverage loss not accompanied by any
-sufficiency transition. Outage plots report detection, ready, and stable-recovery time with
-censoring.
-
-All summaries are macro-averaged over complete scenario runs. Paired perturbation effects use
-Equation~\ref{eq:paired-robustness}; intervals use 2,000 percentile bootstrap resamples of
-complete run pairs with fixed seed 20260710~\cite{field2007bootstrap}. The paper will report the
-number of valid, failed, undefined, and censored runs beside every estimate. Deterministic-replay
-cost is measured at 1/2/4/8 workers using one warm-up and five measured repeats, with byte
-equality, throughput, ingest-to-outcome p50/p95/p99 latency, peak RSS, canonical storage bytes,
-and replay time.
-
-\subsection{External Entity-Level Context}
-\label{sec:public-comparators}
-
-Table~\ref{tab:entity-public-comparison} is secondary context, not the primary validation. It
-combines entity counts reported by CAPTAIN for KAIROS, NODLINK, and CAPTAIN on DARPA TC E3
-CADETS/THEIA~\cite{captain2025,kairos2024,nodlink2024} with a deterministic \trustepisode
-projection. The external rows were not reproduced in this work, and the \trustepisode rows are
-an entity projection from episode membership rather than a native entity classifier. HOLMES is
-omitted because its reported grain is graph/campaign-level rather than an aligned E3
-entity-count row~\cite{holmes2019,nodlink2024}. No cross-grain superiority claim follows.
-
-\begin{table*}[t]
-\caption{Entity-level DARPA TC E3 context. KAIROS, NODLINK, and CAPTAIN counts are transcribed
-from CAPTAIN Table V~\cite{captain2025} and were not reproduced in this work. \trustepisode is
-measured in this work using a deterministic projection from immutable episode membership.
-Precision, recall, and F1 are derived from the displayed counts. Bold denotes the highest
-precision, recall, or F1 within each dataset; ties are retained.}
-\label{tab:entity-public-comparison}
+\begin{table*}[!t]
+\caption{Primary live M1--M6 cells under production formation (mean $\pm$ sample SD; $n=5$).}
+\label{tab:table4-amended-results}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{llrrrrrrl}
+\begin{tabular}{@{}llccccc@{}}
 \toprule
-\textbf{Dataset} & \textbf{Method} & \textbf{TP} & \textbf{FP$_{0}$} & \textbf{FN} &
-\textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Source} \\
+\textbf{Family} & \textbf{Mode} & \textbf{Coverage} & \textbf{Frag.} & \textbf{Merge} & \textbf{Contam.} & \textbf{F1} \\
 \midrule
-E3-CADETS & KAIROS & 15 & 1,017 & 11 & 0.015 & 0.577 & 0.028 & CAPTAIN Tbl.~V \\
- & NODLINK & 3 & 120 & 2 & 0.024 & 0.600 & 0.047 & CAPTAIN Tbl.~V \\
- & CAPTAIN & 16 & 34 & 10 & \textbf{0.320} & \textbf{0.615} & \textbf{0.421} & CAPTAIN Tbl.~V \\
- & \trustepisode & 16 & 64 & 10 & 0.200 & \textbf{0.615} & 0.302 & this work \\
-\midrule
-E3-THEIA & KAIROS & 12 & 3,566 & 3 & 0.003 & 0.800 & 0.007 & CAPTAIN Tbl.~V \\
- & NODLINK & 14 & 62 & 0 & 0.184 & \textbf{1.000} & 0.311 & CAPTAIN Tbl.~V \\
- & CAPTAIN & 11 & 194 & 4 & 0.054 & 0.733 & 0.100 & CAPTAIN Tbl.~V \\
- & \trustepisode & 10 & 9 & 5 & \textbf{0.526} & 0.667 & \textbf{0.588} & this work \\
+M1 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M1 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.300\pm0.112$ & $1.000\pm0.000$ \\
+M2 & attack-only & $0.750\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M2 & concurrent-benign & $0.750\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.350\pm0.091$ & $1.000\pm0.000$ \\
+M3 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M3 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.350\pm0.091$ & $1.000\pm0.000$ \\
+M4 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M4 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.367\pm0.217$ & $1.000\pm0.000$ \\
+M5 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M5 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.433\pm0.091$ & $1.000\pm0.000$ \\
+M6 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
+M6 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.333\pm0.257$ & $1.000\pm0.000$ \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-For the reserved projection, an entity is predicted iff its canonical identifier belongs to a
-decision-eligible positive terminal episode; duplicates count once per evaluation cohort. A
-process-only scope aligns NODLINK, while an all-evaluable scope admits only entities in the
-frozen KAIROS/CAPTAIN-aligned mapping. Projection changes no formation, score, calibration, or
-threshold.
+\input{results/tables/tab_fair_baselines}
 
-\subsection{Pending Evidence and Limitations}
-\label{sec:results}
+Relative to legacy EB0, sliding policies raise coverage (\EbZeroCov{}$\rightarrow$\TeCov{}) and
+exact-complete recovery (\EbZeroExact{}$\rightarrow$\TeExact{}) on the sealed primary cohort.
+Fixed bins cut multi-minute chains at arbitrary boundaries; sliding gap/sessionization preserves
+those chains under the same span cap.
+
+\input{results/tables/tab_paired}
+
+Under fair sliding baselines, EB1--EB4 are identical on every primary metric and every family:
+paired EB4$-$EB1 differences are zero with 60 ties and CIs $[0,0]$. We report \emph{no observed
+difference} (not a formal equivalence test). Relation-aware formation is \emph{not} reported as
+better than fair sliding-time.
+
+\paragraph{Why sliding-time already suffices on M1--M6.}
+The sealed primary cohort does not make advanced relations the unique linkage path: time and
+entity sessionization already recover the same matched episodes. Hub, parent-merge, and late
+guards therefore show no end-to-end metric delta. End-to-end F1 alone can misleadingly suggest
+that complex policy is ``validated'' when the benchmark never stresses it. Future BAS cohorts
+should register mechanism-coverage requirements (session-only, endpoint-only, hub over-merge,
+late horizon, beyond-$W_{max}$ span) before claiming relation-aware gains.
+
+\subsection{Inclusive Temporal Boundary Fixtures}
+\label{sec:boundary-fixtures}
+
+Unit fixtures on production \texttt{EpisodeSynthesizer.\_candidate} confirm inclusive equality at
+the frozen contracts: $W_{gap}\in\{299,300\}$ eligible and $301$ ineligible;
+$W_{max}\in\{3599,3600\}$ eligible and $\{3601,3900\}$ ineligible (Table~\ref{tab:boundary-fixtures}).
+The $3900$\,s case matches the sealed M7 schedule offset and is \emph{not} a substitute for live
+M7 formation metrics. Results are sealed in
+\texttt{results/derived/temporal\_boundary\_conformance.json}.
+
+\begin{table}[!t]
+\caption{Inclusive $W_{gap}$/$W_{max}$ boundary fixtures (unit; all pass).}
+\label{tab:boundary-fixtures}
+\centering
+\scriptsize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Dimension} & \textbf{Seconds} & \textbf{Expected} & \textbf{Observed} \\
+\midrule
+$W_{gap}$ & 299 & eligible & eligible \\
+$W_{gap}$ & 300 & eligible & eligible \\
+$W_{gap}$ & 301 & ineligible & ineligible \\
+$W_{max}$ & 3599 & eligible & eligible \\
+$W_{max}$ & 3600 & eligible & eligible \\
+$W_{max}$ & 3601 & ineligible & ineligible \\
+$W_{max}$ & 3900 & ineligible & ineligible \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sixty-Run Determinism Matrix}
+\label{sec:replay}
+
+\input{results/tables/tab_determinism}
+
+On all \DetNRuns{} sealed malicious runs (M1--M6 $\times$ attack-only/concurrent-benign $\times$
+five), D1 canonical ordered replay ($10\times$ per run; \DetDOneExec{} executions) is
+byte-identical (\DetDOnePass{}/\DetNRuns{}). D2 separates raw delivery-order robustness
+(\DetDTwoRawPass{}/\DetNRuns{}) from re-canonicalized equality
+(\DetDTwoCanonPass{}/\DetNRuns{}): we do \emph{not} claim raw-order robustness. D3 ingest-delay
+grids (including inside, at, and beyond the 900\,s revision horizon) pass
+\DetDThreePass{}/\DetNRuns{}; D4 duplicate/idempotent/conflict cases pass
+\DetDFourPass{}/\DetNRuns{}. D5 documents single-writer-per-run ownership: multi-run parallelism
+is not same-run concurrent mutation, and we claim neither lock-free nor multi-writer determinism.
+
+\subsection{Audit Failure Conformance (A1--A12)}
+\label{sec:audit-conformance}
+
+\input{results/tables/tab_audit_a12}
+
+RQ2 is supported by the full failure matrix: all seven AssemblyFailureRecord codes
+(\AuditFailCodes{}/7) appear with expected terminal outcomes, plus precedence, exclusivity,
+idempotent success retry, and append-only rejection
+(\AuditPass{}/\AuditTotal{} fixtures pass). This is synthetic forensic audit conformance, not
+field effectiveness.
+
+\subsection{Evidence-Loss Taxonomy Validation}
+\label{sec:taxonomy}
+
+\input{results/tables/tab_taxonomy_ag}
+
+The taxonomy is conformance-tested across A--G and instantiated on one sealed live case, M2
+(\TaxPass{}/\TaxTotal{} fixture rows; \TaxLive{} live). Synthetic passes do not imply
+field-validated coverage for every class.
+
+\subsection{M2 Evidence Waterfall}
+\label{sec:m2-analysis}
+
+\begin{table}[!t]
+\caption{M2 evidence-loss waterfall (10 sealed runs).}
+\label{tab:m2-waterfall}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Stage} & \textbf{Expected} & \textbf{Observed} & \textbf{Status} \\
+\midrule
+CALDERA receipt (\texttt{linux.scp\_archive}) & 10 & 10 & retained \\
+Raw EDR/NDR observability (scp mentions) & 10 & 10 & retained \\
+NormalizedEvent as \texttt{file\_transfer} & 10 & 0 & drop \\
+Normalized as \texttt{remote\_session} instead & 10 & 10 & remapped \\
+Episode retains \texttt{file\_transfer} & 10 & 0 & absent token \\
+Episode retains \texttt{remote\_session} & 10 & 10 & retained \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Final class: \MTwoClass{}. Action coverage 0.75 with episode F1 1.0 is therefore not evidence that
+Episode Synthesis dropped an already-normalized \texttt{file\_transfer} event. Primary sealed
+results are unchanged; any mapper fix requires a new version digest and a post-analysis cohort.
+
+\subsection{Contract Ablation Baselines (AB0--AB3)}
+\label{sec:ab-contract}
+
+\input{results/tables/tab_ab_contract}
+
+AB0--AB3 are reference implementations for an isolation study: which contract property prevents
+which forensic failure mode. They are reference implementations for isolation, not product comparisons.
+
+\subsection{Mechanism Conformance Cards}
+\label{sec:mechanism}
+
+\input{results/tables/tab_mechanism}
+
+T1--T8 are synthetic. T2/T3 were redesigned so that \texttt{specific\_entity} is disabled and
+session/endpoint becomes the sole legal relation; ablation then fragments. Passes are
+conformance, not live effectiveness. Live EB1--EB4 remain tied.
+
+\subsection{Supplemental Partition (Not Primary)}
+\label{sec:supplemental-live}
+
+Artifacts below live under a separate \texttt{supplemental\_mechanism} partition (or sealed M7
+membership). They do \emph{not} enter Table~\ref{tab:table4-amended-results} or the 60-run fair
+baseline estimator. Evidence classes are stated per row.
+
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item \textbf{L1 (live base + offline ablation):} three sealed live M3 SSH cross-host bases;
+        offline ablation links under \texttt{authenticated\_session} alone and fragments when
+        that relation is disabled (3/3). Not a claim of organic session-only BAS stress.
+  \item \textbf{L2 (offline ablation on L1 seals):} on the same live SSH seals,
+        \texttt{endpoint\_connection} alone (entity/session/causal disabled) links denser than
+        ablating endpoint (3/3). Offline-only mechanism check.
+  \item \textbf{L3 (offline ablation + controlled inject):} organic hub load is \emph{not}
+        observed (hub-on vs hub-off identical, 0/3 organic). Controlled hub-load inject on the
+        live sealed bases (cutoff$+1$ peers) makes hub-on vs hub-off diverge (3/3). Controlled
+        inject $\neq$ organic BAS hub stress.
+  \item \textbf{L4 late evidence (two distinct classes):}
+        (i)~\emph{controlled late inject} on live seals yields successors and
+        \texttt{beyond\_revision\_horizon} LateEvidenceRecords (3/3);
+        (ii)~\emph{wall-clock forwarder hold/release} with real delays: within-horizon 180\,s
+        holds seal and show multi-revision successors (2/2 pass); beyond-horizon attempts
+        (930\,s hold-release; 1080\,s quiet wait) \emph{seal} but do \emph{not} emit
+        LateEvidenceRecords under organic telemetry (2 sealed, 0/2 LateEvidence; new membership
+        formed instead). Beyond-horizon localization is therefore supported by controlled inject,
+        not by wall-clock beyond runs in this lab.
+  \item \textbf{M7 supplemental boundary-stress cohort:} ten sealed live runs (5 attack-only +
+        5 concurrent-benign) with ability offsets $0/300/3900$\,s. Production formation yields
+        coverage $0$, F1 $0$, and undefined contamination under $W_{max}=3600$\,s. M7 is a
+        descriptive long-horizon stress cell and is excluded from primary cell/mode aggregates.
+\end{itemize}
+
+\subsection{Artifact Reproducibility}
+\label{sec:artifact}
+
+The supplementary archive rebuilds macros from sealed JSON, regenerates tables, and re-runs
+D1--D5, A1--A12, A--G, AB0--AB3, T1--T8, temporal boundary fixtures, and
+\texttt{verify\_claims.py}. A clean-room extract of the companion ZIP reproduces those checks
+under \texttt{CLEANROOM\_REPRODUCTION\_REPORT\_20260721.md}. Digests are refreshed with each
+packing; stale hashes are not reused.
+
+\subsection{Limitations}
 \label{sec:discussion}
 
-The paper-facing CALDERA table and robustness figure intentionally retain \tbd markers until all
-scenario repetitions, perturbation pairs, and outage traces pass validation. Replacement values
-must include run counts, undefined/censored counts, and confidence intervals; a point estimate
-alone is insufficient. The controlled environment demonstrates execution against live operating
-systems and real EDR/NDR collection paths, but cannot establish production generalization,
-unseen-evasion robustness, or field base rates. Calibration claims apply only to exact supported
-manifests. The study excludes CTI, agentic response, impact/priority, OT/ICS, and autonomous
-remediation.
+Two Ubuntu targets; non-commercial EDR; $n=5$ per cell; controlled benign workloads; no
+production base rates; fair baselines tied on primary M1--M6; synthetic cards $\neq$ field
+validation; raw order not robust; no fitted scorer/calibration; no partial-telemetry/outage;
+M2 mapping not corrected in the primary cohort. Organic hub stress remains unobserved on live
+streams. Wall-clock \emph{within}-horizon holds are executed (2/2); wall-clock
+\emph{beyond}-horizon LateEvidenceRecord under organic telemetry was attempted (2 sealed) but
+not observed. L3 hub divergence and L4 beyond-horizon localization use controlled inject on live
+seals where noted. M7 is supplemental only.
+
+\paragraph{Analysis status.}
+Complete (primary): live M1--M6 reconstruction (100 sealed train runs with B1--B8); fair sliding
+baselines with paired CI; T1--T8; M2 waterfall; 60-run determinism D1--D5; A1--A12; A--G; AB0--AB3;
+inclusive boundary fixtures including 3900\,s. Complete (supplemental, not primary): L1 live
+bases + offline L1/L2; L3 controlled hub inject; L4 controlled late inject; wall-clock within
+2/2 and beyond 2 sealed/0 LateEvidence; sealed M7 5+5 boundary-stress. Not executed: organic
+hub-stressed BAS traffic; fitted scorer / RP / PO1.

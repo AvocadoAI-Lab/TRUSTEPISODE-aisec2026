@@ -1,0 +1,38 @@
+{
+  "contract_version": "trustepisode.detector-registry.v1",
+  "value_contract": {
+    "json_type": "finite_number",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "direction": "higher_more_suspicious",
+    "missing_value_rule": "never_impute_as_zero",
+    "conflicting_duplicate_rule": "reject_FeatureVector"
+  },
+  "detectors": [
+    {"source_family": "EDR", "detector_id": "edr.process_anomaly.v1", "semantic": "process_lineage_anomaly"},
+    {"source_family": "EDR", "detector_id": "edr.remote_execution.v1", "semantic": "remote_execution_evidence"},
+    {"source_family": "EDR", "detector_id": "edr.persistence_change.v1", "semantic": "persistence_change_evidence"},
+    {"source_family": "NDR", "detector_id": "ndr.flow_anomaly.v1", "semantic": "flow_behavior_anomaly"},
+    {"source_family": "NDR", "detector_id": "ndr.lateral_session.v1", "semantic": "lateral_session_evidence"},
+    {"source_family": "NDR", "detector_id": "ndr.transfer_anomaly.v1", "semantic": "transfer_behavior_anomaly"}
+  ],
+  "canonical_detector_order": "ascending UTF-8 bytes of source_family || 0x1f || detector_id",
+  "deduplication_key": ["source_family", "detector_id", "dependency_group"],
+  "deduplication_rule": "byte-identical retries collapse; conflicting values or references reject the FeatureVector",
+  "empirical_cdf": {
+    "cohort": "root-deduplicated finite values from negative training revisions only",
+    "tie_rule": "F_hat(r)=(count(value<r)+0.5*count(value=r))/N",
+    "empty_training_detector": "registry_invalid_fail_closed",
+    "normalizer_artifact": "ordered detector_id, N, sorted IEEE-754 binary64 values, and tie rule; RFC8785/SHA-256 digest"
+  },
+  "D": {
+    "eligible_values": "one CDF-normalized value per deduplication key with observation=detected and a legal raw value",
+    "top_k": 3,
+    "fewer_than_k": "mean the min(3,n) available normalized values",
+    "zero_eligible": "D=0 placeholder; Scope Resolver must emit kappa=out_of_support, decision_eligible=false, eligibility_reason=no_eligible_detector_value, and P=null"
+  },
+  "q": {
+    "definition": "q_s=1 iff at least one deduplicated registered detector from source s has observation=detected, a legal finite value, and an evidence root tied to a core entity or selected episode edge; otherwise q_s=0",
+    "C": "q_EDR*q_NDR"
+  }
+}

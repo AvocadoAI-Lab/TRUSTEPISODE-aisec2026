@@ -1,0 +1,63 @@
+{
+  "result_type": "trustepisode.contamination-tradeoff.v1",
+  "summary_by_builder": {
+    "EB0_FIXED_BIN_300s": {
+      "overall_contamination_mean": 0.17777777777777776,
+      "concurrent_contamination_mean": 0.3555555555555555,
+      "concurrent_coverage_mean": 0.9583333333333334,
+      "attack_only_contamination_mean": 0.0
+    },
+    "EB1_SLIDING_TIME": {
+      "overall_contamination_mean": 0.17777777777777776,
+      "concurrent_contamination_mean": 0.3555555555555555,
+      "concurrent_coverage_mean": 0.9583333333333334,
+      "attack_only_contamination_mean": 0.0
+    },
+    "EB2_SLIDING_ENTITY": {
+      "overall_contamination_mean": 0.17777777777777776,
+      "concurrent_contamination_mean": 0.3555555555555555,
+      "concurrent_coverage_mean": 0.9583333333333334,
+      "attack_only_contamination_mean": 0.0
+    },
+    "EB3_RELATION_NO_ADVANCED_GUARDS": {
+      "overall_contamination_mean": 0.17777777777777776,
+      "concurrent_contamination_mean": 0.3555555555555555,
+      "concurrent_coverage_mean": 0.9583333333333334,
+      "attack_only_contamination_mean": 0.0
+    },
+    "EB4_TRUSTEPISODE": {
+      "overall_contamination_mean": 0.17777777777777776,
+      "concurrent_contamination_mean": 0.3555555555555555,
+      "concurrent_coverage_mean": 0.9583333333333334,
+      "attack_only_contamination_mean": 0.0
+    }
+  },
+  "concurrent_pareto": [
+    {
+      "builder": "EB0_FIXED_BIN_300s",
+      "mean_coverage": 0.9583333333333334,
+      "mean_contamination": 0.3555555555555555
+    },
+    {
+      "builder": "EB1_SLIDING_TIME",
+      "mean_coverage": 0.9583333333333334,
+      "mean_contamination": 0.3555555555555555
+    },
+    {
+      "builder": "EB2_SLIDING_ENTITY",
+      "mean_coverage": 0.9583333333333334,
+      "mean_contamination": 0.3555555555555555
+    },
+    {
+      "builder": "EB3_RELATION_NO_ADVANCED_GUARDS",
+      "mean_coverage": 0.9583333333333334,
+      "mean_contamination": 0.3555555555555555
+    },
+    {
+      "builder": "EB4_TRUSTEPISODE",
+      "mean_coverage": 0.9583333333333334,
+      "mean_contamination": 0.3555555555555555
+    }
+  ],
+  "interpretation": "On the sealed concurrent-benign subset, EB1_SLIDING_TIME through EB4_TRUSTEPISODE share identical mean contamination. Relative to legacy EB0_FIXED_BIN_300s, completeness improves while mean contamination remains the same at the overall macro level. Sliding entity does not reduce contamination versus sliding time on this cohort. TrustEpisode therefore shows a completeness gain versus fixed bins without a contamination improvement versus fair sliding baselines."
+}

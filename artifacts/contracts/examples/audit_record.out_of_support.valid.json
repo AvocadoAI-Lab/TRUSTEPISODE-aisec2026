@@ -1,0 +1,68 @@
+{
+  "object_type": "AuditRecord",
+  "schema_version": "trustepisode.online.v1",
+  "episode_id": "ep:8f5d",
+  "revision": 3,
+  "episode_revision_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "D": 0,
+  "C": 0,
+  "z": -1.25,
+  "P": null,
+  "kappa": "out_of_support",
+  "calibration_group_key": null,
+  "decision_eligible": false,
+  "U": {
+    "coverage": "unavailable",
+    "provenance": "complete",
+    "lateness": "late_accepted",
+    "contradiction": "unevaluable",
+    "calibration": "out_of_support"
+  },
+  "source_mask": {
+    "EDR": 1,
+    "NDR": 1
+  },
+  "detector_observation": {
+    "EDR": "examined_none",
+    "NDR": "examined_none"
+  },
+  "health_snapshot": {
+    "EDR": "healthy",
+    "NDR": "healthy"
+  },
+  "resolved_detector_state": {
+    "EDR": "no_detection",
+    "NDR": "no_detection"
+  },
+  "eligible_detector_count": 0,
+  "eligibility_reason": "no_eligible_detector_value",
+  "coverage_ref_ids": {
+    "EDR": "coverage:edr:002",
+    "NDR": "coverage:ndr:002"
+  },
+  "health_snapshot_digest": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+  "ordered_evidence_references": [
+    {
+      "reference_kind": "sentinel",
+      "relation": "contradiction",
+      "dependency_group": "sentinel:none",
+      "sentinel_reason": "not_applicable",
+      "expected_object_id": null
+    }
+  ],
+  "versions": {
+    "schema": {"version": "trustepisode.online.v1", "digest": "sha256:0101010101010101010101010101010101010101010101010101010101010101"},
+    "parser": {"version": "parser.v1", "digest": "sha256:0202020202020202020202020202020202020202020202020202020202020202"},
+    "formation_policy": {"version": "formation.v1", "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303"},
+    "detector_registry": {"version": "detectors.v1", "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404"},
+    "feature_policy": {"version": "feature.v1", "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505"},
+    "normalizer": {"version": "normalizer.v1", "digest": "sha256:0606060606060606060606060606060606060606060606060606060606060606"},
+    "raw_model": {"version": "raw-model.v1", "digest": "sha256:0707070707070707070707070707070707070707070707070707070707070707"},
+    "calibrator": {"version": "calibrator.v1", "digest": "sha256:0808080808080808080808080808080808080808080808080808080808080808"},
+    "support_policy": {"version": "support.v1", "digest": "sha256:0909090909090909090909090909090909090909090909090909090909090909"},
+    "sufficiency_policy": {"version": "sufficiency.v1", "digest": "sha256:1010101010101010101010101010101010101010101010101010101010101010"},
+    "assembly_policy": {"version": "assembly.v1", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+    "manifest": {"version": "manifest.v1", "digest": "sha256:1212121212121212121212121212121212121212121212121212121212121212"}
+  },
+  "canonical_digest": "sha256:092005cac9fe13153dc2700e0ea6964c8a85feb06f0906db74663df024b3b56f"
+}

@@ -1,0 +1,153 @@
+{
+  "contract_version": "trustepisode.thresholds.v1",
+  "source_scope": ["EDR", "NDR"],
+  "formation": {
+    "W_gap_seconds": 300,
+    "W_max_seconds": 3600,
+    "W_revision_seconds": 900,
+    "W_closed_lineage_retention_seconds": 86400,
+    "L_watermark_seconds": 120,
+    "hub_window_seconds": 600,
+    "hub_distinct_relation_cutoff": 25,
+    "max_component_events": 500,
+    "max_component_entities": 200,
+    "max_merge_parents": 3
+  },
+  "features": {
+    "detector_top_k": 3,
+    "corroboration_source_count": 2,
+    "detector_registry": "trustepisode.detector-registry.v1",
+    "raw_value_domain": "finite_binary64_[0,1]",
+    "direction": "higher_more_suspicious",
+    "empirical_cdf_tie_rule": "(count_less+0.5*count_equal)/N",
+    "fewer_than_top_k": "mean_min(3,n)",
+    "zero_eligible": "D=0_placeholder_and_decision_eligible=false",
+    "deduplication_key": ["source_family", "detector_id", "dependency_group"]
+  },
+  "raw_scorer_training": {
+    "objective": "mean(logaddexp(0,z)-y*z)+lambda/2*(b^2+w_D^2+w_C^2)",
+    "lambda": 0.0001,
+    "intercept_domain": "b in real numbers (unconstrained)",
+    "constraints": ["w_D>=0", "w_C>=0"],
+    "cohort": "first_finalized_per_training_lineage_with_exact_EDR_NDR_support_and_positive_or_negative_offline_label",
+    "excluded": ["mixed", "ambiguous", "out_of_support", "AssemblyFailureRecord"],
+    "solver": "deterministic_binary64_L-BFGS-B",
+    "initial_point": [0.0, 0.0, 0.0],
+    "projected_gradient_infinity_tolerance": 1e-9,
+    "objective_change_tolerance": 1e-12,
+    "maximum_iterations": 10000,
+    "artifact_digest_fields": ["ordered_training_revision_ids", "ordered_labels", "detector_registry_digest", "normalizer_digests", "row_major_binary64_matrix", "lambda", "solver_contract", "coefficients"]
+  },
+  "detector_availability_resolution": {
+    "observation_enum": ["detected", "examined_none", "not_examined"],
+    "precedence": [
+      "missing_or_conflicting_coverage_to_unknown",
+      "unexpected_or_down_to_collector_unavailable",
+      "invalid_parser_to_parser_invalid",
+      "unknown_health_or_not_examined_to_unknown",
+      "detected_to_available",
+      "examined_none_to_no_detection"
+    ],
+    "health_predicates": {
+      "heartbeat_period_seconds": 30,
+      "healthy": "zero missed heartbeats AND lag_seconds<=120 AND parser_valid AND transport_live",
+      "degraded": "transport_live AND (exactly one missed heartbeat OR 120<lag_seconds<=600)",
+      "down": "authenticated collector_or_transport_stop OR at least two consecutive missed heartbeats",
+      "unknown": "missing_or_conflicting_covering_intervals"
+    },
+    "feature_eligibility_precedence": "before calibration lookup, eligible_detector_count=0 forces kappa=out_of_support, decision_eligible=false, eligibility_reason=no_eligible_detector_value, and P=null even when resolved states are no_detection",
+    "decision_eligible_iff": "eligible_detector_count>0 AND kappa in {supported_global,supported_group}",
+    "eligibility_reason_enum": ["eligible", "no_eligible_detector_value", "source_out_of_support", "parser_out_of_support", "version_out_of_support", "calibration_out_of_support"]
+  },
+  "contradiction_rules": {
+    "CR1": "overlapping_authenticated_endpoint_binding_maps_one_endpoint_key_to_different_hosts",
+    "CR2": "matched_edr_socket_and_ndr_flow_disagree_on_canonical_initiator",
+    "CR3": "same_host_boot_pid_start_process_key_has_conflicting_parent_or_root_lineage"
+  },
+  "assembly": {
+    "join_deadline_seconds": 120,
+    "deadline_anchor": "EpisodeRevision.watermark",
+    "terminal_outcomes": ["AuditRecord", "AssemblyFailureRecord"],
+    "failure_codes": ["assembly_timeout", "missing_input", "conflicting_duplicate", "key_mismatch", "version_mismatch", "schema_invalid", "digest_mismatch"],
+    "failure_precedence": ["schema_invalid", "key_mismatch", "conflicting_duplicate", "digest_mismatch", "version_mismatch", "missing_input", "assembly_timeout"],
+    "input_order": ["EpisodeRevision", "FeatureVector", "RawLogit", "SupportDecision", "CalibratedProbability", "UProfile", "SourceCoverage"],
+    "canonical_reference_order": ["relation_rank_membership_link_feature_health_contradiction", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"],
+    "array_order_rule": "application sorts arrays by canonical_reference_order before RFC8785; JCS preserves array element order",
+    "reference_sentinel": "optional absence uses {reference_kind:sentinel,relation,dependency_group,sentinel_reason,expected_object_id}; required absence is missing_input",
+    "support_decision_health_fields": ["coverage_ref_ids.EDR", "coverage_ref_ids.NDR", "health_snapshot_digest"],
+    "health_snapshot_digest": "SHA-256 over RFC8785 canonical {EDR:{coverage_ref_id,health,parser_valid,lag},NDR:{coverage_ref_id,health,parser_valid,lag}}",
+    "version_object": ["schema", "parser", "formation_policy", "detector_registry", "feature_policy", "normalizer", "raw_model", "calibrator", "support_policy", "sufficiency_policy", "assembly_policy", "manifest"],
+    "version_binding_fields": ["version", "digest"],
+    "finite_number_rule": "reject NaN, Infinity, -Infinity, negative zero, and binary64 overflow",
+    "health_snapshot_source": "dereference SupportDecision.ordered_coverage_references; Assembler cannot independently select health",
+    "required_provenance": ["membership_events_and_roots", "selected_links", "scored_inputs", "coverage_objects", "versions_used_by_z_P_U"],
+    "optional_provenance": ["unscored_diagnostic_references"],
+    "identical_retry": "idempotent",
+    "conflicting_duplicate": "fail_closed"
+  },
+  "labels_and_matching": {
+    "theta_malicious_action_coverage": 0.5,
+    "theta_benign_contamination": 0.25,
+    "theta_match_weight": 0.5,
+    "minimum_temporal_iou": 0.1,
+    "minimum_entity_jaccard": 0.5,
+    "action_coverage": "|root_deduplicated_episode_action_tokens intersect required_group_action_tokens| / |required_group_action_tokens|",
+    "benign_contamination": "|episode_action_tokens intersect registered_benign_tokens| / |(episode_action_tokens intersect selected_group_tokens) union (episode_action_tokens intersect registered_benign_tokens)|; zero denominator is undefined",
+    "label_precedence": ["mixed", "positive", "negative", "ambiguous"],
+    "group_selection": "descending action_coverage then descending edge_weight then ascending UTF-8 group_id; no edge gives g_star=null, action_coverage=0, contamination=undefined",
+    "truth_conflict": "overlapping groups assign one root/action token to different IDs OR one root is malicious and benign OR duplicate offline receipt IDs disagree on card/window",
+    "string_id_order": "ascending unsigned UTF-8 bytes; identifiers are ASCII-constrained by schema",
+    "run_action_coverage": "mean_over_groups(max_over_episodes(action_coverage))",
+    "run_contamination": "arithmetic_mean_of_defined_episode_contamination; report undefined_count",
+    "empty_denominator": "undefined_never_zero",
+    "formation_metric_graph": "unassigned threshold-qualified edge graph",
+    "one_to_one_assignment_scope": "episode precision recall and F1 only",
+    "offline_label_join": "after terminal AssemblyOutcome insertion, resolve EpisodeRevision by digest and label AuditRecord or AssemblyFailureRecord; unresolved revision is ambiguous",
+    "decision_populations": {
+      "C_dec_all": "first-finalized terminal AssemblyOutcome per lineage",
+      "C_dec_score": "decision-eligible AuditRecord with finite P",
+      "C_dec_binary": "C_dec_score with offline label positive or negative"
+    },
+    "class_dependent_metrics_population": "C_dec_binary only",
+    "failure_bias_reporting": "RT1 counts each terminal outcome type and AssemblyFailureRecord by positive, negative, mixed, ambiguous label over C_dec_all",
+    "sensitivity": {
+      "theta_malicious_action_coverage": [0.25, 0.5, 0.75],
+      "theta_benign_contamination": [0.1, 0.25, 0.5],
+      "theta_match_weight": [0.4, 0.5, 0.6]
+    }
+  },
+  "calibration_group_gate": {
+    "group_key_fields": ["deployment_profile", "EDR_detector_version", "NDR_detector_version"],
+    "group_key_canonicalization": "RFC8785_SHA256",
+    "forbidden_group_key_fields": ["scenario", "run", "identity", "label"],
+    "minimum_positive_revisions": 50,
+    "minimum_negative_revisions": 50,
+    "minimum_independent_runs": 10,
+    "run_level_folds": 5,
+    "fold_assignment_seed": 20260710,
+    "fold_assignment_unit": "complete run; no run crosses folds",
+    "fold_sort": "descending (positive_count+negative_count), then ascending SHA-256(UTF8('20260710')||0x1f||group_key||0x1f||run_id), then run_id UTF-8",
+    "fold_assignment": "for each sorted run r and fold f compute resulting loads P_f=(pos_f+pos_r)/P_total, N_f=(neg_f+neg_r)/N_total, R_f=(runs_f+1)/R_total; choose ascending (max(P_f,N_f,R_f),P_f+N_f+R_f,f); require every fold nonempty",
+    "fold_assignment_artifact": "ordered {group_key,run_id,positive_count,negative_count,fold} array plus SHA-256 over RFC8785 bytes",
+    "brier_improvement": "Brier_global - Brier_group; positive favors group",
+    "nll_improvement": "NLL_global - NLL_group; positive favors group",
+    "minimum_mean_brier_improvement": 0.01,
+    "minimum_mean_nll_improvement": 0.01,
+    "require_positive_lower_95pct_bound_for_both": true,
+    "require_nonnegative_improvement_in_every_fold": true,
+    "undefined_or_tied_gate_result": "fallback_supported_global",
+    "passing_group_final_fit": "all_calibration_partition_records_for_exact_key",
+    "runtime_resolver_order": ["exact_support", "single_enabled_exact_group", "global_fallback"]
+  },
+  "uncertainty": {
+    "cluster_bootstrap_repetitions": 2000,
+    "cluster_bootstrap_seed": 20260710,
+    "interval": "percentile_2.5_97.5"
+  },
+  "ranking_metrics": {
+    "budget_fraction": 0.1,
+    "precision_at_k": 10,
+    "score_order": "descending_score_then_ascending_run_id_episode_id_revision_unsigned_UTF8",
+    "undefined_rule": "AUPRC_requires_positive; AUROC_requires_positive_and_negative; zero_denominators_are_null"
+  }
+}

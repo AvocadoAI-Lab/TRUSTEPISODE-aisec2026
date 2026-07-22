@@ -1,0 +1,15 @@
+{
+  "object_type": "AssemblyFailureRecord",
+  "schema_version": "trustepisode.online.v1",
+  "episode_id": "ep:8f5d",
+  "revision": 4,
+  "episode_revision_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+  "failure_code": "assembly_timeout",
+  "observed_input_types": [
+    "EpisodeRevision",
+    "FeatureVector",
+    "RawLogit"
+  ],
+  "assembly_policy_version": "assembly.v1",
+  "canonical_digest": "sha256:d04a05c59b5717b7575c75f30d7b344843839101f410a5941d0656b8dda41460"
+}

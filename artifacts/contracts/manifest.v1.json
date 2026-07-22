@@ -1,0 +1,91 @@
+{
+  "contract_version": "trustepisode.artifact-manifest.v3",
+  "files": [
+    {
+      "bytes": 4398,
+      "path": "README.md",
+      "sha256": "3bed7d94059f863643cdcb937deb50dfca5bf04934463a41b9fdd718c12a4ed1"
+    },
+    {
+      "bytes": 3741,
+      "path": "baseline_registry.v1.json",
+      "sha256": "9458e112f68e2e0c31092f994cfebba82db4407e2fb9e6778c654e3178853d40"
+    },
+    {
+      "bytes": 2309,
+      "path": "detector_registry.v1.json",
+      "sha256": "c8841869f5eb04e26ee2bf14660c578a70c4ab684a2fb6758de37ce1f1dbc4ee"
+    },
+    {
+      "bytes": 525,
+      "path": "examples/assembly_failure.valid.json",
+      "sha256": "c7ed6dbc55b628fb33e64ee3b966e00b10f3a800c4cf78ecfac228860317b983"
+    },
+    {
+      "bytes": 3124,
+      "path": "examples/audit_record.out_of_support.valid.json",
+      "sha256": "2d0848593dba4929b77fec5e31c43487eafdec06cbbf266318f31639909a59fe"
+    },
+    {
+      "bytes": 154,
+      "path": "examples/audit_record.reject-label.json",
+      "sha256": "d5a27d4cdbb0c59bbd40352d39e103bee59ae4044ac268de3351c3b60c560e15"
+    },
+    {
+      "bytes": 3248,
+      "path": "examples/audit_record.valid.json",
+      "sha256": "6fdcbca4d78ee2b8fd3c4b504874dd0a43af69d94d181b4da8b56b1efcc1f0f2"
+    },
+    {
+      "bytes": 2786,
+      "path": "examples/late_evidence.valid.json",
+      "sha256": "02e00af4a604d987f7757a6ca85dd891543ba6b65f745286314d2175b433078e"
+    },
+    {
+      "bytes": 6752,
+      "path": "lab_manifest.v1.json",
+      "sha256": "32807476fad0de47f2fdb8c78000189c35d6399300f59fb073593fa9e0b5a072"
+    },
+    {
+      "bytes": 8083,
+      "path": "perturbations.v1.json",
+      "sha256": "a205e5d8e14a6fb4408dcd44dfb3d0a9ba2fc7429b6bb8cef752a199f86bb6cf"
+    },
+    {
+      "bytes": 3787,
+      "path": "result_registry.v1.json",
+      "sha256": "c60ce2d7d84ed11c850a6a4283ef9848e9fbab6a099702c0bda3017f5479898d"
+    },
+    {
+      "bytes": 836,
+      "path": "run_registry.template.csv",
+      "sha256": "339b1ed134a9f803b20e692259a5ba5f674a339775193fbb9790171035bbba5f"
+    },
+    {
+      "bytes": 20675,
+      "path": "scenario_cards.v1.json",
+      "sha256": "edb071d4b4b1af5a362a7e2b015cb6b46a86fbd7404d1ef4043762ac0a76e332"
+    },
+    {
+      "bytes": 1924,
+      "path": "split_policy.v1.json",
+      "sha256": "259a9267547903f83f18881d3c3d2eb1d962fb10d6e3d6559eb213c90a11db69"
+    },
+    {
+      "bytes": 10124,
+      "path": "thresholds.v1.json",
+      "sha256": "ee9fa86d178b747bad58179dc548556285286bd51ca363db68994f1e75e0022f"
+    },
+    {
+      "bytes": 27983,
+      "path": "trustepisode_online.v1.schema.json",
+      "sha256": "52314f9eff6dfe3160b9c7effb783eccc5f4a4b10ada474dee7165f94077d171"
+    },
+    {
+      "bytes": 13858,
+      "path": "validate_contracts.py",
+      "sha256": "0766a60d3cebe8739adb4feaf05458f21cc4e16b5b66bf237424a75254ae9a11"
+    }
+  ],
+  "hash_algorithm": "SHA-256"
+}

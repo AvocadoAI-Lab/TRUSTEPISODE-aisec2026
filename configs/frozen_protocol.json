@@ -1,0 +1,42 @@
+{
+  "protocol_id": "trustepisode.frozen-protocol.amended-formation.v1",
+  "date": "2026-07-21",
+  "scheme": "B_formation_contract_paper",
+  "primary_cohort": {
+    "malicious_runs": 60,
+    "benign_runs": 40,
+    "repetitions_per_family_mode": 5,
+    "families": ["M1", "M2", "M3", "M4", "M5", "M6"],
+    "excluded": ["M7_live_primary"]
+  },
+  "executed": [
+    "native_bas_formation",
+    "temporal_boundary_conformance",
+    "table2_sufficiency_rule_tests",
+    "offline_eb1_eb2_eb3_baselines",
+    "relation_and_guard_ablations",
+    "exact_complete_and_m2_token_recovery",
+    "matching_threshold_sensitivity",
+    "sealed_input_formation_digest_equality"
+  ],
+  "not_executed": [
+    "fitted_raw_scorer",
+    "global_or_group_affine_calibration",
+    "held_out_locked_test_ranking",
+    "rp0_rp7_partial_telemetry",
+    "physical_collector_outage_po1",
+    "fitted_pipeline_cost_benchmark_rt6"
+  ],
+  "group_calibrator_gate": {
+    "minimum_positive_revisions": 50,
+    "minimum_negative_revisions": 50,
+    "minimum_independent_runs": 10,
+    "met_by_current_sealed_inventory": false,
+    "post_hoc_lowering_allowed": false
+  },
+  "seeds": {
+    "bootstrap": 20260710,
+    "perturbation_domain_separated": true
+  },
+  "resampling_unit": "complete_run"
+}

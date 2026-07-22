@@ -1,0 +1,51 @@
+{
+  "contract_version": "trustepisode.split-policy.v2",
+  "assignment_seed": 20260710,
+  "independent_unit": "base_campaign_id",
+  "strata": ["scenario_family", "benign_mode"],
+  "freeze_gate": "all base campaign IDs are registered before labels are released",
+  "ordering": "ascending SHA-256 of UTF-8 assignment_seed || ':' || base_campaign_id within each stratum",
+  "cycle_size": 10,
+  "cycle_assignment": {
+    "0-4": "train",
+    "5-6": "development",
+    "7": "calibration",
+    "8-9": "locked_test"
+  },
+  "target_proportions": {
+    "train": 0.5,
+    "development": 0.2,
+    "calibration": 0.1,
+    "locked_test": 0.2
+  },
+  "replay_inheritance": "every RP0-RP7 replay child, EpisodeRevision, and terminal AssemblyOutcome inherits its base campaign partition and bootstrap_cluster_id",
+  "physical_outage_population": {
+    "id": "PO1",
+    "relationship_to_base_runs": "independent dedicated cohort, not a descendant of the 220 base runs",
+    "partition": "locked_test",
+    "bootstrap_cluster_id": "po1_cell_id",
+    "trace_count": 40,
+    "fitting_prohibition": "PO1 traces cannot enter training, development, calibration, RT2, RT3a, or RT3b"
+  },
+  "registry_columns": [
+    "run_id",
+    "base_campaign_id",
+    "parent_run_id",
+    "pair_id",
+    "scenario_family",
+    "benign_mode",
+    "seed",
+    "partition",
+    "bootstrap_cluster_id",
+    "role",
+    "manifest_digest"
+  ],
+  "fail_closed_rules": [
+    "a row with a missing registry column cannot enter a formal result",
+    "one base_campaign_id cannot map to more than one partition",
+    "a replay-descendant partition mismatch invalidates the complete base campaign cluster",
+    "every complete 10-run base stratum contributes at least one campaign to every partition",
+    "every PO1 row has partition=locked_test, bootstrap_cluster_id=po1_cell_id, and no parent base run",
+    "locked_test rows cannot be reassigned after label release"
+  ]
+}

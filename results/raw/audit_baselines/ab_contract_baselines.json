@@ -1,0 +1,108 @@
+{
+  "result_type": "trustepisode.audit-contract-ablation.v1",
+  "scope": "synthetic isolation study; not commercial SOTA comparison",
+  "seed": 20260721,
+  "fixtures": [
+    "late_within",
+    "late_beyond",
+    "missing_input",
+    "replay",
+    "duplicate_retry",
+    "ref_reorder"
+  ],
+  "builders": [
+    {
+      "builder": "AB0_MUTABLE_RECORD",
+      "prior_history_mutation_count": 1,
+      "missing_terminal_outcome_count": 1,
+      "byte_identical_replay_rate": 1.0,
+      "undiagnosed_failure_count": 1,
+      "provenance_completeness": 0.0,
+      "failure_localization_rate": 0.0,
+      "version_mismatch_detection_rate": 0.0,
+      "conflicting_duplicate_detection": 0.0,
+      "append_only_violations": 1,
+      "investigator_visible_state_count": 1,
+      "prior_digest_unchanged_on_late": false
+    },
+    {
+      "builder": "AB1_NONCANONICAL_APPEND",
+      "prior_history_mutation_count": 0,
+      "missing_terminal_outcome_count": 1,
+      "byte_identical_replay_rate": 0.0,
+      "undiagnosed_failure_count": 1,
+      "provenance_completeness": 0.5,
+      "failure_localization_rate": 0.0,
+      "version_mismatch_detection_rate": 0.0,
+      "conflicting_duplicate_detection": 0.0,
+      "append_only_violations": 0,
+      "investigator_visible_state_count": 1,
+      "prior_digest_unchanged_on_late": true,
+      "ref_reorder_breaks_digest": true
+    },
+    {
+      "builder": "AB2_SILENT_FAILURE",
+      "prior_history_mutation_count": 0,
+      "missing_terminal_outcome_count": 1,
+      "byte_identical_replay_rate": 1.0,
+      "undiagnosed_failure_count": 1,
+      "provenance_completeness": 0.5,
+      "failure_localization_rate": 0.0,
+      "version_mismatch_detection_rate": 0.0,
+      "conflicting_duplicate_detection": 0.0,
+      "append_only_violations": 0,
+      "investigator_visible_state_count": 2,
+      "prior_digest_unchanged_on_late": true
+    },
+    {
+      "builder": "AB3_TRUSTEPISODE",
+      "prior_history_mutation_count": 0,
+      "missing_terminal_outcome_count": 0,
+      "byte_identical_replay_rate": 1.0,
+      "undiagnosed_failure_count": 0,
+      "provenance_completeness": 1.0,
+      "failure_localization_rate": 1.0,
+      "version_mismatch_detection_rate": 1.0,
+      "conflicting_duplicate_detection": 1.0,
+      "append_only_violations": 0,
+      "investigator_visible_state_count": 4,
+      "prior_digest_unchanged_on_late": true,
+      "failure_blocks_later_success": true,
+      "explicit_failure_records": 1
+    }
+  ],
+  "property_matrix": [
+    {
+      "property": "prior_history_immutable_under_late",
+      "AB0_Mutable": false,
+      "AB1_Noncanonical": false,
+      "AB2_Silent_failure": true,
+      "AB3_TrustEpisode": true,
+      "evidence_type": "synthetic conformance"
+    },
+    {
+      "property": "byte_identical_replay_under_ref_reorder",
+      "AB0_Mutable": true,
+      "AB1_Noncanonical": false,
+      "AB2_Silent_failure": true,
+      "AB3_TrustEpisode": true,
+      "evidence_type": "synthetic conformance"
+    },
+    {
+      "property": "explicit_terminal_failure_on_missing_input",
+      "AB0_Mutable": false,
+      "AB1_Noncanonical": false,
+      "AB2_Silent_failure": false,
+      "AB3_TrustEpisode": true,
+      "evidence_type": "synthetic conformance"
+    },
+    {
+      "property": "append_only_terminal_store",
+      "AB0_Mutable": false,
+      "AB1_Noncanonical": true,
+      "AB2_Silent_failure": true,
+      "AB3_TrustEpisode": true,
+      "evidence_type": "synthetic conformance"
+    }
+  ]
+}

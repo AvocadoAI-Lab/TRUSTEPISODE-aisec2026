@@ -1,0 +1,12 @@
+{
+  "executed": false,
+  "scheme": "B_design_only",
+  "reason": "Insufficient sealed calibration/locked labels for leakage-free run-level held-out ranking; group gate 50/50/10 unmet. No AUPRC/AUROC reported.",
+  "models_not_fitted": [
+    "ML0_RULE_SCORE",
+    "ML1_D_ONLY",
+    "ML2_D_PLUS_C",
+    "ML3_UNCONSTRAINED"
+  ],
+  "claim": "Scorer/calibrator remain design interfaces only in this submission."
+}

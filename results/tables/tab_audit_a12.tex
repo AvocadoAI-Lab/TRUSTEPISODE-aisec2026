@@ -1,0 +1,31 @@
+\begin{table*}[!t]
+\caption{A1--A12 audit conformance fixtures (synthetic; covers all seven AssemblyFailureRecord codes).}
+\label{tab:audit-a12}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llllcc@{}}
+\toprule
+\textbf{Fixture} & \textbf{Expected} & \textbf{Observed} & \textbf{Term.} & \textbf{Prior chg?} & \textbf{Result} \\
+\midrule
+A1\_SUCCESS & success & success & 1 & no & pass \\
+A2\_SCHEMA\_INVALID & schema\_invalid & schema\_invalid & 1 & no & pass \\
+A3\_KEY\_MISMATCH & key\_mismatch & key\_mismatch & 1 & no & pass \\
+A4\_CONFLICTING\_DUPLICATE & conflicting\_duplicate & conflicting\_duplicate & 1 & no & pass \\
+A5\_DIGEST\_MISMATCH & digest\_mismatch & digest\_mismatch & 1 & no & pass \\
+A6\_VERSION\_MISMATCH & version\_mismatch & version\_mismatch & 1 & no & pass \\
+A7\_MISSING\_INPUT & missing\_input & missing\_input & 1 & no & pass \\
+A8\_ASSEMBLY\_TIMEOUT & assembly\_timeout & assembly\_timeout & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_SCHEMA & schema\_invalid & schema\_invalid & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_KEY & key\_mismatch & key\_mismatch & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_DUPLICATE & conflicting\_duplicate & conflicting\_duplicate & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_DIGEST & digest\_mismatch & digest\_mismatch & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_VERSION & version\_mismatch & version\_mismatch & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_MISSING & missing\_input & missing\_input & 1 & no & pass \\
+A9\_FAILURE\_PRECEDENCE\_TIMEOUT & assembly\_timeout & assembly\_timeout & 1 & no & pass \\
+A10\_TERMINAL\_EXCLUSIVITY & rejected & rejected & 1 & no & pass \\
+A11\_IDEMPOTENT\_SUCCESS\_RETRY & idempotent & idempotent & 1 & no & pass \\
+A12\_APPEND\_ONLY\_STORE & both\_rejected & both\_rejected & 1 & no & pass \\
+\bottomrule
+\end{tabular}
+\end{table*}

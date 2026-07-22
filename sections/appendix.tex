@@ -218,8 +218,7 @@ coverage & unknown & first: any required health interval is missing or conflicti
  & complete & else every expected instance is healthy and parser valid \\
 \midrule
 provenance & missing & first: any scored value, accepted link, membership event, or required root is unresolved \\
- & partial & else at least one optional unscored reference is absent \\
- & complete & else every required pointer and dependency root resolves \\
+ & complete & else every required pointer and dependency root resolves; schema value \texttt{partial} is reserved and not emitted by v1 \\
 \midrule
 lateness & late-accepted & first: this revision was created by accepted late evidence \\
  & revisable & else episode is open or finalized inside the 900 s horizon \\
@@ -307,7 +306,7 @@ artifact validation.
 \textbf{Symbol} & \textbf{Meaning} & \textbf{Owner} & \textbf{Selection data} & \textbf{Freeze and validation} \\
 \midrule
 $W_{\mathrm{gap}}$ & maximum event-time inactivity gap & formation policy & development & before final train fit; EB1/EB2 sensitivity \\
-$W_{\max}$ & maximum event-time episode span & formation policy & development & before final train fit; M7 sensitivity \\
+$W_{\max}$ & maximum event-time episode span & formation policy & fixed contract & deterministic 3599/3600/3601 s conformance \\
 $W_{\mathrm{rev}}$ & post-watermark revision horizon & revision policy & development/pilot & before calibration; delay replay \\
 $L_{\mathrm{wm}}$ & allowed ingest lateness for watermark & revision policy & development/pilot & before calibration; delay replay \\
 $f_{\mathrm{hub}}$ & generic/high-frequency entity cutoff & formation policy & training/development & before final train fit; EB3-H ablation \\
@@ -405,7 +404,7 @@ Upstream detector contract or parser semantics & out of support & revalidate fea
 Raw-model coefficients or training population & invalid & refit calibrator \\
 Label policy & invalid for supervised claim & regenerate labels; repeat fit and evaluation \\
 Supported source mask or health regime & out of support & collect calibration support and register a new manifest \\
-Schema-only additive field excluded from features & pending compatibility check & prove canonical equivalence before manifest amendment \\
+Schema-only additive field excluded from features & compatibility unproven & prove canonical equivalence before manifest amendment \\
 Candidate prevalence drift & revalidation signal only & audit reliability; do not automatically change episode-level output \\
 \bottomrule
 \end{tabular}
@@ -460,7 +459,6 @@ M3 & two Linux EDR targets; discovery $\rightarrow$ temporary-key SSH write & Li
 M4 & instrumented service; five requests 60 s apart $\rightarrow$ local action & registered NDR cadence plus EDR local action & stop client and remove action; fail on cadence error over 1 s \\
 M5 & discovery $\rightarrow$ local configuration action & EDR-only hard case; NDR no-detection is valid & remove configuration; fail if Identity/receipt value reaches online objects \\
 M6 & same SSH/admin family as B5; discovery $\rightarrow$ remote write & identical tool family in both classes; context plus EDR/NDR distinguish use & remove action/session/key; retain declared action failure \\
-M7 & discovery at 0 s $\rightarrow$ SSH write at 300 s $\rightarrow$ local action at 3900 s & observations across $W_{\mathrm{gap}}$/$W_{\max}$ boundaries & remove actions/sessions; report any schedule-bound violation \\
 \bottomrule
 \end{tabular}
 \vspace{8pt}
@@ -484,10 +482,10 @@ B8 & \texttt{supervisorctl} maintenance with a frozen work order & administrativ
 \end{tabular}
 \end{table*}
 
-Every card records its version, target images, benign mode, repetition ID, and seed. Each
-malicious family requires 10 valid attack-only repetitions and 10 valid concurrent-benign
-repetitions; B1--B8 each require 10 valid pure-benign repetitions. Achieved counts remain
-\texttt{pending}. The machine-readable ordered actions, offline receipts, observations, cleanup, and failure rules are in
+Every card records its version, target images, benign mode, repetition ID, and seed. The amended
+primary cohort contains five valid attack-only and five valid concurrent-benign repetitions for
+each M1--M6 family; B1--B8 each contain five standalone-benign repetitions. All 100 runs are
+sealed, with zero primary-cohort failures. The machine-readable ordered actions, offline receipts, observations, cleanup, and failure rules are in
 \path{artifacts/contracts/scenario_cards.v1.json}. A collection failure excludes the run from
 primary metrics but remains in RT1 and the failure log. A failed scenario action
 with healthy primary collectors remains in the registered sensitivity view but not the
@@ -614,7 +612,7 @@ Every replay child seed is HMAC-SHA256 over base-run ID, intervention, and level
 
 PO1 is a dedicated locked-test-only cohort with
 $2$ sources $\times2$ durations $\times10$ repetitions, exactly 40 physical traces, balanced
-over M1/M3/M4/M7 by the registered modular allocation. After a 120-second steady state, all
+over M1/M3/M4/M6 by the registered modular allocation. After a 120-second steady state, all
 registered collector-egress processes for the selected EDR or NDR family are stopped for 120
 or 600 seconds, then restored; targets, packet capture, and network interfaces remain live.
 TrustEpisode and OB1 reuse each immutable trace. The procedure records last healthy heartbeat, first degraded/down
@@ -708,9 +706,9 @@ zero; \texttt{N/A} is reserved for structurally inapplicable fields. The machine
 \toprule
 \textbf{Scorer} & \textbf{AUPRC} $\uparrow$ & \textbf{Recall@budget} $\uparrow$ & \textbf{AUROC} $\uparrow$ & \textbf{Precision@$k$} $\uparrow$ \\
 \midrule
-SB1 static severity & \tbd & \tbd & \tbd & \tbd \\
-SB2 $D$ only & \tbd & \tbd & \tbd & \tbd \\
-SB3 $D+C$ raw & \tbd & \tbd & \tbd & \tbd \\
+SB1 static severity & not reported & not reported & not reported & not reported \\
+SB2 $D$ only & not reported & not reported & not reported & not reported \\
+SB3 $D+C$ raw & not reported & not reported & not reported & not reported \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -724,9 +722,9 @@ SB3 $D+C$ raw & \tbd & \tbd & \tbd & \tbd \\
 \toprule
 \textbf{Mapping} & \textbf{Brier} $\downarrow$ & \textbf{NLL} $\downarrow$ & \textbf{Reliability} & \textbf{Supported coverage} & \textbf{Out-of-support rate} \\
 \midrule
-SB4 uncalibrated sigmoid score & \tbd & \tbd & pending & \tbd & \tbd \\
-SB5 supported global & \tbd & \tbd & pending & \tbd & \tbd \\
-SB6 supported group & \tbd & \tbd & pending & \tbd & \tbd \\
+SB4 uncalibrated sigmoid score & not reported & not reported & not reported & not reported & not reported \\
+SB5 supported global & not reported & not reported & not reported & not reported & not reported \\
+SB6 supported group & not reported & not reported & not reported & not reported & not reported \\
 \bottomrule
 \end{tabular}
 \end{table*}

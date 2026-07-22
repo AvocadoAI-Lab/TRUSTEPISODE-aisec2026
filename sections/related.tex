@@ -1,30 +1,77 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Alert correlation and provenance.}
-Classical alert-correlation methods connect observations into attack scenarios using temporal,
-causal, and prerequisite relations~\cite{ning2002attackscenarios}. Provenance-based intrusion
-detection preserves process and information-flow context; HOLMES, NODLINK, and KAIROS show how
-causal graphs support multi-stage reconstruction and investigation
-~\cite{holmes2019,nodlink2024,kairos2024}. CAPTAIN further demonstrates that a lightweight,
-interpretable rule system can adapt deployment-specific parameters~\cite{captain2025}.
-\trustepisode differs by treating deterministic cross-source candidate construction,
-revision ownership, and candidate-conditioned probability calibration as one versioned
-contract rather than presenting a new graph detector.
+\subsection{Alert Correlation and Attack Reconstruction}
 
-\paragraph{Calibration and incomplete telemetry.}
-Ranking and calibration answer different questions: a high AUPRC does not imply reliable
-probabilities~\cite{guo2017calibration,gneiting2007proper}. Platt-style affine calibration is
-compact and ranking-preserving when its slope is positive, but only for a fixed candidate
-population and support regime~\cite{platt1999probabilistic}. Missing-modality research likewise
-shows that absent inputs require explicit handling rather than silent zero imputation
-~\cite{missingmodality2024}. \trustepisode therefore separates observed source masks,
-authenticated health, detector availability, calibration status, and sufficiency. The raw
-scorer cannot read health or labels, and unsupported records retain a diagnostic logit but no
-numeric probability.
+Classical alert correlation reconstructs multi-step scenarios from intrusion alerts by temporal
+and causal linking~\cite{ning2002attackscenarios}. Provenance-based detectors such as HOLMES,
+UNICORN, KAIROS, NODLINK, and CAPTAIN recover APT context from system graphs and alerts
+~\cite{holmes2019,unicorn2020,kairos2024,nodlink2024,captain2025}. Those systems motivate episode
+construction; they do not by themselves fix single-owner membership, late-data revision policy,
+or append-only terminal audit outcomes for mixed EDR/NDR streams.
 
-\paragraph{Scope.}
-The method does not model operational impact, response priority, autonomous response, CTI
-enrichment, or language-agent behavior. Its claims are limited to deterministic EDR/NDR episode
-formation, manifest-scoped maliciousness calibration, explicit evidence sufficiency, and
-replayable audit records.
+\subsection{Digital Forensic Event Reconstruction}
+
+Timeline-based event reconstruction is a core digital-forensic technique for inferring past
+activity from heterogeneous artifacts~\cite{breitinger2025sok,casey2011digitalevidence}. Recent
+work formalizes timestamp interpretation via time anchors and clock-skew anomalies
+~\cite{vanini2024timeanchors} and surveys challenges beyond mere data volume
+~\cite{breitinger2025sok}. Process models and filesystem analysis emphasize documenting what was
+examined, what was unavailable, and how conclusions depend on incomplete traces
+~\cite{carrier2005filesystem,nist80086}. TrustEpisode imports these audit requirements into
+\emph{online} EDR/NDR episode reconstruction: immutable revisions, explicit late stores, and
+digestable terminal outcomes under delayed delivery.
+
+\subsection{Reproducibility, Tool Validation, and Provenance}
+
+Forensic tool and method validation requires documented procedures, known datasets, and
+repeatable results before casework~\cite{swgde2018tooltesting,brunty2022validation,wales2026validation}.
+Chain-of-custody and provenance discipline demand that investigators show integrity of examined
+objects and distinguish observed from unavailable evidence~\cite{casey2011digitalevidence,nist80086}.
+TrustEpisode's contribution is not a higher detector F1; it is a single-owner revision contract,
+canonical replay boundary, and explicit terminal failure semantics that make reconstruction
+outcomes auditable under the same reproducibility expectations.
+
+\subsection{Incomplete Telemetry and Evidence-Loss Attribution}
+
+EDR and NDR fail differently; missing modality, parser blind spots, and collector health can
+erase or distort attack steps without implying that correlation ``missed'' an already-normalized
+event~\cite{missingmodality2024,vaseghipanah2026blindspots}. Reconstruction contracts must
+therefore separate sensor observability, normalization/token mapping, formation membership, and
+offline attribution when diagnosing incomplete episodes.
+
+\subsection{Positioning Summary}
+
+Table~\ref{tab:related-compare} contrasts representative lines along forensic-contract properties.
+Unknown cells are marked \emph{Not reported}; we do not infer undocumented product behavior.
+\trustepisode's novelty is the audit lifecycle and evidence-loss localization contract, not a new
+graph algorithm or classifier.
+
+\begin{table*}[!t]
+\caption{Related-work comparison on forensic reconstruction contract properties (Not reported =
+not documented in the cited source).}
+\label{tab:related-compare}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}p{0.14\textwidth}cccccccc@{}}
+\toprule
+\textbf{Work} & \textbf{EDR+NDR} & \textbf{Imm.\ rev.} & \textbf{Late evid.} & \textbf{Canon.\ replay} & \textbf{Term.\ fail} & \textbf{Src health} & \textbf{Loss loc.} & \textbf{Live} \\
+\midrule
+Alert correlation~\cite{ning2002attackscenarios} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
+HOLMES~\cite{holmes2019} & Partial & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
+UNICORN~\cite{unicorn2020} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
+KAIROS~\cite{kairos2024} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
+Timeline SoK~\cite{breitinger2025sok} & Survey & Survey & Survey & Survey & Survey & Survey & Survey & Survey \\
+Time anchors~\cite{vanini2024timeanchors} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Clock skew & Yes \\
+\trustepisode (this) & Yes & Yes & Yes & Yes & Yes & Yes & A--G & Yes \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Scope Distinction}
+
+\trustepisode does not claim a new graph detector, AI ranking effectiveness, attribution beyond
+observable EDR/NDR, enterprise impact estimation, or autonomous response. The evaluated
+contribution is a deterministic forensic reconstruction and audit contract for sealed EDR/NDR
+evidence under late arrival and incomplete observability.

@@ -1,0 +1,17 @@
+\begin{table*}[!t]
+\caption{Contract ablation / reference-implementation comparison (synthetic isolation study; not SOTA product baselines).}
+\label{tab:ab-contract}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccp{0.18\textwidth}@{}}
+\toprule
+\textbf{Property} & \textbf{AB0 Mutable} & \textbf{AB1 Noncan.} & \textbf{AB2 Silent} & \textbf{TrustEpisode} & \textbf{Evidence} \\
+\midrule
+prior\_history\_immutable\_under\_late & no & no & yes & yes & synthetic conformance \\
+byte\_identical\_replay\_under\_ref\_reorder & yes & no & yes & yes & synthetic conformance \\
+explicit\_terminal\_failure\_on\_missing\_input & no & no & no & yes & synthetic conformance \\
+append\_only\_terminal\_store & no & yes & yes & yes & synthetic conformance \\
+\bottomrule
+\end{tabular}
+\end{table*}

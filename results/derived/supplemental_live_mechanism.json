@@ -1,0 +1,217 @@
+{
+  "result_type": "trustepisode.supplemental-live.mechanism-analysis.v1",
+  "scope": "Supplemental live sealed bases under partition supplemental_mechanism; L1 session ablation offline on 3× M3 SSH live seals; L4 controlled late inject (T7-style) on live seals — not wall-clock 900s wait. Primary M1-M6 untouched.",
+  "l1": {
+    "n": 3,
+    "pass_count": 3,
+    "rows": [
+      {
+        "run_id": "run-supp-l1-01-20260721T114212Z",
+        "n_events": 32,
+        "session_only_episodes": 27,
+        "no_session_episodes": 32,
+        "session_only_membership_digest": "sha256:4a29997c1606489d2a1a28fc691522d924b6903c0c5970be07d72be5cbe1869f",
+        "no_session_membership_digest": "sha256:32e9be971b8f66e5fb5425384b3e015e7cea6c1c7115d4b1d6cf9e51abe955c0",
+        "linked_under_session_only": true,
+        "ablation_fragments": true,
+        "pass": true,
+        "interpretation": "session-only links and no-session ablation fragments"
+      },
+      {
+        "run_id": "run-supp-l1-02-20260721T114405Z",
+        "n_events": 34,
+        "session_only_episodes": 29,
+        "no_session_episodes": 34,
+        "session_only_membership_digest": "sha256:7f62fca2e18921c7d8c84446df0f791e7663f8eb2bd31aa385d6fed202c8e71b",
+        "no_session_membership_digest": "sha256:74e5f30a88121726c3c67483fb3800ae76646c3bf4bea91f8b10429bbe9d68c8",
+        "linked_under_session_only": true,
+        "ablation_fragments": true,
+        "pass": true,
+        "interpretation": "session-only links and no-session ablation fragments"
+      },
+      {
+        "run_id": "run-supp-l1-03-20260721T114636Z",
+        "n_events": 26,
+        "session_only_episodes": 21,
+        "no_session_episodes": 26,
+        "session_only_membership_digest": "sha256:6e97ddd87c110e9285e107429696d4e618e264e917359a91372232e9ad36f5ab",
+        "no_session_membership_digest": "sha256:7d59f1a0b431ff034ae97234cc662b6ad67dbe31dec386d53d29aba573a8adf0",
+        "linked_under_session_only": true,
+        "ablation_fragments": true,
+        "pass": true,
+        "interpretation": "session-only links and no-session ablation fragments"
+      }
+    ]
+  },
+  "l4": {
+    "n": 6,
+    "pass_count": 6,
+    "pass_on_l1_ssh_bases": 3,
+    "pass_on_m5_bases": 3,
+    "rows": [
+      {
+        "run_id": "run-supp-l1-01-20260721T114212Z",
+        "card_id": "M3",
+        "n_events": 32,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:8609bdda9833fa1ade885319bfaae47a965671ab139ee47f95261bc489952e8c",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 34,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:4d6b2bf4b40d2dcc66deebf92d6cb02ab6fe06735a814b576e3890bfc500092f",
+          "prior_tip_digest_beyond": "sha256:865a1d8ace54aa94bfc931b2f7400c186ad363228e68f330d2c5c2a1a663b614"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "reuse_l1_sealed_ssh_stream"
+      },
+      {
+        "run_id": "run-supp-l1-02-20260721T114405Z",
+        "card_id": "M3",
+        "n_events": 34,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:30597058025780dd86bf5c09d991621323aff5ea7ae7f8b99b23f3e152ed50f7",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 36,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:686ced52c76d174e0f21e5f774e186623eff98534028b316f095e3381eb88e7f",
+          "prior_tip_digest_beyond": "sha256:13953a07477001fecaca40db715aced9d2eb01fb40f5bdc685646a5ea384116d"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "reuse_l1_sealed_ssh_stream"
+      },
+      {
+        "run_id": "run-supp-l1-03-20260721T114636Z",
+        "card_id": "M3",
+        "n_events": 26,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:5157eaea10c4548ddae3b8b75c80ae0114196e3c75a6f1937bd2e38ae352e5f0",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 28,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:046bee92d4d76984c4914cf31cb9992ceb009ad98802cf71f24b0d0641d26709",
+          "prior_tip_digest_beyond": "sha256:83eba2c51bdbf09561487c09200f9ddf0498c90f32049a537388cca545bc3868"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "reuse_l1_sealed_ssh_stream"
+      },
+      {
+        "run_id": "run-supp-l4-01-20260721T114826Z",
+        "card_id": "M5",
+        "n_events": 16,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:7b300bac1957442c388d36dc2efd39252f91a201d881667ec70cd7bf16d2826d",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 18,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:8b35ec7a2fa9ec4a234f5e7c8e8f55972323685f36b01ddb2874e421e672ac89",
+          "prior_tip_digest_beyond": "sha256:815b87109f93f52f7c06e927bd5d842781bad4031821fbe71480ba70bbde0ba1"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "m5_live_sealed"
+      },
+      {
+        "run_id": "run-supp-l4-02-20260721T114937Z",
+        "card_id": "M5",
+        "n_events": 16,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:43ebda72750e5405b1db75df33f19e0adfdc930d96f1d68c83b4ee255903a492",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 11,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:8abada046551823d27749055230b0b4f2d784b3dcb584281584526d2c238ad51",
+          "prior_tip_digest_beyond": "sha256:691ffd147902528d0e1b0e457a6da1ddc6d26870eb21e746f52d6f56cf0291a2"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "m5_live_sealed"
+      },
+      {
+        "run_id": "run-supp-l4-03-20260721T115046Z",
+        "card_id": "M5",
+        "n_events": 23,
+        "W_revision_seconds": 900,
+        "base_membership_digest": "sha256:3d11cc40cf801de38b41d83639ad2a6994e61eb23420a6cdc02470c8c758e000",
+        "base_n_late": 0,
+        "within_horizon": {
+          "max_revision": 25,
+          "membership_changed": true,
+          "successor_observed": true,
+          "n_late": 0
+        },
+        "beyond_horizon": {
+          "n_late": 1,
+          "late_reasons": [
+            "beyond_revision_horizon"
+          ],
+          "late_store_effect": true,
+          "prior_tip_digest_base": "sha256:a0090dc9da7d34b607c060b705c04d3719062e3cd57885657a9b75dd8f569bf8",
+          "prior_tip_digest_beyond": "sha256:24f4be0d798e0024881132bda7c2bde0e9da61961a5ce472b81ac1546b13d530"
+        },
+        "pass": true,
+        "delivery_mode": "live_sealed_base_plus_controlled_late_inject_T7_style",
+        "interpretation": "within-horizon successor and beyond-horizon LateEvidenceRecord on live sealed base",
+        "l4_base": "m5_live_sealed"
+      }
+    ]
+  },
+  "claim_sentence": "Supplemental live mechanism validation confirms session-only and late-evidence contract paths on sealed live bases (3/3 L1; L4 via controlled late inject on those SSH seals; not raw wall-clock forwarder delay)."
+}

@@ -1,0 +1,19 @@
+\begin{table*}[!t]
+\caption{Fair sliding-gap baselines versus legacy fixed bins on the sealed 60-run M1--M6 malicious cohort
+(mean $\pm$ sample SD). Primary comparisons share $W_{gap}=300$\,s and $W_{max}=3600$\,s.}
+\label{tab:fair-baselines}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+\textbf{Builder} & \textbf{Role} & \textbf{Coverage} & \textbf{Exact-comp.} & \textbf{Frag.} & \textbf{Contam.} & \textbf{F1} \\
+\midrule
+EB0\_FIXED\_BIN\_300s & legacy & $0.942\pm0.113$ & $0.783\pm0.415$ & $0.083\pm0.279$ & $0.178\pm0.208$ & $0.950\pm0.120$ \\
+EB1\_SLIDING\_TIME & primary & $0.958\pm0.094$ & $0.833\pm0.376$ & $0.000\pm0.000$ & $0.178\pm0.208$ & $1.000\pm0.000$ \\
+EB2\_SLIDING\_ENTITY & primary & $0.958\pm0.094$ & $0.833\pm0.376$ & $0.000\pm0.000$ & $0.178\pm0.208$ & $1.000\pm0.000$ \\
+EB3\_RELATION\_NO\_ADVANCED\_GUARDS & primary & $0.958\pm0.094$ & $0.833\pm0.376$ & $0.000\pm0.000$ & $0.178\pm0.208$ & $1.000\pm0.000$ \\
+EB4\_TRUSTEPISODE & primary & $0.958\pm0.094$ & $0.833\pm0.376$ & $0.000\pm0.000$ & $0.178\pm0.208$ & $1.000\pm0.000$ \\
+\bottomrule
+\end{tabular}
+\end{table*}

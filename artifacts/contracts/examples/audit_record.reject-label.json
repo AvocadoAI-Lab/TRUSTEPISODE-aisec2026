@@ -1,0 +1,7 @@
+{
+  "object_type": "AuditRecord",
+  "schema_version": "trustepisode.online.v1",
+  "episode_id": "ep:forbidden",
+  "revision": 0,
+  "malicious_label": 1
+}

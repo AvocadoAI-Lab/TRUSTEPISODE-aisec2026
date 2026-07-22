@@ -1,0 +1,158 @@
+{
+  "contract_version": "trustepisode.lab-manifest.v3",
+  "status": "preregistered_before_formal_collection",
+  "formal_topology": {
+    "data_plane": {
+      "repository": "sensel-caldera-linux-lab",
+      "services": ["caldera", "target-linux", "target-linux-02", "ndr-gateway"],
+      "role_mapping": {
+        "target-linux": "edr-target-01",
+        "target-linux-02": "edr-target-02",
+        "ndr-gateway": "ndr-gateway-01"
+      },
+      "endpoint_count": 2,
+      "endpoint_os": "Ubuntu 22.04 Linux containers",
+      "ndr_count": 1,
+      "routing": "all endpoint peer, service, and Caldera traffic traverses the inline ndr-gateway"
+    },
+    "collection_plane": {
+      "edr": "each target writes generic process start/exit observations to an internal append-only spool; an independently stoppable forwarder writes label-free NormalizedEvent and SourceCoverage records to the sealed host evidence range",
+      "ndr": "one inline Suricata EVE spool and independently stoppable strict normalizer/forwarder owned by ndr-gateway",
+      "health": "process-authenticated forwarder status, parser validity, transport liveness, cursor, and observed lag for each of two EDR paths and one NDR path"
+    },
+    "execution_plane": {
+      "card_executor": "the host orchestrator executes frozen bash_no_profile templates at monotonic offsets after the evidence collector is ready",
+      "caldera_role": "the pinned Caldera container preserves the isolated control-plane topology and release manifest; ENABLE_SANDCAT=false during formal primary-evidence windows, so Caldera identifiers and agent control traffic cannot enter the primary telemetry",
+      "optional_mirrors": "Wazuh, guacamole-ai, and Aristaconnector-Control-Plane may consume a sealed copy only after primary bundle creation and are excluded from RT1-RT7 denominators"
+    },
+    "evaluation_plane": {
+      "runtime": "new TrustEpisode Section 3 reference runtime",
+      "truth": "offline Ground Truth Store containing Caldera/card/action receipts",
+      "label_join": "after terminal AssemblyOutcome only"
+    }
+  },
+  "primary_sources": ["EDR", "NDR"],
+  "primary_source_count": 2,
+  "health_contract": {
+    "heartbeat_period_seconds": 30,
+    "healthy_max_lag_seconds": 120,
+    "degraded_max_lag_seconds": 600,
+    "down_after_consecutive_missed_heartbeats": 2,
+    "snapshot_owner": "Health Monitor",
+    "snapshot_digest_rule": "RFC8785(SourceCoverage entries in UTF-8 source_instance order)"
+  },
+  "software_pins": {
+    "caldera": {
+      "version": "5.3.0",
+      "annotated_tag_object": "dd22d543a519afe63ca35c454bf1add5d75c45dc",
+      "peeled_release_commit": "b24f6e7a99cab19cbf417009bda9b9c6c81abc31"
+    },
+    "sensel_edge_conformance": {
+      "repository": "sensel-ot-edge-sensor",
+      "gate": "the lab NDR adapter and pinned sensor implementation must match canonical bytes, raw digest, event-id preimage result, source direction, and protected-IP admission on the same fixture"
+    },
+    "ocsf_schema": {
+      "version": "1.8.0",
+      "commit": "6fa6499a0f8c9f449d342816e90e5f687c224b0a"
+    },
+    "json_schema": "Draft 2020-12",
+    "canonical_json": "RFC 8785"
+  },
+  "required_roles": [
+    "caldera_control_plane",
+    "isolated_linux_edr_target_01",
+    "isolated_linux_edr_target_02",
+    "inline_suricata_ndr_gateway",
+    "edr_collection_plane",
+    "ndr_raw_spool",
+    "health_monitor",
+    "ground_truth_store",
+    "trustepisode_reference_runtime",
+    "offline_evaluation_harness"
+  ],
+  "required_image_keys": [
+    "caldera_control_plane_v1",
+    "ubuntu2204_edr_target_v1",
+    "ubuntu2204_edr_service_v1",
+    "suricata_ndr_gateway_v1",
+    "trustepisode_runtime_v1"
+  ],
+  "image_resolution": "each image key must bind to an OCI SHA-256 digest, Dockerfile/build-context digest, installed-package manifest digest, and configuration digest before the first formal run",
+  "frozen_contracts": {
+    "scenario_cards": "trustepisode.scenario-cards.v3",
+    "baselines": "trustepisode.baseline-registry.v1",
+    "perturbations": "trustepisode.perturbations.v3",
+    "split_policy": "trustepisode.split-policy.v2",
+    "online_schema": "trustepisode-online.v1"
+  },
+  "label_firewall": {
+    "offline_only_fields": ["run_id", "card_id", "scenario_id", "ability_id", "operation_id", "receipt_id", "marker", "label", "split", "attack_window"],
+    "offline_only_values": "all values and digest preimages from the sealed run/card/receipt manifests",
+    "enforcement": "recursive key and exact-value rejection before NormalizedEvent construction; a match invalidates the run and halts formal collection",
+    "caldera_training_log": "may be used only to verify action execution and construct offline labels; never as primary EDR evidence"
+  },
+  "required_per_run_fields": [
+    "run_id",
+    "base_campaign_id",
+    "pair_id",
+    "parent_run_id",
+    "partition",
+    "bootstrap_cluster_id",
+    "role",
+    "manifest_digest",
+    "scenario_card_version",
+    "scenario_card_digest",
+    "benign_workload_version",
+    "execution_mode",
+    "target_instance_ids",
+    "target_image_keys",
+    "target_image_digests",
+    "caldera_operation_manifest_digest",
+    "ability_command_catalog_digest",
+    "ordered_ability_start_offsets_digest",
+    "baseline_registry_digest",
+    "collector_image_digests",
+    "collector_configuration_sha256",
+    "topology_manifest_sha256",
+    "parser_schema_versions",
+    "source_native_severity_parser_digest",
+    "clock_source",
+    "maximum_clock_skew_ms",
+    "seed",
+    "offline_receipt_ids",
+    "receipt_preimage_digest",
+    "action_success_failure_status",
+    "cleanup_status",
+    "post_cleanup_filesystem_digest",
+    "label_firewall_status",
+    "collection_incidents",
+    "raw_bundle_digest"
+  ],
+  "required_outage_fields": [
+    "po1_cell_id",
+    "source_family",
+    "duration_seconds",
+    "repetition_index",
+    "allocated_card_id",
+    "t_anchor",
+    "t_stop",
+    "t_detect",
+    "t_restore",
+    "t_h1",
+    "t_h2",
+    "t_ready",
+    "t_stable",
+    "t_censor",
+    "censor_reason"
+  ],
+  "required_cost_fields": ["hardware_manifest_sha256", "software_manifest_sha256", "worker_count", "measured_repetition"],
+  "fail_closed": "a run missing any required field is retained in RT1 and the failure log but cannot enter RT2-RT7",
+  "formal_collection_gate": [
+    "all required image and contract digests resolved",
+    "two EDR forwarder health paths and one NDR parser/forwarder health path pass a 30-minute soak",
+    "label-firewall regression passes on malicious and benign pilot runs",
+    "clock skew is within the frozen maximum",
+    "cleanup restores every target baseline digest",
+    "synthetic end-to-end runtime fixture produces schema-valid terminal outcomes"
+  ]
+}

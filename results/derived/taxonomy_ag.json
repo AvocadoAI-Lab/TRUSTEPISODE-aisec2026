@@ -1,0 +1,109 @@
+{
+  "result_type": "trustepisode.evidence-loss-taxonomy.ag.v1",
+  "scope": "seven synthetic fixtures plus M2-derived D instantiation; no supplemental L1-L4 runs",
+  "conformance_rows": [
+    {
+      "id": "SYNTHETIC_A",
+      "expected_class": "A_execution_failure",
+      "observed_class": "A_execution_failure",
+      "pass": true,
+      "reason": "receipt is not successful",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_B",
+      "expected_class": "B_sensor_observability_failure",
+      "observed_class": "B_sensor_observability_failure",
+      "pass": true,
+      "reason": "successful receipt lacks raw observability",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_C",
+      "expected_class": "C_parser_or_normalization_failure",
+      "observed_class": "C_parser_or_normalization_failure",
+      "pass": true,
+      "reason": "raw evidence did not normalize",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_D",
+      "expected_class": "D_token_mapping_failure",
+      "observed_class": "D_token_mapping_failure",
+      "pass": true,
+      "reason": "required token is missing or mapped differently in normalized evidence",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_E",
+      "expected_class": "E_formation_membership_failure",
+      "observed_class": "E_formation_membership_failure",
+      "pass": true,
+      "reason": "normalized required token is absent from matched episode",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_F",
+      "expected_class": "F_offline_attribution_failure",
+      "observed_class": "F_offline_attribution_failure",
+      "pass": true,
+      "reason": "matched episode contains token but matcher gave no credit",
+      "source": "synthetic"
+    },
+    {
+      "id": "SYNTHETIC_G",
+      "expected_class": "G_unknown_or_incomplete_trace",
+      "observed_class": "G_unknown_or_incomplete_trace",
+      "pass": true,
+      "reason": "diagnostics are incomplete",
+      "source": "synthetic"
+    },
+    {
+      "id": "M2_LIVE_D",
+      "expected_class": "D_token_mapping_failure",
+      "observed_class": "D_token_mapping_failure",
+      "pass": true,
+      "reason": "required token is missing or mapped differently in normalized evidence",
+      "source": "results/derived/m2_waterfall.json"
+    }
+  ],
+  "confusion_rows": [
+    {
+      "expected_class": "A_execution_failure",
+      "observed_class": "A_execution_failure",
+      "count": 1
+    },
+    {
+      "expected_class": "B_sensor_observability_failure",
+      "observed_class": "B_sensor_observability_failure",
+      "count": 1
+    },
+    {
+      "expected_class": "C_parser_or_normalization_failure",
+      "observed_class": "C_parser_or_normalization_failure",
+      "count": 1
+    },
+    {
+      "expected_class": "D_token_mapping_failure",
+      "observed_class": "D_token_mapping_failure",
+      "count": 2
+    },
+    {
+      "expected_class": "E_formation_membership_failure",
+      "observed_class": "E_formation_membership_failure",
+      "count": 1
+    },
+    {
+      "expected_class": "F_offline_attribution_failure",
+      "observed_class": "F_offline_attribution_failure",
+      "count": 1
+    },
+    {
+      "expected_class": "G_unknown_or_incomplete_trace",
+      "observed_class": "G_unknown_or_incomplete_trace",
+      "count": 1
+    }
+  ],
+  "pass_count": 8,
+  "fail_count": 0
+}

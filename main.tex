@@ -1,12 +1,8 @@
-% TrustEpisode AISec 2026 submission draft
-% Compile with: latexmk -pdf -bibtex main.tex
-\documentclass[sigconf,anonymous]{acmart}
-
-\settopmatter{printacmref=false,printfolios=false}
-\acmConference[AISec 2026]{AISec 2026 Submission Draft}{}{}
-\acmYear{2026}
-\renewcommand\footnotetextcopyrightpermission[1]{}
-\pagestyle{plain}
+% TrustEpisode DFRWS submission
+% Format: Elsevier elsarticle 5p (two-column), 10pt, compliant with DFRWS
+%   10 single-spaced two-column pages @ ~1in margins / 10pt (refs+appendix extra).
+% Compile: pdflatex + bibtex + pdflatex x2
+\documentclass[preprint,5p,times,twocolumn]{elsarticle}
 
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -20,84 +16,94 @@
 \usepackage{placeins}
 \usepackage{microtype}
 \usepackage{xspace}
+\usepackage{caption}
+\usepackage{hyperref}
 
-\graphicspath{{figs/}}
+\journal{Forensic Science International: Digital Investigation}
+
+\graphicspath{{figs/}{trustepisode_figures/pdf/}{results/figures/}}
 \DeclareGraphicsExtensions{.pdf,.eps}
 
+% Float placement: prefer tops; avoid sparse float-only pages.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\setcounter{dbltopnumber}{3}
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\floatsep}{6pt plus 2pt minus 2pt}
-\setlength{\intextsep}{6pt plus 2pt minus 2pt}
-\setlength{\abovecaptionskip}{4pt}
-\setlength{\belowcaptionskip}{0pt}
-\captionsetup{font=small}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{2pt}
+\captionsetup{font=small,skip=3pt}
 \setlength{\emergencystretch}{2em}
-\raggedbottom
+\flushbottom
+\setlist[itemize]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
 
 \newcommand{\trustepisode}{\textsc{TrustEpisode}\xspace}
-\newcommand{\tbd}{\texttt{pending}\xspace}
+\input{results/tables/result_macros}
 
 \begin{document}
 
-\title{TrustEpisode: Deterministic Episode Formation and Manifest-Scoped Calibration for Partial EDR/NDR Telemetry}
+\begin{frontmatter}
 
-\author{Anonymous Authors}
-\affiliation{\institution{Anonymous Institution}}
-\email{anonymous@anonymous.edu}
+\title{TrustEpisode: Deterministic and Auditable Reconstruction of EDR/NDR Attack Episodes}
+
+\author[anon]{Anonymous Authors}
+\address{Anonymous Institution}
 
 \begin{abstract}
-Multi-step attacks appear as temporally dispersed endpoint and network observations rather than
-one decisive alert. Correlation must therefore define which events form a candidate episode,
-preserve deterministic revisions under late data, and distinguish an unsupported probability
-from a low probability when telemetry is missing.
+Investigators reconstructing multi-step attacks from EDR and NDR telemetry need a deterministic,
+auditable reconstruction contract: single-owner episode membership, immutable revisions under late
+evidence, collector health distinct from ``no detection,'' and a replayable terminal outcome per
+revision.
 
-We present \trustepisode, a label-blind EDR/NDR pipeline with explicit ownership boundaries.
-Evidence Fabric emits canonical events and independent source-health intervals; Episode
-Synthesis alone owns membership and immutable revisions; a two-feature stateless scorer emits
-a raw logit; and a manifest-scoped affine calibrator emits a nullable maliciousness
-probability. A separate deterministic evaluator reports a five-axis evidence-sufficiency
-profile without changing that probability. An AuditRecord Assembler creates one terminal,
-append-only outcome per revision: a complete AuditRecord from independently produced inputs, or
-an explicit AssemblyFailureRecord without fabricated score or probability fields.
-
-We specify an end-to-end validation protocol in which CALDERA executes seven multi-step attack
-families on isolated live Ubuntu systems observed through EDR/NDR collection paths. Paired
-event-loss, delay, reordering, clock-shift, duplication, source-masking, and physical-outage
-conditions test both performance degradation and transitions in the five evidence-sufficiency
-axes. The analysis table and robustness plots remain \texttt{pending} until the registered
-executions complete; no synthetic performance values or confidence intervals are reported.
+We present \trustepisode{} for sealed EDR/NDR attack-episode reconstruction. On the sealed primary
+live CALDERA cohort (60 M1--M6 malicious runs; 40 standalone benign), sliding sessionization raises
+mean coverage from \EbZeroCov{} to \TeCov{} versus fixed 300\,s bins, and fair sliding baselines
+EB1--EB4 show \emph{no observed difference} (60/60 paired ties; not an equivalence test). Canonical
+ordered replay is byte-identical on all 60 sealed malicious runs
+(\DetDOnePass{}/\DetNRuns{}); raw delivery order is not order-robust without re-canonicalization.
+Audit conformance covers all seven AssemblyFailureRecord codes
+(\AuditPass{}/\AuditTotal{} fixtures). The A--G evidence-loss taxonomy is
+conformance-tested (\TaxPass{}/\TaxTotal{}) and instantiated on sealed M2 as \MTwoClass{}.
+Contract-ablation baselines AB0--AB3 isolate which properties prevent history mutation, silent
+failure, and noncanonical replay. A separate supplemental partition reports live L1/L4 bases,
+offline L2/L3 ablations (including controlled hub load), controlled late inject, and wall-clock
+forwarder holds (within-horizon 2/2; beyond-horizon sealed but LateEvidenceRecord not observed
+organically). Sealed M7 is reported only as a supplemental 3900\,s boundary-stress cohort
+(coverage~$0$ under $W_{max}=3600$\,s), not as a primary estimator. Fitted scoring, calibration,
+and outage robustness remain out of scope.
 \end{abstract}
 
-\keywords{attack episode formation, probability calibration, partial telemetry, provenance, EDR, NDR}
+\begin{keyword}
+digital forensics \sep attack episode reconstruction \sep EDR \sep NDR \sep
+replayable audit \sep evidence provenance
+\end{keyword}
 
-\maketitle
-\fancyhf{}
-\renewcommand{\headrulewidth}{0pt}
-\fancyfoot[c]{\thepage}
+\end{frontmatter}
 
 \input{sections/intro}
 \input{sections/related}
 \input{sections/arch}
 \input{sections/exps}
-\ifdefined\fullappendix
-\clearpage
-\fi
 \input{sections/conc}
-\ifdefined\fullappendix
-\input{sections/appendix}
-\else
+\paragraph{Generative AI use disclosure.}
+OpenAI Codex and Cursor agents assisted with language editing, experiment orchestration,
+consistency checking, and claim-to-evidence audits. The authors independently designed the
+study, verified code and reported results, and take responsibility for the manuscript.
+
 \input{sections/appendix_submission}
-\fi
 
-\ifdefined\fullappendix
-\clearpage
-\fi
-\FloatBarrier
-\bibliographystyle{ACM-Reference-Format}
+\bibliographystyle{elsarticle-harv}
 \bibliography{bib/references}
-
-\section*{Generative AI Use Disclosure}
-OpenAI Codex was used to assist with language editing, \LaTeX{} formatting, and consistency
-review. The authors reviewed and verified the technical claims, formulas, citations, and
-reported results and take full responsibility for the manuscript.
 
 \end{document}

@@ -14,7 +14,7 @@ TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿�
 
 `main_full.pdf` 只屬於可選的內部審查輸出，不是投稿交付物，也不再封裝於 reproducibility companion。
 
-`main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact，並綁定 SHA-256 `6298bd2e89bd50a78a890b62750dcca2bcee34906fd6dd73a4a77f2a19c81205`。正式投稿時必須上傳完全相同的 ZIP；缺件或 hash 不符均使 machine-readable contract 主張失效。
+`main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact；正式投稿時必須上傳與論文及 `.sha256` sidecar 相同的 ZIP。缺件或 hash 不符均使 machine-readable contract 主張失效。
 
 [ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。`main.pdf` 目前為 12 頁，正文 Conclusion 位於第 9 頁；`Use of Generative AI` 尾段已依本次稿件決策移除，正式投稿前仍應由作者依當時 submission policy 自行確認 disclosure 欄位或文字要求。
 
@@ -266,7 +266,7 @@ main.pdf       12 pages, 4 figures, 7 tables, no overfull hbox/undefined referen
 
 ```text
 main.pdf       aca9399f0a2721ef6d69111eacbf27d590f3b1bc1d9eebf5ee6542a6eeac5f3b
-companion zip  6298bd2e89bd50a78a890b62750dcca2bcee34906fd6dd73a4a77f2a19c81205
+companion zip  45c191952c48411e0de534c2d99762c451e44f56f031277ceb8354715e1949ef
 ```
 
 ## 結果與投稿狀態

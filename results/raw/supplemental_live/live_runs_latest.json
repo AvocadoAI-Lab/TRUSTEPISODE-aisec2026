@@ -1,0 +1,114 @@
+{
+  "result_type": "trustepisode.supplemental-live.l1-l4.v1",
+  "plan": {
+    "protocol": "PROTOCOL_L1_L4_FAST.md",
+    "partition": "supplemental_mechanism",
+    "primary_untouched": true,
+    "targets": {
+      "L1": [
+        "M3",
+        3
+      ],
+      "L4": [
+        "M5",
+        3
+      ]
+    },
+    "note": "L1 uses M3 SSH cross-host abilities; L4 uses M5 short local; late inject offline"
+  },
+  "runs": [
+    {
+      "run_id": "run-supp-l1-01-20260721T114212Z",
+      "card_id": "M3",
+      "tag": "l1",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:42:12.835587+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:1f394184e985f0af631c0eab071241f3534d082ee42eab2934ed5129146fe61c",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l1-01-20260721T114212Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:44:05.877507+00:00"
+    },
+    {
+      "run_id": "run-supp-l1-02-20260721T114405Z",
+      "card_id": "M3",
+      "tag": "l1",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:44:05.877622+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:1a4188ac8fa00e710d3ee08a1773df3d5a138cf93516b6e00c314f8bf40a03a6",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l1-02-20260721T114405Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:46:36.864502+00:00"
+    },
+    {
+      "run_id": "run-supp-l1-03-20260721T114636Z",
+      "card_id": "M3",
+      "tag": "l1",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:46:36.864649+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:9de4836f0faf5ccf38298b0b26ba5be1a2bfd9eb0e86f064847f78fe1add2527",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l1-03-20260721T114636Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:48:26.698747+00:00"
+    },
+    {
+      "run_id": "run-supp-l4-01-20260721T114826Z",
+      "card_id": "M5",
+      "tag": "l4",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:48:26.698863+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:e630bc5920746c405161d7120e75bb32847798e4d6dbe066cc99722b1535b959",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4-01-20260721T114826Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:49:37.272000+00:00"
+    },
+    {
+      "run_id": "run-supp-l4-02-20260721T114937Z",
+      "card_id": "M5",
+      "tag": "l4",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:49:37.272123+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:dff08ac1ca64f0c15e159aa6abd6ca8f0d9c1e65c66f24a615b08676da578cb8",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4-02-20260721T114937Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:50:46.752981+00:00"
+    },
+    {
+      "run_id": "run-supp-l4-03-20260721T115046Z",
+      "card_id": "M5",
+      "tag": "l4",
+      "partition": "supplemental_mechanism",
+      "mode": "attack_only",
+      "started_at": "2026-07-21T11:50:46.753239+00:00",
+      "receipt_valid": true,
+      "receipt_digest": "sha256:fb807236cdc54617e0d2a04fa3a31b71ddf399777671a39b414f1e26c5940848",
+      "execution_errors": [],
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4-03-20260721T115046Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T11:52:28.983229+00:00"
+    }
+  ],
+  "l1_sealed": 3,
+  "l4_sealed": 3,
+  "completed_at": "2026-07-21T11:52:28.983374+00:00"
+}

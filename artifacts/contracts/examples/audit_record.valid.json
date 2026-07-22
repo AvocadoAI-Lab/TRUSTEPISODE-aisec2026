@@ -1,0 +1,72 @@
+{
+  "object_type": "AuditRecord",
+  "schema_version": "trustepisode.online.v1",
+  "episode_id": "ep:8f5d",
+  "revision": 2,
+  "episode_revision_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "D": 0.82,
+  "C": 1,
+  "z": 2.14,
+  "P": 0.73,
+  "kappa": "supported_global",
+  "calibration_group_key": null,
+  "decision_eligible": true,
+  "U": {
+    "coverage": "complete",
+    "provenance": "complete",
+    "lateness": "stable",
+    "contradiction": "none",
+    "calibration": "supported_global"
+  },
+  "source_mask": {
+    "EDR": 1,
+    "NDR": 1
+  },
+  "detector_observation": {
+    "EDR": "detected",
+    "NDR": "detected"
+  },
+  "health_snapshot": {
+    "EDR": "healthy",
+    "NDR": "healthy"
+  },
+  "resolved_detector_state": {
+    "EDR": "available",
+    "NDR": "available"
+  },
+  "eligible_detector_count": 2,
+  "eligibility_reason": "eligible",
+  "coverage_ref_ids": {
+    "EDR": "coverage:edr:001",
+    "NDR": "coverage:ndr:001"
+  },
+  "health_snapshot_digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+  "ordered_evidence_references": [
+    {
+      "reference_kind": "object",
+      "raw_pointer": {
+        "object_id": "edr:0042",
+        "content_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "locator": "record:42",
+        "storage_schema_version": "raw.v1"
+      },
+      "dependency_group": "root:0042",
+      "relation": "feature"
+    }
+  ],
+  "versions": {
+    "schema": {"version": "trustepisode.online.v1", "digest": "sha256:0101010101010101010101010101010101010101010101010101010101010101"},
+    "parser": {"version": "parser.v1", "digest": "sha256:0202020202020202020202020202020202020202020202020202020202020202"},
+    "formation_policy": {"version": "formation.v1", "digest": "sha256:0303030303030303030303030303030303030303030303030303030303030303"},
+    "detector_registry": {"version": "detectors.v1", "digest": "sha256:0404040404040404040404040404040404040404040404040404040404040404"},
+    "feature_policy": {"version": "feature.v1", "digest": "sha256:0505050505050505050505050505050505050505050505050505050505050505"},
+    "normalizer": {"version": "normalizer.v1", "digest": "sha256:0606060606060606060606060606060606060606060606060606060606060606"},
+    "raw_model": {"version": "raw-model.v1", "digest": "sha256:0707070707070707070707070707070707070707070707070707070707070707"},
+    "calibrator": {"version": "calibrator.v1", "digest": "sha256:0808080808080808080808080808080808080808080808080808080808080808"},
+    "support_policy": {"version": "support.v1", "digest": "sha256:0909090909090909090909090909090909090909090909090909090909090909"},
+    "sufficiency_policy": {"version": "sufficiency.v1", "digest": "sha256:1010101010101010101010101010101010101010101010101010101010101010"},
+    "assembly_policy": {"version": "assembly.v1", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+    "manifest": {"version": "manifest.v1", "digest": "sha256:1212121212121212121212121212121212121212121212121212121212121212"}
+  },
+  "canonical_digest": "sha256:245af657633d4b7d5caf01118efcb6a84366e8fcc13f624dca2ee424711f292e"
+}

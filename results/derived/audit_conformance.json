@@ -1,0 +1,206 @@
+{
+  "result_type": "trustepisode.audit-conformance.a12.v1",
+  "scope": "synthetic forensic audit conformance; sealed primary Table-4 and M1-M6 are untouched",
+  "fixtures": [
+    {
+      "id": "A1_SUCCESS",
+      "injected_fault": "none; formation-only success terminal",
+      "expected_code": "success",
+      "observed_code": "success",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:4512309507bcee5b27b32183c9619e0d0bf96bed6f98f2d8cb63929553dc1dfd",
+      "pass": true,
+      "execution": "formation-only success; _assemble requires full FeatureVector/model wiring"
+    },
+    {
+      "id": "A2_SCHEMA_INVALID",
+      "injected_fault": "schema invalid",
+      "expected_code": "schema_invalid",
+      "observed_code": "schema_invalid",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:6928306e25d7b899e82020dc17e1a45d37aef66c40503db054ec942f593fa5f8",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A3_KEY_MISMATCH",
+      "injected_fault": "key_mismatch",
+      "expected_code": "key_mismatch",
+      "observed_code": "key_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:c7aa6bd8344c65d172d88a2f706a6092fe68966c77422f058059f0e65e2c321c",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A4_CONFLICTING_DUPLICATE",
+      "injected_fault": "conflicting duplicate",
+      "expected_code": "conflicting_duplicate",
+      "observed_code": "conflicting_duplicate",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:a9ca013f9d63103755049c39f621e4a25a539fac8733bb4ba9d7fc0b9bbf4306",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A5_DIGEST_MISMATCH",
+      "injected_fault": "digest mismatch",
+      "expected_code": "digest_mismatch",
+      "observed_code": "digest_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:7c66a21806c14054c4d1993102d8e909ecef576f5f5cec06d6f4970b77fa9ae3",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A6_VERSION_MISMATCH",
+      "injected_fault": "version mismatch",
+      "expected_code": "version_mismatch",
+      "observed_code": "version_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:5e2e4472f43e4cfa4f729f4c5726dead4fb6e427d90e2c4612f43374a71bf0f2",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A7_MISSING_INPUT",
+      "injected_fault": "missing_input required artifact",
+      "expected_code": "missing_input",
+      "observed_code": "missing_input",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:8ceac3424ed3eed48412239ec4fd6cce44eb629f9cdcb222c87e30717450dc22",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A8_ASSEMBLY_TIMEOUT",
+      "injected_fault": "unclassified assembler exception",
+      "expected_code": "assembly_timeout",
+      "observed_code": "assembly_timeout",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:a5891a6e707e45e6529bd378e514a4870513572b14c679b4e7c7262f7b89c824",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_SCHEMA",
+      "injected_fault": "schema key_mismatch duplicate digest version missing_input",
+      "expected_code": "schema_invalid",
+      "observed_code": "schema_invalid",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:6928306e25d7b899e82020dc17e1a45d37aef66c40503db054ec942f593fa5f8",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_KEY",
+      "injected_fault": "key_mismatch duplicate digest version missing_input",
+      "expected_code": "key_mismatch",
+      "observed_code": "key_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:c7aa6bd8344c65d172d88a2f706a6092fe68966c77422f058059f0e65e2c321c",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_DUPLICATE",
+      "injected_fault": "duplicate digest version missing_input",
+      "expected_code": "conflicting_duplicate",
+      "observed_code": "conflicting_duplicate",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:a9ca013f9d63103755049c39f621e4a25a539fac8733bb4ba9d7fc0b9bbf4306",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_DIGEST",
+      "injected_fault": "digest version missing_input",
+      "expected_code": "digest_mismatch",
+      "observed_code": "digest_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:7c66a21806c14054c4d1993102d8e909ecef576f5f5cec06d6f4970b77fa9ae3",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_VERSION",
+      "injected_fault": "version missing_input",
+      "expected_code": "version_mismatch",
+      "observed_code": "version_mismatch",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:5e2e4472f43e4cfa4f729f4c5726dead4fb6e427d90e2c4612f43374a71bf0f2",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_MISSING",
+      "injected_fault": "missing_input timeout",
+      "expected_code": "missing_input",
+      "observed_code": "missing_input",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:8ceac3424ed3eed48412239ec4fd6cce44eb629f9cdcb222c87e30717450dc22",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A9_FAILURE_PRECEDENCE_TIMEOUT",
+      "injected_fault": "opaque assembler fault",
+      "expected_code": "assembly_timeout",
+      "observed_code": "assembly_timeout",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:a5891a6e707e45e6529bd378e514a4870513572b14c679b4e7c7262f7b89c824",
+      "pass": true,
+      "execution": "direct classify_failure fixture (full pipeline wiring intentionally not required)"
+    },
+    {
+      "id": "A10_TERMINAL_EXCLUSIVITY",
+      "injected_fault": "success after failure",
+      "expected_code": "rejected",
+      "observed_code": "rejected",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:3ccc9365d15e8acc9bf7df587b68e8f1883d2dfea8b3e1f370eff5c7028dd415",
+      "pass": true,
+      "execution": "append-only terminal-store simulation"
+    },
+    {
+      "id": "A11_IDEMPOTENT_SUCCESS_RETRY",
+      "injected_fault": "identical success retry",
+      "expected_code": "idempotent",
+      "observed_code": "idempotent",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:b244a490c4e4a6e52ec79112352b74e34e67a498467ea501954f6b0da515797d",
+      "pass": true,
+      "execution": "append-only terminal-store simulation"
+    },
+    {
+      "id": "A12_APPEND_ONLY_STORE",
+      "injected_fault": "update and delete attempts",
+      "expected_code": "both_rejected",
+      "observed_code": "both_rejected",
+      "terminal_count": 1,
+      "prior_record_changed": false,
+      "digest": "sha256:65905b7786a23d80389b21bf13cb58002efb4973c2b7a02561092706b5b8c52c",
+      "pass": true,
+      "execution": "append-only terminal-store simulation"
+    }
+  ],
+  "pass_count": 18,
+  "fail_count": 0
+}

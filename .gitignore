@@ -31,3 +31,10 @@
 *.acr
 *.alg
 *.ist
+
+# Local scratch / cleanroom extracts
+tmp/
+*.spl
+**/__pycache__/
+*.pyc
+

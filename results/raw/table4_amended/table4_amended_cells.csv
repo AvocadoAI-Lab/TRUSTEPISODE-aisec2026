@@ -1,0 +1,15 @@
+card_id,mode,achieved,failed,action_coverage_mean,action_coverage_sample_sd,action_coverage_defined,action_coverage_undefined,fragmentation_mean,fragmentation_sample_sd,fragmentation_defined,fragmentation_undefined,over_merge_mean,over_merge_sample_sd,over_merge_defined,over_merge_undefined,contamination_mean,contamination_sample_sd,contamination_defined,contamination_undefined,episode_f1_mean,episode_f1_sample_sd,episode_f1_defined,episode_f1_undefined
+M1,attack_only,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M1,concurrent_benign,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.3,0.11180339887498948,5,0,1.0,0.0,5,0
+M2,attack_only,5,0,0.75,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M2,concurrent_benign,5,0,0.75,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.35,0.09128709291752769,5,0,1.0,0.0,5,0
+M3,attack_only,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M3,concurrent_benign,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.35,0.09128709291752769,5,0,1.0,0.0,5,0
+M4,attack_only,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M4,concurrent_benign,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.36666666666666664,0.2173067468400883,5,0,1.0,0.0,5,0
+M5,attack_only,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M5,concurrent_benign,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.4333333333333333,0.09128709291752769,5,0,1.0,0.0,5,0
+M6,attack_only,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,1.0,0.0,5,0
+M6,concurrent_benign,5,0,1.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.3333333333333333,0.25685058345704065,5,0,1.0,0.0,5,0
+M7,attack_only,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,,,0,5,0.0,0.0,5,0
+M7,concurrent_benign,5,0,0.0,0.0,5,0,0.0,0.0,5,0,0.0,0.0,5,0,,,0,5,0.0,0.0,5,0

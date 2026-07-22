@@ -1,0 +1,59 @@
+{
+  "contract_version": "trustepisode.result-registry.v1",
+  "unexecuted_cell": "pending",
+  "not_applicable_cell": "N/A",
+  "registries": {
+    "RT1": {
+      "name": "population_and_label_counts",
+      "row_key": ["partition", "population"],
+      "columns": ["runs", "terminal_episodes", "C_dec_all", "C_dec_score", "C_dec_binary", "supported_global_count", "supported_group_count", "out_of_support_audit_count", "assembly_failure_count", "score_coverage", "binary_coverage", "out_of_support_rate_over_all", "failure_rate_over_all", "outcome_positive", "outcome_negative", "outcome_mixed", "outcome_ambiguous", "failure_positive", "failure_negative", "failure_mixed", "failure_ambiguous", "class_conditional_failure_rates", "binary_prevalence"]
+    },
+    "RT2": {
+      "name": "formation",
+      "row_key": ["builder"],
+      "rows": ["EB1", "EB2", "EB3", "EB3-H"],
+      "columns": ["action_coverage", "fragmentation", "over_merge", "contamination", "episode_f1"],
+      "metric_basis": "coverage_fragmentation_over_merge_use_unassigned_threshold_graph; episode_f1_uses_one_to_one_assignment"
+    },
+    "RT3a": {
+      "name": "ranking",
+      "row_key": ["scorer"],
+      "rows": ["SB1", "SB2", "SB3"],
+      "columns": ["C_dec_all", "C_dec_score", "C_dec_binary", "score_coverage", "binary_coverage", "AUPRC", "recall_at_budget", "AUROC", "precision_at_k"],
+      "metric_population": "C_dec_binary"
+    },
+    "RT3b": {
+      "name": "supported_calibration",
+      "row_key": ["mapping"],
+      "rows": ["SB4", "SB5", "SB6"],
+      "columns": ["C_dec_all", "C_dec_score", "C_dec_binary", "Brier", "NLL", "reliability_bins", "score_coverage", "binary_coverage", "supported_global_rate_over_all", "supported_group_rate_over_all", "out_of_support_rate_over_all", "failure_rate_over_all"],
+      "metric_population": "C_dec_binary"
+    },
+    "RT4": {
+      "name": "paired_replay",
+      "population": "28 malicious locked-test base runs (M1-M7 x two modes x two locked repetitions), each with 41 deterministic RP0-RP7 children; 1,148 child bundles total",
+      "row_key": ["intervention_id", "source_family", "level"],
+      "columns": ["delta_action_coverage", "delta_fragmentation", "delta_z", "delta_supported_Brier", "delta_supported_NLL", "supported_coverage", "U_axis_transitions", "revision_count", "stabilization_seconds"]
+    },
+    "RT5": {
+      "name": "physical_outage",
+      "population": "40 dedicated locked-test physical traces",
+      "row_key": ["po1_cell_id", "source_family", "duration_seconds", "repetition_index", "allocated_card_id", "comparator"],
+      "rows": ["TrustEpisode", "OB1_available_source_denominator"],
+      "columns": ["trace_digest", "t_anchor", "t_stop", "t_detect", "t_restore", "t_h1", "t_h2", "t_ready", "t_stable", "t_censor", "censor_reason", "health_detection_seconds", "decision_eligible_fraction", "out_of_support_rate", "recovery_seconds", "stable_revision_seconds"],
+      "pairing_invariant": "both comparator rows for a po1_cell_id reference the same trace_digest"
+    },
+    "RT6": {
+      "name": "determinism_and_cost",
+      "row_key": ["worker_count"],
+      "rows": [1, 2, 4, 8],
+      "columns": ["hardware_manifest_digest", "software_manifest_digest", "measured_repetitions", "canonical_hash_equal", "events_per_second", "p50_ms", "p95_ms", "p99_ms", "peak_rss_mb", "canonical_bytes_per_event", "canonical_bytes_per_outcome", "replay_seconds", "failure_fraction"]
+    },
+    "RT7": {
+      "name": "error_taxonomy",
+      "row_key": ["error_category"],
+      "rows": ["fragmentation", "over_merge", "collector_outage", "parser_failure", "unsupported_calibration", "label_ambiguity"],
+      "columns": ["count", "run_fraction", "candidate_fraction", "representative_revision_id", "adjudication_status"]
+    }
+  }
+}

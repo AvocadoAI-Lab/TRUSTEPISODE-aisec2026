@@ -27,7 +27,8 @@ numeric $z$, Boolean eligibility, closed enums/maps for $\kappa,U,m,h,a^{det}$, 
 arrays, and a closed version object. Only $P$ and group key are nullable: out-of-support requires
 $P=$ JSON null; only supported-group requires a non-null key. NaN, infinities, negative zero, and
 binary64 overflow are invalid. AssemblyFailureRecord contains no
-$D,C,z,P,U$ and has exactly one of the seven failure codes in Section~\ref{sec:sufficiency}.
+$D,C,z,P,U$ and has exactly one of the seven failure codes defined by the assembly contract
+(schema, key, duplicate, digest, version, missing-input, timeout).
 Canonical bytes follow RFC 8785 JSON canonicalization~\cite{rfc8785}. JCS sorts object
 properties but preserves array order, so the application sorts every reference array first.
 SHA-256 includes each outcome's declared
@@ -60,9 +61,7 @@ classes; candidates sort by $(-\rho,-n_R,\Delta_t,t_{start},id)$. A hub has at l
 relations in 600 s. Merge permits at most three parents connected by causal, session, or
 endpoint relations and
 at most 500 events/200 entities; otherwise attach to the first candidate. The event order is
-\begin{equation*}
-(t^{event},t^{ingest},source\_instance,event\_id).
-\end{equation*}
+$(t^{\mathrm{event}},t^{\mathrm{ingest}},\texttt{source\_instance},\texttt{event\_id})$.
 First finalization freezes $t_f$ and deadline $t_f+900$ s. The lineage then leaves the open
 index and remains in a revisable index; at closure, canonical relation keys remain in a
 closed-lineage index through deadline plus $W_{ret}$. Each event queries revisable/closed indexes
@@ -85,31 +84,30 @@ submission PDF.
 \label{tab:submission-thresholds}
 \centering
 \footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.08}
-\begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth}
-                >{\raggedright\arraybackslash}p{0.26\textwidth}
-                >{\raggedright\arraybackslash}p{0.23\textwidth}
-                >{\raggedright\arraybackslash}p{0.25\textwidth}}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{0.16\textwidth}
+  >{\raggedright\arraybackslash}p{0.28\textwidth}
+  >{\raggedright\arraybackslash}p{0.26\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}@{}}
 \toprule
 \textbf{Contract owner} & \textbf{Parameter(s)} & \textbf{Frozen value / order} & \textbf{Validation rule} \\
 \midrule
-\multicolumn{4}{l}{\textbf{A. Numeric contract}} \\
+\multicolumn{4}{@{}l@{}}{\textbf{A. Numeric contract}} \\
 Formation & $W_{gap}$; $W_{max}$; $L_{wm}$; $W_{rev}$; $W_{ret}$ & 300; 3600; 120; 900; 86400 s & sealed before final training fit \\
 Formation guards & hub relations/window; parents; component cap & 25/600 s; 3; 500 events/200 entities & reject on violation; never learned \\
 Feature & detector IDs; top-$k$; source mask & 3 EDR + 3 NDR; $k=3$; EDR+NDR & finite $[0,1]$; mid-rank CDF \\
 Offline matching & $\theta_{mal}$; $\theta_{contam}$; $\theta_{match}$ & .50; .25; .50 & freeze before label release \\
 Match predicates & temporal IoU; entity Jaccard & .10; .50 & also require exact action/receipt \\
-Group gate & positives; negatives; runs; folds & 50; 50; 10; 5 & deterministic balanced run folds \\
-Gate gain & mean $\Delta$Brier; mean $\Delta$NLL; uncertainty & $\ge.01$; $\ge.01$; lower 95\% $>0$ & every held-out fold nonnegative \\
-Uncertainty & bootstrap repetitions; seed & 2000; 20260710 & resample complete run clusters \\
+Uncertainty (paired CI) & bootstrap repetitions; seed & 2000; 20260721 & resample complete run clusters \\
 \midrule
-\multicolumn{4}{l}{\textbf{B. Deterministic $U$ precedence (first match wins)}} \\
+\multicolumn{4}{@{}l@{}}{\textbf{B. Deterministic $U$ precedence (first match wins)}} \\
 $u_{coverage}$ & health/parser state & unknown $>$ unavailable $>$ degraded $>$ complete & evaluate authenticated coverage first \\
-$u_{provenance}$ & required references & missing $>$ partial $>$ complete & required roots precede optional diagnostics \\
+$u_{provenance}$ & required references & missing $>$ complete & \texttt{partial} reserved; v1 emits only missing/complete \\
 $u_{lateness}$ & revision state & late\_accepted $>$ revisable $>$ stable & accepted successor; before deadline; closed \\
 $u_{contradiction}$ & CR1--CR3 & present $>$ unevaluable $>$ none & first applicable conflict rule wins \\
-$u_{calibration}$ & exact support enum & out\_of\_support; supported\_group; supported\_global & exact manifest and support resolution \\
+$u_{support}$ & exact support enum & out\_of\_support; supported\_group; supported\_global & design-only; no fitted $P$ claimed \\
 \bottomrule
 \end{tabular}
 \renewcommand{\arraystretch}{1}
@@ -129,33 +127,21 @@ provenance is every membership/root, selected link, scored input, coverage objec
 diagnostics are optional. Any later executable threshold file must exactly match
 Table~\ref{tab:submission-thresholds}.
 
-\subsection{Calibration Resolver and Invalidation}
+\subsection{Probability Interface Contract (Unevaluated)}
 \label{app:calibration-manifest}
 
-The global fit uniquely minimizes natural-prevalence NLL plus $10^{-6}(a^2+b^2)$ with
-$a\ge10^{-6}$. A registered group key is the RFC~8785/SHA-256 digest of deployment profile and
-EDR/NDR detector versions; labels, scenario, and run are forbidden. Five-fold
-calibration-partition cross-fitting keeps each run intact. For each group, runs with binary
-counts $(p_r,n_r)$ sort by decreasing $p_r+n_r$, then SHA-256 of seed/group/run. Each run is
-greedily assigned to the fold minimizing the resulting maximum normalized positive, negative,
-and run loads, then total normalized load and fold ID; the assignment map is sealed and hashed.
-The gate uses positive improvements $\Delta B=B_{global}-B_{group}$ and
-$\Delta N=NLL_{global}-NLL_{group}$. It evaluates the gate, after which a passing group is refit on
-all calibration records for that key and sealed with its coefficients. Manifest validation
-rejects duplicate keys. Runtime resolution first checks exact mask \texttt{11}, health, parser,
-resolved detector states, and formation/feature/model/label/schema/pipeline versions; mismatch
-yields out-of-support. Otherwise one enabled exact group yields \path{supported_group}, and no
-enabled key falls back to \path{supported_global}. Scope Resolver alone emits the key, status,
-and eligibility; Calibrator only emits $P$. Episode/candidate, feature/normalizer, raw-model, or
-label changes invalidate calibration; additive unused fields require equivalence proof.
+Optional score fields may remain in schema. Binding rules only: version identifiers and digests
+must match; unsupported probability is JSON null; $U$ must not rewrite $P$; no fitted coefficients
+are reported in this submission. Affine objectives, group gates, fold assignment, and refit
+protocols are deferred to supplementary material and are not empirical contributions here.
 
 \subsection{Live-System Lab, Cards, and Offline Labels}
 \label{app:lab-label-policy}
 
-The lab, card, and label contract is exactly Sections~\ref{sec:datasets}--\ref{sec:scenarios},
-Equation~\ref{eq:match-weight}, and Table~\ref{tab:malicious-scenarios}. It pins public CALDERA
-and OCSF versions; missing manifest fields fail closed; each card/mode requires ten valid runs
-with achieved counts \texttt{pending}.
+The lab, card, and label contract is exactly Sections~\ref{sec:datasets}--\ref{sec:ground-truth}
+and Equation~\ref{eq:match-weight}. It pins public CALDERA
+and OCSF versions; missing manifest fields fail closed. The amended primary cohort fixes five
+valid runs per M1--M6 card/mode and five standalone runs per B1--B8 card, all achieved.
 Each Linux-only M/B card closes image key and digest, ordered ability IDs, no-profile Bash
 executor plus exact command templates, monotonic offsets, fixed target paths, offline receipt
 preimage, success/failure predicates, cleanup commands and digest check, and allowed mode.
@@ -165,25 +151,22 @@ the frozen run manifest. Malicious modes are attack-only or one hash-selected B1
 60 s earlier; benign cards also run standalone. Missing values and malformed inputs are counted,
 not zero-filled.
 
-\subsection{Adversarial Robustness and Statistical Contract}
+\subsection{Unexecuted Extensions and Statistical Contract}
 \label{app:experimental-contract}
 
-Formation coverage, fragmentation, and over-merge use the threshold-qualified graph;
-one-to-one assignment is restricted to episode precision/recall/F1. Decision counts use
-$\mathcal C_{dec}^{all}$; scorable coverage uses $\mathcal C_{dec}^{score}$; class-dependent
-metrics use positive/negative $\mathcal C_{dec}^{binary}$. Outcome and failure labels join only
-after terminal insertion. Source mask, drop, interval removal, delay, reorder, clock shift, and
-duplication instantiate every registered EDR/NDR source and dose specified in
-Section~\ref{sec:partial-telemetry}. Every condition is paired with the immutable unchanged
-replay of the same live-system run.
+Formation coverage, fragmentation, over-merge, exact-complete recovery, and one-to-one episode
+F1 are reported for the amended sealed cohort. Fitted calibration, locked-test ranking,
+RP0--RP7 partial-telemetry children, physical outage, and full assembly cost benchmarks remain
+registered but unexecuted. The pre-declared group-calibrator gate (50 positive, 50 negative, 10
+runs) is not lowered post hoc. If those protocols are later executed, resampling units must be
+complete runs; undefined and failed outcomes must be counted, never silently zeroed; and
+protocol amendments must be timestamped before inspecting estimates.
 
-The five axes in Table~\ref{tab:sufficiency} are reported as categorical state counts,
-proportions, and paired transition matrices. Scalar changes follow
-Equation~\ref{eq:paired-robustness}; transitions follow
-Equation~\ref{eq:sufficiency-transition}. The physical-outage cohort contains exactly 40 traces
-(two sources by two durations by ten repetitions), balanced over M1/M3/M4/M7, and fixes health
-detection, ready, stable-recovery, follow-up, and censoring rules. Metrics, run-level resampling,
-undefined/censored reporting, and deterministic replay cost are exactly
-Sections~\ref{sec:research-questions}, \ref{sec:partial-telemetry}, and \ref{sec:metrics} plus
-Table~\ref{tab:caldera-analysis-plan}. All measured fields remain \texttt{pending} until the
-registered executions complete.
+The required supplementary archive is
+\path{TrustEpisode_reproducibility_companion_v1.zip}. Concatenating the following two
+hexadecimal lines gives its SHA-256:
+\begin{flushleft}\scriptsize\ttfamily
+ef2081c2a04c3bda0efe518f824ad28f\\
+fb0793a15ca6aeb6d08053b0ec57829b
+\end{flushleft}
+The adjacent sidecar records the same digest.

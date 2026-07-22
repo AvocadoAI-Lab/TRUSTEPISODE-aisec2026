@@ -1,0 +1,167 @@
+{
+  "status": "executed",
+  "unit": "complete_run",
+  "configs": [
+    {
+      "iou": 0.1,
+      "jaccard": 0.5,
+      "match": 0.5,
+      "label": "primary",
+      "episode_f1": {
+        "mean": 0.8571428571428571,
+        "sample_sd": 0.3524536884251207,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8214285714285714,
+        "sample_sd": 0.3487629721831799,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.05,
+      "jaccard": 0.5,
+      "match": 0.5,
+      "label": "iou_0.05",
+      "episode_f1": {
+        "mean": 0.861904761904762,
+        "sample_sd": 0.34282551038802356,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8321428571428572,
+        "sample_sd": 0.3343862769232867,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.2,
+      "jaccard": 0.5,
+      "match": 0.5,
+      "label": "iou_0.20",
+      "episode_f1": {
+        "mean": 0.8571428571428571,
+        "sample_sd": 0.3524536884251207,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8214285714285714,
+        "sample_sd": 0.3487629721831799,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.1,
+      "jaccard": 0.25,
+      "match": 0.5,
+      "label": "jaccard_0.25",
+      "episode_f1": {
+        "mean": 0.8571428571428571,
+        "sample_sd": 0.3524536884251207,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8214285714285714,
+        "sample_sd": 0.3487629721831799,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.1,
+      "jaccard": 0.75,
+      "match": 0.5,
+      "label": "jaccard_0.75",
+      "episode_f1": {
+        "mean": 0.7714285714285715,
+        "sample_sd": 0.4229444261101448,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.7357142857142858,
+        "sample_sd": 0.41241097916397623,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.1,
+      "jaccard": 0.5,
+      "match": 0.4,
+      "label": "match_0.40",
+      "episode_f1": {
+        "mean": 0.8571428571428571,
+        "sample_sd": 0.3524536884251207,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8214285714285714,
+        "sample_sd": 0.3487629721831799,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    },
+    {
+      "iou": 0.1,
+      "jaccard": 0.5,
+      "match": 0.6,
+      "label": "match_0.60",
+      "episode_f1": {
+        "mean": 0.8571428571428571,
+        "sample_sd": 0.3524536884251207,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "action_coverage": {
+        "mean": 0.8214285714285714,
+        "sample_sd": 0.3487629721831799,
+        "min": 0.0,
+        "max": 1.0,
+        "defined": 70,
+        "undefined": 0
+      },
+      "n": 70
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "command": "python scripts/run_fair_baselines.py --families m1-m7",
+  "builders": [
+    "EB0_FIXED_BIN_300s",
+    "EB1_SLIDING_TIME",
+    "EB2_SLIDING_ENTITY",
+    "EB3_RELATION_NO_ADVANCED_GUARDS",
+    "EB4_TRUSTEPISODE"
+  ],
+  "config_digests": {
+    "EB0_FIXED_BIN_300s": "sha256:c77007a1fe4ff72a6608a7d3f44934c20596215c5cc7349cd1d5e5ee72ae5352",
+    "EB1_SLIDING_TIME": "sha256:476e9c34ea98c0af080259c5fced3ed2d6b94a07bf65140f69bfbfb5228cd0b0",
+    "EB2_SLIDING_ENTITY": "sha256:1f56732096212771adb5c274cf0ee8e0639f23601a05d136b548d90b411aa771",
+    "EB3_RELATION_NO_ADVANCED_GUARDS": "sha256:9dba25444641deb49d9a3b45d6604ee4c7e0c10389390fdee1193ca7e3478ecf",
+    "EB4_TRUSTEPISODE": "sha256:b5d28d7dd88eb3e23b6f73e9e5c52bda6c00a73b7d9bf977f8b0d4491ea3950e"
+  },
+  "per_run_digest": "sha256:31a47ba866c4e61fa64064788936fec8f889abb05f93bf839341c2c7d946bbf6",
+  "derived_digest": "sha256:c2ebadeefdcb5d7a7961f2a932d7eb31c9ba5aa7fc9c26cf3ea1ea73c474c3a1"
+}

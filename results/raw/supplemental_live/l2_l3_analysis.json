@@ -1,0 +1,126 @@
+{
+  "result_type": "trustepisode.supplemental-live.l2-l3.v1",
+  "scope": "L2 endpoint ablation on supplemental live SSH seals; L3 hub path via controlled hub-load on those live seals (organic hub traffic not observed). Primary M1-M6 untouched.",
+  "l2": {
+    "n": 3,
+    "pass_count": 3,
+    "rows": [
+      {
+        "run_id": "run-supp-l1-01-20260721T114212Z",
+        "card_id": "M3",
+        "n_events": 32,
+        "endpoint_only_episodes": 14,
+        "no_endpoint_episodes": 32,
+        "endpoint_only_digest": "sha256:e9cd640dd64844616adece140610ddd6ab16aaeb675a635ecd48529f93dabde6",
+        "no_endpoint_digest": "sha256:32e9be971b8f66e5fb5425384b3e015e7cea6c1c7115d4b1d6cf9e51abe955c0",
+        "pass": true,
+        "interpretation": "endpoint-only links and no-endpoint ablation fragments"
+      },
+      {
+        "run_id": "run-supp-l1-02-20260721T114405Z",
+        "card_id": "M3",
+        "n_events": 34,
+        "endpoint_only_episodes": 10,
+        "no_endpoint_episodes": 34,
+        "endpoint_only_digest": "sha256:3003bc231b04a0dc4d333869eeb59f606c62fe405b4e750b42056d37caa7b6c9",
+        "no_endpoint_digest": "sha256:74e5f30a88121726c3c67483fb3800ae76646c3bf4bea91f8b10429bbe9d68c8",
+        "pass": true,
+        "interpretation": "endpoint-only links and no-endpoint ablation fragments"
+      },
+      {
+        "run_id": "run-supp-l1-03-20260721T114636Z",
+        "card_id": "M3",
+        "n_events": 26,
+        "endpoint_only_episodes": 7,
+        "no_endpoint_episodes": 26,
+        "endpoint_only_digest": "sha256:e021c446894389b11748ffd1f140c335e92efcb2d340e77a5f6f8367eea737c1",
+        "no_endpoint_digest": "sha256:7d59f1a0b431ff034ae97234cc662b6ad67dbe31dec386d53d29aba573a8adf0",
+        "pass": true,
+        "interpretation": "endpoint-only links and no-endpoint ablation fragments"
+      }
+    ]
+  },
+  "l3": {
+    "n": 3,
+    "pass_count": 3,
+    "organic_pass_count": 0,
+    "controlled_inject_pass_count": 3,
+    "rows": [
+      {
+        "run_id": "run-supp-l1-01-20260721T114212Z",
+        "card_id": "M3",
+        "n_events": 32,
+        "hub_subject": "ip:172.30.11.10",
+        "hub_cutoff": 25,
+        "raw_live": {
+          "hub_on_episodes": 1,
+          "hub_off_episodes": 1,
+          "digest_differs": false,
+          "pass": false,
+          "interpretation": "hub guard not stressed on raw live stream"
+        },
+        "controlled_hub_inject": {
+          "n_injected_peers": 26,
+          "hub_on_episodes": 12,
+          "hub_off_episodes": 1,
+          "digest_differs": true,
+          "pass": true,
+          "delivery_mode": "live_sealed_base_plus_controlled_hub_load",
+          "interpretation": "hub-on vs hub-off diverges under controlled hub load on live sealed base"
+        },
+        "pass": true,
+        "interpretation": "hub contract path exercised via controlled hub-load on live sealed base"
+      },
+      {
+        "run_id": "run-supp-l1-02-20260721T114405Z",
+        "card_id": "M3",
+        "n_events": 34,
+        "hub_subject": "ip:172.30.11.10",
+        "hub_cutoff": 25,
+        "raw_live": {
+          "hub_on_episodes": 1,
+          "hub_off_episodes": 1,
+          "digest_differs": false,
+          "pass": false,
+          "interpretation": "hub guard not stressed on raw live stream"
+        },
+        "controlled_hub_inject": {
+          "n_injected_peers": 26,
+          "hub_on_episodes": 13,
+          "hub_off_episodes": 1,
+          "digest_differs": true,
+          "pass": true,
+          "delivery_mode": "live_sealed_base_plus_controlled_hub_load",
+          "interpretation": "hub-on vs hub-off diverges under controlled hub load on live sealed base"
+        },
+        "pass": true,
+        "interpretation": "hub contract path exercised via controlled hub-load on live sealed base"
+      },
+      {
+        "run_id": "run-supp-l1-03-20260721T114636Z",
+        "card_id": "M3",
+        "n_events": 26,
+        "hub_subject": "ip:172.30.11.10",
+        "hub_cutoff": 25,
+        "raw_live": {
+          "hub_on_episodes": 1,
+          "hub_off_episodes": 1,
+          "digest_differs": false,
+          "pass": false,
+          "interpretation": "hub guard not stressed on raw live stream"
+        },
+        "controlled_hub_inject": {
+          "n_injected_peers": 26,
+          "hub_on_episodes": 12,
+          "hub_off_episodes": 1,
+          "digest_differs": true,
+          "pass": true,
+          "delivery_mode": "live_sealed_base_plus_controlled_hub_load",
+          "interpretation": "hub-on vs hub-off diverges under controlled hub load on live sealed base"
+        },
+        "pass": true,
+        "interpretation": "hub contract path exercised via controlled hub-load on live sealed base"
+      }
+    ]
+  }
+}

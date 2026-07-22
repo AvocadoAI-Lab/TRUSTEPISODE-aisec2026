@@ -1,50 +1,42 @@
-\section{TrustEpisode Method}
+\section{TrustEpisode Reconstruction Contract}
 \label{sec:method}
 
-\trustepisode converts EDR/NDR telemetry into deterministic candidate revisions and
-version-scoped evidence records. Evidence Fabric and Health Monitor respectively own events
-and source health; Episode Synthesis alone owns membership; Feature Extractor emits health-blind
-$D,C,m$ and detector observations; Stateless Scorer emits $z$; Scope Resolver emits resolved
-detector availability, $\kappa$, the calibration-group key, and \path{decision_eligible};
-Calibrator emits nullable $P$; and Sufficiency Evaluator emits structured $U$. For each revision,
-the AuditRecord Assembler emits exactly one terminal AssemblyOutcome: a canonical AuditRecord
-when its join succeeds, or an immutable AssemblyFailureRecord when it cannot safely assemble one.
-Ground truth is joined only after inference. The method estimates malicious activity inside a
-frozen EDR/NDR candidate; it does not estimate enterprise risk, impact, response priority, or
-unobservable attacks. Figure~\ref{fig:method-architecture} shows these boundaries.
+\trustepisode converts EDR/NDR telemetry into deterministic episode revisions and version-scoped
+forensic audit records. Evidence Fabric and Health Monitor own events and source health; Episode
+Synthesis alone owns membership; optional Feature Extractor / Scorer / Calibrator fields remain
+schema interfaces without fitted artifacts in this submission. For each revision, the AuditRecord
+Assembler emits exactly one terminal AssemblyOutcome: a canonical AuditRecord or an immutable
+AssemblyFailureRecord. Ground truth is joined only offline. Figure~\ref{fig:method-architecture}
+shows these boundaries.
 
-\subsection{Problem Scope, Output Contract, and Ownership}
+\subsection{Investigation and Threat Model}
+\label{sec:threat-model}
+
+\paragraph{Assumptions.}
+Raw pointers and the sealed evidence store are integrity-checkable; Health Monitor coverage
+messages have authenticated sources; attackers may induce missing events, delayed delivery, and
+duplicate retries; attackers cannot arbitrarily forge signed health state; runtime software may
+fault; the offline evaluator is isolated from online formation.
+
+\paragraph{Non-assumptions.}
+We do \emph{not} assume complete telemetry, that collector silence equals downtime, that all
+attacks are observable, that ground truth is available online, that model scores are reliable, or
+that raw arrival order is fixed.
+
+\paragraph{Investigator workflow.}
+(1)~import sealed EDR/NDR; (2)~form EpisodeRevisions; (3)~inspect the terminal audit outcome;
+(4)~check coverage and provenance; (5)~accept a late successor or LateEvidenceRecord;
+(6)~if a required step is missing, run the A--G waterfall; (7)~replay and verify digests;
+(8)~report observed, unavailable, and unknown separately.
+
+\subsection{Evidence and Reconstruction Model}
 \label{sec:problem-formulation}
 
-Let $\mathcal C$ contain every emitted EpisodeRevision and define
-\begin{equation}
-\mathcal C_{\mathrm{sup}}=
-\{\epsilon^{(r)}\in\mathcal C:
-\kappa_{\epsilon^{(r)}}\in\{\kappa_G,\kappa_g\}\},
-\label{eq:supported-population}
-\end{equation}
-where $\kappa_G$, $\kappa_g$, and $\kappa_\varnothing$ serialize as
-\path{supported_global}, \path{supported_group}, and \path{out_of_support}. The offline
-target $Y_{\epsilon^{(r)}}\in\{0,1\}$ is revision specific: evidence first accepted in $r+1$
-cannot relabel $r$. Positive and negative revisions form the primary supervised cohort; mixed
-and ambiguous revisions enter only the registered sensitivity analysis.
+Online objects are NormalizedEvent, SourceCoverage, EpisodeRevision, LateEvidenceRecord,
+AuditRecord, and AssemblyFailureRecord. Offline labels never enter online schemas. Table~\ref{tab:ownership}
+assigns every object to one producer.
 
-When defined, the candidate-conditioned output is
-\begin{equation}
-P_{\epsilon^{(r)}}=\Pr(Y_{\epsilon^{(r)}}=1\mid
-\epsilon^{(r)},v_{\mathrm{episode}},v_{\mathrm{feature}},
-v_{\mathrm{model}},v_{\mathrm{cal}}).
-\label{eq:scoped-probability}
-\end{equation}
-It is not the unconditional probability that an organization is under attack. Online schemas
-are label blind and reject scenario, marker, window, and label fields. Source-health
-messages are authenticated; activity outside observable EDR/NDR traces is
-outside the claim.
-
-Table~\ref{tab:ownership} assigns every online object and decision field to one producer and
-forbids downstream components from silently taking over that ownership.
-
-\begin{table*}[t]
+\begin{table*}[!t]
 \caption{Single-owner online object contract.}
 \label{tab:ownership}
 \centering
@@ -54,14 +46,12 @@ forbids downstream components from silently taking over that ownership.
 \textbf{Object} & \textbf{Sole producer} & \textbf{Consumers} & \textbf{Forbidden behavior} \\
 \midrule
 NormalizedEvent & Evidence Fabric & Episode Synthesis & label, scenario, or health fields \\
-SourceCoverage & Health Monitor & Scope Resolver; Sufficiency Evaluator; Assembler & infer outage from event silence; independently resample health \\
-EpisodeRevision / LateEvidenceRecord & Episode Synthesis & Feature Extractor; Sufficiency; Assembler / late store & rewrite a revision; admit beyond-horizon evidence \\
-FeatureVector $[D,C,m,o^{det}]$ & Feature Extractor & Scorer; Scope/Sufficiency; Assembler & SourceCoverage, inferred health, or labels \\
-Raw logit $z$ & Stateless Scorer & Calibrator; Assembler & probability wording \\
-SupportDecision & Scope Resolver & Calibrator; Sufficiency; Assembler & test-selected status; second eligibility/health producer \\
-Nullable $P$ & Calibrator & Assembler; downstream review & modification by $U$; numeric unsupported output \\
-Structured $U$ & Sufficiency Evaluator & Assembler; downstream review & scalarization or recomputation of $P$ \\
-AssemblyOutcome & AuditRecord Assembler & Append-only store; replay; evaluation & both success and failure for one revision; update/delete \\
+SourceCoverage & Health Monitor & Scope Resolver; Sufficiency; Assembler & infer outage from event silence \\
+EpisodeRevision / LateEvidenceRecord & Episode Synthesis & Feature; Sufficiency; Assembler / late store & rewrite a prior revision; admit beyond-horizon into membership \\
+FeatureVector $[D,C,m]$ & Feature Extractor & Scorer; Assembler & labels or inferred health \\
+Nullable $P$ & Calibrator (design) & Assembler & numeric unsupported output \\
+Structured $U$ & Sufficiency Evaluator & Assembler & scalarization that rewrites $P$ \\
+AssemblyOutcome & AuditRecord Assembler & Append-only store; replay & both success and failure; update/delete \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -72,278 +62,103 @@ AssemblyOutcome & AuditRecord Assembler & Append-only store; replay; evaluation 
   \setlength{\fboxsep}{5pt}
   \begin{minipage}{\columnwidth}\centering
   \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{EDR/NDR events + authenticated source health}}}\\[-1pt]
-  $\downarrow$\\[-1pt]
+    \textbf{EDR/NDR events + authenticated source health}}}\\[2pt]
+  $\downarrow$\\[2pt]
   \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Evidence Fabric / Health Monitor}\\
-    canonical events and independent coverage intervals}}\\[-1pt]
-  $\downarrow$\\[-1pt]
+    \textbf{Evidence Fabric / Health Monitor}}}\\[2pt]
+  $\downarrow$\\[2pt]
   \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Episode Synthesis}\\
-    immutable membership and revisions}}\\[-1pt]
-  $\downarrow$\\[-1pt]
+    \textbf{Episode Synthesis (sole membership owner)}}}\\[2pt]
+  $\downarrow$\\[2pt]
   \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{Independent lanes}\\
-    scorer $\rightarrow z$; scope/calibrator $\rightarrow P$; sufficiency $\rightarrow U$}}\\[-1pt]
-  $\downarrow$\\[-1pt]
-  \fbox{\parbox{0.91\columnwidth}{\centering
-    \textbf{AuditRecord Assembler}\\
-    one append-only terminal outcome per revision}}\\[2pt]
-  \textit{Offline only: training, calibration, labels, and evaluation.}
+    \textbf{AuditRecord Assembler $\rightarrow$ append-only store}}}\\[2pt]
+  \textit{Offline only: labels, matching, evaluation.}
   \end{minipage}
-  \caption{Label-blind online and offline boundaries. The primary candidate path contains EDR/NDR only. Every arrow enters a declared producer; the AuditRecord Assembler owns the terminal AssemblyOutcome and the append-only store is only a sink. $U$ has no numerical path into the scorer or calibrator.}
+  \caption{Label-blind online reconstruction and offline evaluation boundary.}
   \label{fig:method-architecture}
 \end{figure}
 
-\subsection{Evidence, Health, and Detector Availability}
-\label{sec:evidence-fabric}
+\subsection{Independent Evidence Health and Observability}
+\label{sec:evidence-health}
 
-Evidence Fabric maps each source record to a NormalizedEvent with stable ID, event and ingest
-times, source instance, canonical subject/object/action, immutable raw pointer, and root
-dependency group. Forwarded copies retain their root and cannot add evidence. OCSF v1.8.0 is
-only a field-alignment target~\cite{ocsf2026}. Health Monitor independently emits authenticated
-SourceCoverage intervals from heartbeat, lag, parser, and transport observations; silence is
-never interpreted as failure. Each manifest fixes a 30 s heartbeat period: \texttt{healthy}
-requires no missed heartbeat, lag $\le120$ s, valid parser, and live transport;
-\texttt{degraded} means one missed heartbeat or $120<$ lag $\le600$ s while transport remains
-live; \texttt{down} requires an authenticated collector/transport stop or two consecutive missed
-heartbeats; missing or conflicting intervals yield \texttt{unknown}.
+Event silence is not an outage. ``No detection'' is not ``unavailable.'' SourceCoverage carries
+authenticated health, parser validity, and an observed source mask. Assemblers consume exact
+coverage references; they do not infer health from empty event windows.
 
-For $s\in\mathcal S^\star=\{\mathrm{EDR},\mathrm{NDR}\}$,
-\begin{equation}
-m_{\epsilon,s}=\mathbf{1}[\epsilon\text{ contains an observed event from }s].
-\label{eq:source-mask}
-\end{equation}
-Feature Extractor is the sole producer of $m$ and health-independent observation
-$o^{det}_{\epsilon,s}\in\{\texttt{detected},\texttt{examined\_none},
-\texttt{not\_examined}\}$. It reads EpisodeRevision and detector outputs, but never
-SourceCoverage. Scope Resolver is the sole producer of resolved availability $a^{det}$ and
-selects coverage at $t_{sup}=\texttt{EpisodeRevision.event\_time\_end}$, not the later
-watermark or assembly wall time. It requires exactly one content-distinct covering interval per
-expected source instance and applies, in order: missing or conflicting intervals $\mapsto\texttt{unknown}$;
-unexpected/down source $\mapsto\texttt{collector\_unavailable}$; invalid parser
-$\mapsto\texttt{parser\_invalid}$; unknown health or \texttt{not\_examined}
-$\mapsto\texttt{unknown}$; otherwise \texttt{detected}$\mapsto\texttt{available}$ and
-\texttt{examined\_none}$\mapsto\texttt{no\_detection}$. Thus event silence never becomes
-health. Finally, $q_{\epsilon,s}=1$ requires lineage-deduplicated detector support tied to a core
-entity or edge. Scope Resolver consumes $(m,o^{det},h)$, eligible-detector count $n$, and exact
-versions and alone emits SupportDecision. It contains $a^{det},\kappa,g,e,n$, an eligibility
-reason, \path{coverage_ref_ids}, and \path{health_snapshot_digest}; $e$ is
-\path{decision_eligible}. Before calibration resolution, $n=0$ deterministically yields
-$\kappa=\kappa_\varnothing$, $e=0$, reason \path{no_eligible_detector_value}, and therefore
-JSON-null $P$, even when both resolved states are \path{no_detection}. Otherwise $e=1$ iff all
-support predicates pass and $\kappa\in\{\kappa_G,\kappa_g\}$. Coverage IDs identify the exact
-EDR/NDR SourceCoverage objects used by the resolver. The digest covers their RFC~8785 canonical
-health snapshot.
-
-\subsection{Deterministic Episode Synthesis and Revisions}
+\subsection{Deterministic Episode Formation}
 \label{sec:episode-synthesis}
 
-For event $e_i$ and open episode $E$, eligibility is
-\begin{equation}
-\ell(e_i,E)=\mathbf{1}[\Delta_t\le300\mathrm{s}\land R=1\land
-\operatorname{span}(E\cup\{e_i\})\le3600\mathrm{s}\land H=0].
-\label{eq:link-eligibility}
-\end{equation}
-$R$ comprises process-causal, authenticated-session, endpoint-mapped connection, and
-specific-entity relations. Their precedence $\rho$ is respectively $4,3,2,1$; $n_R$ is the
-number of distinct satisfied relation classes. $H=1$ when all support comes from an entity with
-at least 25 distinct relations in the preceding 600 s. Eligible candidates use the sole order
-$(-\rho,-n_R,\Delta_t,t_{start},\mathrm{episode\_id})$.
-
-Zero/one candidates start/attach. Multiple candidates merge only when there are at most three
-parents, every parent is connected through the new event by a causal, session, or endpoint
-relation, and the result has at most 500 events and 200 entities; otherwise the first ordered
-candidate receives the event. Start and merge IDs hash the policy version and canonical
-inputs; membership order is $(t^{event},t^{ingest},\mathrm{source\_instance},
-\mathrm{event\_id})$.
-
-The watermark is maximum observed ingest time minus 120 s. When an open lineage first satisfies
-the watermark, Episode Synthesis emits a \texttt{finalized} successor and freezes
-$t_f$ and deadline $t_f+900$ s. The lineage leaves the open-candidate index but remains in a
-separate revisable index. A closed-lineage index retains canonical relation keys and the latest
-revision until deadline plus $W_{ret}=86400$ s. Before that fixed deadline, a late event is accepted only if
-Equation~\ref{eq:link-eligibility} holds against the latest revision; acceptance emits a new
-\texttt{finalized} successor with the unioned membership and the same $t_f$ and deadline. It
-does not reopen the lineage or extend the horizon. At the deadline a membership-identical
-\texttt{closed} successor is emitted, removed from the revisable index, and retained in the
-closed-lineage index. A later related event emits an immutable LateEvidenceRecord with reason
-\texttt{beyond\_revision\_horizon}, \texttt{closed\_lineage\_match}, or
-\texttt{duplicate\_after\_terminal\_outcome} to the late store; it cannot create an EpisodeRevision or change membership, $z$, $P$, or an earlier
-AuditRecord. An event older than $W_{ret}$ is recorded as
-\texttt{closed\_index\_expired}; it cannot start a fresh episode.
-
-\paragraph{Algorithm 1: label-blind update.}
-Validate and root-deduplicate the event. First query revisable and closed-lineage indexes using
-event time and canonical relation keys. If any match, select one by
-$(state\ priority,-\rho,-n_R,\Delta_t,t_{start},id)$ with revisable before closed; emit exactly one
-accepted successor or LateEvidenceRecord and return. Only when no non-open lineage matches may
-the event query sorted open candidates and execute exactly one start/attach/merge action. Events
-past $W_{ret}$ fail ingress. Advance the watermark and emit each immutable state successor or
-side record. Replay asserts equality of IDs, membership, links,
-states, late records, features, outputs, evidence references, and canonical digests. Figure
-~\ref{fig:episode-revision-lifecycle} illustrates the fixed transition points.
+Formation links events using process-causal, authenticated-session, endpoint-connection, and
+specific-entity relations under a 300\,s maximum inter-event gap and 3600\,s maximum episode
+span. Tie-breaks are deterministic (relation precedence, relation count, $\Delta t$, start time,
+episode ID). Hub suppression, parent merge, and exact event-time ordering are part of the frozen
+policy. Formation never reads labels, receipts, or scenario metadata.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig02_episode_revision_lifecycle.pdf}
-  \caption{Deterministic lifecycle. Event time controls linking, ingest time controls the 120 s watermark, accepted evidence within 900 s creates a successor revision, and evidence beyond the horizon cannot rewrite history.}
+  \caption{Episode revision lifecycle: open $\rightarrow$ finalized $\rightarrow$ late successor or
+  closed; beyond-horizon evidence enters LateEvidenceRecord without rewriting earlier membership.}
   \label{fig:episode-revision-lifecycle}
 \end{figure*}
 
-\subsection{Compact Features and Stateless Raw Score}
-\label{sec:feature-semantics}
+\subsection{Immutable Revision Lifecycle}
+\label{sec:revision-lifecycle}
 
-The primary scorer input is
-\begin{equation}
-x_\epsilon=[D_\epsilon,C_\epsilon].
-\label{eq:feature-vector}
-\end{equation}
-The frozen detector registry contains exactly three EDR IDs and three NDR IDs; each emits only a
-finite binary64 value $r\in[0,1]$, with larger values more suspicious. Source family, detector
-ID, and dependency group form the deduplication key. Byte-identical retries collapse; a
-conflicting value or reference rejects the FeatureVector. For each detector, negative training revisions define
-$\widehat F(r)=(\#\{v<r\}+0.5\#\{v=r\})/N$; $N=0$ invalidates the registry. Sort normalized
-values descending, breaking ties by UTF-8 detector ID then dependency-group ID. If $n>0$, $D$ is
-the mean of the first $\min(3,n)$ values; if $n=0$, $D=0$ is a diagnostic placeholder and the
-revision is not decision eligible. Missing/nonfinite/out-of-range values are never zero-imputed.
-For source $s$, $q_{\epsilon,s}=1$ iff at least one root-deduplicated registered detector has
-\texttt{detected}, a legal value, and a root tied to a core entity or selected edge; otherwise it
-is zero. Thus corroboration is fixed to
-\begin{equation}
-C_\epsilon=q_{\epsilon,\mathrm{EDR}}q_{\epsilon,\mathrm{NDR}},\qquad K=2.
-\label{eq:corroboration}
-\end{equation}
-With $\lambda=10^{-4}$, the stateless scorer is the unique frozen solution
-\begin{equation}
-\begin{aligned}
-(\hat b,\hat w_D,\hat w_C)&=\arg\min_{b\in\mathbb R,\;w_D,w_C\ge0}
- \frac1N\sum_i[\log(1+e^{z_i})-y_i z_i]\\
-&\quad+\frac\lambda2(b^2+w_D^2+w_C^2),\\
-z_i&=b+w_DD_i+w_CC_i.
-\end{aligned}
-\label{eq:raw-logit}
-\end{equation}
-Its cohort is the first finalized revision per training lineage with exact EDR/NDR health/parser
-support and an offline positive/negative label; mixed, ambiguous, OOS, and failed outcomes are
-excluded and counted. Deterministic binary64 L-BFGS-B starts at zero, uses stable
-\texttt{logaddexp}, stops at projected-gradient infinity norm $\le10^{-9}$ and objective change
-$\le10^{-12}$, and fails closed after 10,000 iterations. The RFC~8785/SHA-256 model artifact
-covers ordered training revision IDs/labels, detector-registry and normalizer digests, matrix
-bytes, $\lambda$, solver contract, and final coefficients. Health, $m$, $a^{det}$, $\kappa$, $U$,
-and outage status never enter $x_\epsilon$.
+Watermark lag finalizes open episodes. Late evidence inside a fixed 900\,s revision horizon may
+create an immutable successor revision; beyond-horizon or closed-lineage evidence produces a
+LateEvidenceRecord. Earlier revision digests are never rewritten. Deadlines are not extended by
+late arrivals.
 
-\subsection{Manifest-Scoped Affine Calibration}
-\label{sec:calibration}
+\subsection{Terminal Forensic Audit Contract}
+\label{sec:audit-assembly}
 
-The global calibrator uniquely minimizes natural-prevalence calibration NLL plus
-$10^{-6}(a^2+b_{cal}^2)$ subject to $a\ge10^{-6}$. Thus
-\begin{equation}
-P_\epsilon=
-\begin{cases}
-\sigma(a z_\epsilon+b_{cal}) & e=1,\ \kappa=\kappa_G,\\
-\sigma(a_g z_\epsilon+b_g) & e=1,\ \kappa=\kappa_g,\\
-\texttt{null} & e=0,\ \kappa=\kappa_\varnothing,
-\end{cases}
-\label{eq:affine-calibration}
-\end{equation}
-following positive-slope score calibration~\cite{platt1999probabilistic,gneiting2007proper}.
-The primary manifest supports only exact EDR+NDR mask \texttt{11}, non-down/non-unknown health,
-valid parsers, resolved detector states \texttt{available} or \texttt{no\_detection}, and exact
-pipeline versions. Any mismatch is out-of-support.
+At \texttt{revision.watermark}$+120$\,s the assembler inserts exactly one terminal outcome under
+$(episode\_id,revision)$: AuditRecord or AssemblyFailureRecord with a closed failure code set
+(schema, key, duplicate, digest, version, missing-input, timeout). Success cannot follow terminal
+failure. References are canonically ordered; RFC~8785/JCS serialization and SHA-256 digests bind
+versions. The store is append-only.
 
-Before calibration, the manifest registers each group key as the RFC~8785/SHA-256 digest of a
-canonical object containing deployment profile and EDR/NDR detector versions; scenario, run,
-and label fields are forbidden.
-Conditional groups use deterministic balanced five-fold run-level cross-fitting on the
-calibration partition. Within each group, intact runs with binary counts $(p_r,n_r)$ sort by
-decreasing $p_r+n_r$, then seeded SHA-256 and run ID. Each run goes to the fold minimizing the
-resulting maximum normalized positive, negative, and run loads; ties use total normalized load
-then fold ID. Every fold must be nonempty, and the ordered assignment map is sealed by digest.
-A group requires at least 50 positive revisions, 50 negatives, and 10 runs. For each held-out fold, improvement is
-$\Delta B=\operatorname{Brier}_{global}-\operatorname{Brier}_{group}$ and
-$\Delta N=\operatorname{NLL}_{global}-\operatorname{NLL}_{group}$, first macro-averaged by run
-and then equally across folds. Both means must be at least 0.01, every fold must be nonnegative,
-and paired run-bootstrap lower 95\% bounds for both must exceed zero. A passing group is
-refit once on all calibration-partition records with that key; its final coefficients and key are
-sealed in the manifest. Manifest validation rejects duplicate keys. Runtime resolution is
-exclusive: first reject any support mismatch; otherwise select the single enabled exact key, or
-fall back to global when none is enabled. Scope Resolver alone emits $g$, $\kappa$, and
-$e=\mathbf{1}[n>0\land\kappa\ne\kappa_\varnothing]$; Calibrator only maps $(z,e,\kappa,g)$ to
-$P$. This invariant prevents \path{no_detection} health support from making an empty detector
-vector score eligible.
+\subsection{Evidence-Loss Taxonomy}
+\label{sec:evidence-loss-taxonomy}
 
-\subsection{Structured Sufficiency and Audit Assembly}
-\label{sec:sufficiency}
+When a required action token is absent from a reconstructed episode, diagnosis uses the following
+closed classes (Table~\ref{tab:loss-taxonomy}):
 
-\begin{equation}
-\begin{aligned}
-U_\epsilon=(&u_{coverage},u_{provenance},u_{lateness},\\
-             &u_{contradiction},u_{calibration}).
-\end{aligned}
-\label{eq:sufficiency}
-\end{equation}
-
-Table~\ref{tab:sufficiency} makes every $U$ axis a first-match deterministic rule rather than an
-informal confidence judgment.
-
-\begin{table*}[t]
-\caption{Deterministic $U$ rules; rows list highest-to-lowest precedence.}
-\label{tab:sufficiency}
+\begin{table}[!t]
+\caption{Evidence-loss taxonomy for incomplete reconstruction.}
+\label{tab:loss-taxonomy}
 \centering
 \scriptsize
-\begin{tabular}{p{0.14\textwidth}p{0.20\textwidth}p{0.57\textwidth}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\columnwidth}>{\raggedright\arraybackslash}p{0.62\columnwidth}@{}}
 \toprule
-\textbf{Axis} & \textbf{Precedence} & \textbf{First matching predicate} \\
+\textbf{Class} & \textbf{Decision rule (summary)} \\
 \midrule
-coverage & unknown $>$ unavailable $>$ degraded $>$ complete & missing/conflicting required interval; else any down/not-collected/parser-invalid; else one missed heartbeat or lag $(120,600]$ s; else all required intervals healthy \\
-provenance & missing $>$ partial $>$ complete & unresolved scored input, membership event, selected link, coverage interval, or version; else optional unscored diagnostic absent; else all required roots resolve \\
-lateness & late\_accepted $>$ revisable $>$ stable & successor accepts late evidence; else open/finalized before fixed deadline; else closed \\
-contradiction & present $>$ unevaluable $>$ none & any evaluable CR1--CR3 true; else an applicable rule lacks a required field; else all applicable rules false \\
-calibration & out\_of\_support; supported\_group; supported\_global & exact serialization of Scope Resolver $\kappa$ \\
+\path{A_execution_failure} & Action receipt/predicate shows non-success \\
+\path{B_sensor_observability_failure} & Receipt success but raw EDR/NDR lacks identifiable activity \\
+\path{C_parser_or_normalization_failure} & Raw present; NormalizedEvent absent or rejected \\
+\path{D_token_mapping_failure} & NormalizedEvent present under wrong/missing required token \\
+\path{E_formation_membership_failure} & Correct token exists but not retained in matched episode \\
+\path{F_offline_attribution_failure} & Episode retains evidence; matcher fails to credit token \\
+\path{G_unknown_or_incomplete_trace} & Required supporting records missing for A--F \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
-The frozen contradiction rules are CR1, overlapping authenticated endpoint bindings map one
-endpoint key to different hosts; CR2, matched EDR socket and NDR flow disagree on the initiator
-after canonical direction normalization; and CR3, the same $(host,boot,pid,start)$ process key
-has conflicting parent/root lineage. A rule is applicable only when its relation exists; absent
-required fields then yield \texttt{unevaluable}. No applicable relation yields \texttt{none}.
-$U$ is never scalarized and cannot gate, modify, or relabel $P$.
+Forbidden inference: treating F1~$=$~1.0 as exact-complete step recovery; treating missing tokens
+as formation failures without a waterfall.
 
-AuditRecord Assembler joins one EpisodeRevision, FeatureVector, $z$, SupportDecision, $P$, $U$,
-and the exact SourceCoverage objects referenced by SupportDecision, by
-$(episode\_id,revision)$ and exact versions. It copies the health snapshot from those references;
-it cannot independently select or infer health. Required provenance comprises every membership
-event/root, selected link, scored input, coverage object, and version used by $z,P,U$; only
-unscored diagnostic references are optional. Identical retries are idempotent; conflicting
-duplicates fail. At deterministic deadline $\texttt{revision.watermark}+120$ s it atomically inserts
-exactly one AssemblyOutcome under that key: a complete AuditRecord, or an AssemblyFailureRecord
-with one code from \{\texttt{assembly\_timeout}, \texttt{missing\_input},
-\texttt{conflicting\_duplicate}, \texttt{key\_mismatch}, \texttt{version\_mismatch},
-\texttt{schema\_invalid}, \texttt{digest\_mismatch}\} and no fabricated score/probability fields.
-The unique-key store grants
-insert/select only and forbids a later success after terminal failure. The evaluation reports
-failure counts separately.
-Inputs are processed in fixed type order EpisodeRevision, FeatureVector, raw logit,
-SupportDecision, $P$, $U$, SourceCoverage. When multiple failures apply, precedence is schema,
-key, duplicate, digest, version, missing-input, then timeout. Before canonicalization, references
-sort by relation rank (membership/link/feature/health/contradiction), dependency-group UTF-8
-bytes, object reference before sentinel, object-ID-or-empty bytes, then digest-or-empty bytes.
-RFC~8785 preserves JSON array element order rather than sorting it; JCS is applied only after
-this application-level ordering. Optional absence uses a closed sentinel; missing required
-provenance fails assembly. Every closed VersionSet component binds a version identifier and
-SHA-256 digest for schema/parser/formation, detector registry, feature, normalizer, raw model,
-calibrator, support, sufficiency, assembly, and manifest. JSON numbers must be finite binary64 values represented by JSON
-decimal grammar; NaN, infinities, negative zero, and overflow fail schema validation. Runtime
-host, PID, wall-clock, and duration form a non-canonical envelope excluded from digests.
+\subsection{Scoring and Probability Extension (Design Only)}
+\label{sec:calibration}
 
-\subsection{Boundary and Reproducibility Contract}
+Schema fields may retain an optional score interface: version-bound, nullable $P$ outside support,
+and $U$ that must not rewrite $P$. This submission reports no fitted coefficients, Brier/NLL, or
+held-out ranking. Scoring and calibration are not empirical claims here.
+
+\subsection{Boundary}
 \label{sec:method-boundary}
 
-The method excludes CTI, RAG/agents, impact/priority, automated response, and OT/ICS
-generalization. Appendix~\ref{app:data-contracts} and the tables cited in the main text are
-normative. The contribution is limited to
-deterministic EDR/NDR episode construction, manifest-scoped probability, structured sufficiency,
-and replayable append-only provenance.
+The \emph{evaluated} contribution is deterministic episode reconstruction and replayable audit
+semantics, including evidence-loss localization. Manifest-scoped probability is design-only.
+CTI, RAG/agents, impact scoring, and OT/ICS generalization are excluded.

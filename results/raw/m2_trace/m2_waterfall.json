@@ -1,0 +1,390 @@
+{
+  "result_type": "trustepisode.m2-evidence-waterfall.v1",
+  "n_runs": 10,
+  "required_token": "command_family:file_transfer",
+  "waterfall": [
+    {
+      "stage": "receipt_success",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    },
+    {
+      "stage": "raw_observable",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    },
+    {
+      "stage": "normalized_file_transfer_present",
+      "expected_count": 10,
+      "observed_count": 0,
+      "drop_count": 10,
+      "note": ""
+    },
+    {
+      "stage": "normalized_as_remote_session_instead",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": null,
+      "note": "SCP evidence exists but mapped to command_family:remote_session, not file_transfer"
+    },
+    {
+      "stage": "episode_retained_file_transfer",
+      "expected_count": 10,
+      "observed_count": 0,
+      "drop_count": 10,
+      "note": ""
+    },
+    {
+      "stage": "episode_retained_remote_session",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    }
+  ],
+  "drop_class_counts": {
+    "D_token_mapping_failure": 10
+  },
+  "final_classification": "D_token_mapping_failure",
+  "interpretation": "All 10 M2 runs have successful linux.scp_archive receipts and raw scp observability, but Evidence Fabric labels the corresponding process events as command_family:remote_session rather than command_family:file_transfer. Formation retains remote_session evidence; offline matching therefore cannot credit the required file_transfer token. This is not an Episode Synthesis membership failure of an already-normalized file_transfer event.",
+  "per_run": [
+    {
+      "run_id": "run-012930f3314e360d0e737b69cb1169a5",
+      "mode": "attack_only",
+      "manifest_digest": "sha256:d16b6bc7a19a7cef9e071cdd1503d4f9306ef1b97a5dbd939ce2ccaa39300d8c",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 12,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-11d66ffe7f81d6300883097dd2ef2b4e",
+      "mode": "attack_only",
+      "manifest_digest": "sha256:8d22d338fad1fb9570d05b0fd5a716c4e19727f0701290f9e049d96fe8b3d383",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 12,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-1c9de2854631bfc2a4e8df78e305360f",
+      "mode": "attack_only",
+      "manifest_digest": "sha256:c9a2f0bca129ec686c3cd278e5b54d4e1eac67873a9c6acb6415e7d061f0d28f",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 12,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-6640798366b3afb9cde4b8c8c19b4503",
+      "mode": "attack_only",
+      "manifest_digest": "sha256:d8e463e9889653763805249d103344b58dc87379c3d2ba3683905822349ce2b3",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 12,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-dd2aabad9d6bd7f429a78e7cf7b8bd9f",
+      "mode": "attack_only",
+      "manifest_digest": "sha256:7329a057253e4b998e3507942274db6e1d8c9742543682e28db9842f6ff4c6cf",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 12,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-02ce0e3669a4f557e7e90368a59bedd3",
+      "mode": "concurrent_benign",
+      "manifest_digest": "sha256:b8d9249b9415bfd77a24e066d3d75937b27f3f8a2d4dbd11f2156bc79f1a222f",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 14,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "file_change": 6,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 4
+      },
+      "action_counts": {
+        "process.start.file_change": 3,
+        "process.exit.file_change": 3,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 4
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-90dd42e29e4ee460145ce0792b2bcd67",
+      "mode": "concurrent_benign",
+      "manifest_digest": "sha256:851587f632f829d1a45f16bf93f719e6ee0782bb28ed0009cd75e93ea1fc4645",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 16,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 4,
+      "family_counts": {
+        "remote_session": 4,
+        "file_change": 4,
+        "archive": 2,
+        "null": 6
+      },
+      "action_counts": {
+        "process.start.remote_session": 2,
+        "process.exit.remote_session": 2,
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "network.flow": 6
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-b6bc6722dde571318db7a9242fd3bc91",
+      "mode": "concurrent_benign",
+      "manifest_digest": "sha256:aef988bf9e5fde56a7a442dd6e0322b5141601694f8175a968ad616e9a3410ea",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 16,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 4,
+      "family_counts": {
+        "remote_session": 4,
+        "file_change": 4,
+        "archive": 2,
+        "null": 6
+      },
+      "action_counts": {
+        "process.start.remote_session": 2,
+        "process.exit.remote_session": 2,
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "network.flow": 6
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-bf495b90d557d68befe482058c79c332",
+      "mode": "concurrent_benign",
+      "manifest_digest": "sha256:aa54e1adc95b3633fdf3f7b013531d1bfdaeb31408984af98ec4d2181b700ea5",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 18,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 4,
+      "family_counts": {
+        "remote_session": 4,
+        "file_change": 4,
+        "archive": 2,
+        "null": 8
+      },
+      "action_counts": {
+        "process.start.remote_session": 2,
+        "process.exit.remote_session": 2,
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "network.flow": 8
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    },
+    {
+      "run_id": "run-c6c84df6f102474f19195d4d2aada95d",
+      "mode": "concurrent_benign",
+      "manifest_digest": "sha256:029f4babc1d7d7cafc60063f84760f0d62600e6f2d07652ef5f03e6fc435964f",
+      "expected_token": "command_family:file_transfer",
+      "receipt_success": true,
+      "scp_receipt_count": 1,
+      "raw_observable": 1,
+      "normalized_event_count": 16,
+      "normalized_file_transfer": 0,
+      "normalized_remote_session_scp_proxy": 2,
+      "family_counts": {
+        "package_manager": 2,
+        "file_change": 4,
+        "archive": 2,
+        "remote_session": 2,
+        "null": 6
+      },
+      "action_counts": {
+        "process.start.package_manager": 1,
+        "process.exit.package_manager": 1,
+        "process.start.file_change": 2,
+        "process.exit.file_change": 2,
+        "process.start.archive": 1,
+        "process.exit.archive": 1,
+        "process.start.remote_session": 1,
+        "process.exit.remote_session": 1,
+        "network.flow": 6
+      },
+      "episode_retained_file_transfer": 0,
+      "episode_retained_remote_session": 1,
+      "action_coverage": 0.75,
+      "episode_f1": 1.0,
+      "drop_class": "D_token_mapping_failure",
+      "token_retention_conditional_on_observability": 0.0
+    }
+  ],
+  "registry_sha256": "sha256:6f08b0d323e2bcea6f3bb97f3d1d3b0e3678b75328f8b569cf40076df40debf2"
+}

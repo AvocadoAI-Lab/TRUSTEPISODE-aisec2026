@@ -1,14 +1,19 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\trustepisode defines a narrow, replayable contract for EDR/NDR episode formation and
-candidate-conditioned maliciousness calibration. Episode Synthesis alone owns immutable
-membership revisions; the scorer, support resolver, calibrator, sufficiency evaluator, and
-AuditRecord Assembler have disjoint outputs; each revision terminates in either a complete
-AuditRecord or an explicit AssemblyFailureRecord; and missing or incompatible telemetry yields an
-explicit out-of-support state rather than a fabricated probability. The primary evaluation
-executes frozen CALDERA attack families on isolated live Ubuntu targets and pairs each execution
-with replay perturbations or authenticated collector outages. Performance deltas are interpreted
-together with the five sufficiency-state transitions, so honest abstention under missing evidence
-is distinguished from silent confidence. These CALDERA and robustness results remain pending;
-the current draft therefore makes no claim of deployment generalization.
+\trustepisode provides a deterministic, auditable EDR/NDR episode-reconstruction contract:
+single-owner immutable revisions, append-only terminal outcomes with a complete failure-code
+matrix, and stage-localized A--G evidence-loss diagnosis. On the sealed M1--M6 cohort, sliding
+sessionization improves completeness relative to fixed bins, but fair sliding time/entity/relation
+builders show \emph{no observed difference} from full TrustEpisode (60/60 ties). That negative
+result is forensic evidence about benchmark coverage: advanced guards require targeted
+conformance cards, which we provide without treating them as live effectiveness. Canonical
+replay is byte-identical on all 60 sealed malicious runs; raw arrival-order robustness requires
+re-canonicalization. M2's missing \texttt{file\_transfer} token is
+\texttt{D\_token\_mapping\_failure}, not a demonstrated formation drop. Contract ablation shows
+which properties prevent mutable history, silent missing-input failure, and noncanonical replay.
+Supplemental partition artifacts (not primary estimators) include L1 live bases with offline
+L1/L2 ablations, L3 controlled hub inject, L4 controlled late inject, wall-clock within-horizon
+holds (2/2), and sealed beyond-horizon attempts without organic LateEvidenceRecord. Sealed M7 is
+a supplemental 3900\,s boundary-stress cohort only. Fitted scoring, calibration, and
+telemetry-outage robustness remain unevaluated and outside these claims.

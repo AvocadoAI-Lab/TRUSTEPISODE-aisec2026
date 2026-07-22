@@ -1,0 +1,81 @@
+{
+  "contract_version": "trustepisode.perturbations.v3",
+  "canonical_base_order": ["event_time", "ingest_time", "source_instance", "event_id"],
+  "child_digest": "S=HMAC-SHA256(key=UTF8('20260710'), message=UTF8(base_run_id)||0x1f||UTF8(RP_id)||0x1f||UTF8(source_family_or_none)||0x1f||RFC8785(level))",
+  "uniform_prf": "U(domain,key)=uint64_be(HMAC-SHA256(key=S,message=UTF8(domain)||0x1f||UTF8(key))[0:8])/2^64",
+  "design_matrix": "RP0 has source=none and level=control; RP1 has levels EDR_only/NDR_only; RP2-RP7 instantiate every Cartesian child in source_family=[EDR,NDR] x the registered levels; no source is randomly selected",
+  "replay": [
+    {"id": "RP0", "intervention": "unchanged", "levels": ["control"], "mapping": "emit canonical base byte stream unchanged"},
+    {"id": "RP1", "intervention": "source_event_mask", "levels": ["EDR_only", "NDR_only"], "mapping": "retain exactly the named source family and remove the other; preserve order; SourceCoverage unchanged"},
+    {"id": "RP2", "intervention": "independent_event_drop", "sources": ["EDR", "NDR"], "levels": [0.05, 0.1, 0.25], "mapping": "for each event of the explicit child source in canonical order drop iff U('drop',source_family||0x1f||event_id)<level; retain all events of the other source"},
+    {"id": "RP3", "intervention": "bounded_burst_drop_seconds", "sources": ["EDR", "NDR"], "levels": [30, 120, 300], "candidate_order": "ascending unique integer-microsecond event_time t from the explicit source satisfying t+level*1000000<=run_end_us", "index": "j=floor(U('interval','start')*candidate_count), with U in [0,1), hence 0<=j<candidate_count", "mapping": "remove explicit-source events in [candidate[j],candidate[j]+level seconds); retain the other source; candidate_count=0 invalidates child"},
+    {"id": "RP4", "intervention": "fixed_ingest_delay_seconds", "sources": ["EDR", "NDR"], "levels": [30, 120, 600], "mapping": "add exactly level*1000000 integer microseconds to ingest_time of every explicit-source event; event_time, other source, and SourceCoverage unchanged"},
+    {"id": "RP5", "intervention": "arrival_reorder_buffer_seconds", "sources": ["EDR", "NDR"], "levels": [30, 120, 600], "anchor": "minimum ingest_time_us over the complete base stream", "buffer_width": "exactly level*1000000 integer microseconds", "buffer_index": "floor((ingest_time_us-anchor_us)/(level*1000000))", "mapping": "within each buffer reorder explicit-source events by (U('permute',source_family||0x1f||event_id),event_id UTF-8); retain timestamps and positions of other-source events, then merge by ingest_time and canonical tie order"},
+    {"id": "RP6", "intervention": "event_time_clock_skew_seconds", "sources": ["EDR", "NDR"], "levels": [-120, -30, 30, 120], "mapping": "add exactly level*1000000 signed integer microseconds to event_time of every explicit-source event; ingest_time, other source, and SourceCoverage unchanged"},
+    {"id": "RP7", "intervention": "dependency_aware_duplicate_rate", "sources": ["EDR", "NDR"], "levels": [0.05, 0.1, 0.25], "selection": "for each ascending dependency_group of the explicit source duplicate the complete group once iff U('duplicate',source_family||0x1f||dependency_group)<level", "duplicate_id_preimage": "UTF8('RP7')||0x1f||S_as_32_raw_bytes||0x1f||UTF8(original_event_id)||0x1f||uint32_be(1)", "mapping": "duplicate event_id=lowercase hex SHA-256(duplicate_id_preimage), ingest_time_us=original+1, and preserve all other fields including dependency_group; hash collision invalidates child"}
+  ],
+  "physical_outage": {
+    "id": "PO1",
+    "source_families": ["EDR", "NDR"],
+    "population": "dedicated locked-test attack_only cohort; excluded from the 220 base runs and from training, development, calibration, RT2, RT3a, and RT3b",
+    "representative_cards": ["M1", "M3", "M4", "M7"],
+    "steady_state_seconds": 120,
+    "outage_duration_seconds": [120, 600],
+    "valid_repetitions_per_source_duration_cell": 10,
+    "required_physical_trace_count": 40,
+    "design_matrix": "source_family [EDR,NDR] x outage_duration_seconds [120,600] x repetition_index [0,9], yielding exactly 40 physical traces",
+    "allocation": {
+      "source_index": {"EDR": 0, "NDR": 1},
+      "duration_index": {"120": 0, "600": 1},
+      "card_index": "(repetition_index + 2*source_index + duration_index) mod 4",
+      "card_order": ["M1", "M3", "M4", "M7"],
+      "balance_invariant": "the 40-cell expansion assigns exactly 10 traces to each representative card",
+      "po1_cell_id": "lowercase hex SHA-256(UTF8('PO1-v3')||0x1f||source_family||0x1f||uint32_be(duration_seconds)||0x1f||uint32_be(repetition_index)||0x1f||allocated_card_id)",
+      "ordering": "source family order EDR,NDR; duration order 120,600; repetition index ascending"
+    },
+    "comparator_reuse": "TrustEpisode and OB1_available_source_denominator are evaluated from the same immutable raw trace and SourceCoverage journal; an outage is never repeated per comparator",
+    "follow_up_seconds_after_restore": 1800,
+    "timestamp_contract": {
+      "t_anchor": "start of the first interval with two immediately preceding healthy heartbeats, parser_valid=true, transport_live=true, and backlog_seconds<=120",
+      "t_stop": "t_anchor+120 seconds, valid only if all health predicates remain continuously true on [t_anchor,t_stop)",
+      "t_detect": "start_of_first_authenticated_degraded_or_down_SourceCoverage_interval",
+      "t_restore": "t_stop_plus_outage_duration",
+      "t_h1": "first_healthy_heartbeat_after_restore",
+      "t_h2": "second_consecutive_healthy_heartbeat_after_restore",
+      "t_ready": "first timestamp at or after t_restore beginning two consecutive heartbeat intervals with parser_valid=true, transport_live=true, and backlog_seconds<=120",
+      "t_stable": "first_time_at_or_after_max(t_h2,t_ready) followed_by_900_seconds_without_new_revision",
+      "detection_seconds": "t_detect_minus_t_stop",
+      "t_censor": "t_restore+1800 seconds",
+      "detection_censoring": "if no t_detect<t_restore, detection is right-censored at t_restore and t_detect is null",
+      "recovery_censoring": "if t_ready or t_stable is absent by t_censor, recovery is right-censored at t_censor and the absent timestamp is null",
+      "censor_reason_enum": ["none", "health_not_detected_before_restore", "parser_or_backlog_not_ready", "no_stable_revision_before_followup_end"],
+      "recovery_seconds": "t_stable_minus_t_restore when uncensored; otherwise null"
+    },
+    "action": "at t_stop, stop all manifest-registered collector egress process IDs for exactly the selected source family within one second; restore the same IDs at t_restore; do not stop targets, packet capture, control-plane services, or network interfaces",
+    "source_action_resolver": {
+      "EDR": "the UTF-8-sorted endpoint telemetry egress process IDs for edr-target-01 and edr-target-02",
+      "NDR": "the single Suricata EVE transport/forwarder process ID in ndr-gateway; packet capture and local EVE spooling remain live"
+    },
+    "required_observations": [
+      "last healthy heartbeat",
+      "first degraded_or_down SourceCoverage interval",
+      "watermark and revision transitions",
+      "calibration status and decision eligibility",
+      "first recovery heartbeat",
+      "first stable revision"
+    ],
+    "recovery_criterion": "two consecutive healthy heartbeat intervals, parser_valid=true, backlog_seconds<=L_watermark_seconds, then no new revision for W_revision_seconds",
+    "safety_abort": "abort if collector stop affects the control plane or a non-laboratory route"
+  },
+  "cost_protocol": {
+    "input": "frozen_RP0_replay",
+    "worker_counts": [1, 2, 4, 8],
+    "warmup_repetitions_excluded": 1,
+    "measured_repetitions": 5,
+    "latency": "monotonic_ingest_to_terminal_AssemblyOutcome",
+    "rss_sampling_milliseconds": 100,
+    "storage": "sum_of_canonical_bytes",
+    "throughput_denominator": "all_terminal_outcomes_including_AssemblyFailureRecord",
+    "required_row_fields": ["hardware_manifest_digest", "software_manifest_digest", "failure_fraction"]
+  }
+}

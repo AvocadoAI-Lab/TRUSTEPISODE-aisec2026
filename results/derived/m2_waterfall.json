@@ -1,0 +1,52 @@
+{
+  "final_classification": "D_token_mapping_failure",
+  "waterfall": [
+    {
+      "stage": "receipt_success",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    },
+    {
+      "stage": "raw_observable",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    },
+    {
+      "stage": "normalized_file_transfer_present",
+      "expected_count": 10,
+      "observed_count": 0,
+      "drop_count": 10,
+      "note": ""
+    },
+    {
+      "stage": "normalized_as_remote_session_instead",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": null,
+      "note": "SCP evidence exists but mapped to command_family:remote_session, not file_transfer"
+    },
+    {
+      "stage": "episode_retained_file_transfer",
+      "expected_count": 10,
+      "observed_count": 0,
+      "drop_count": 10,
+      "note": ""
+    },
+    {
+      "stage": "episode_retained_remote_session",
+      "expected_count": 10,
+      "observed_count": 10,
+      "drop_count": 0,
+      "note": ""
+    }
+  ],
+  "drop_class_counts": {
+    "D_token_mapping_failure": 10
+  },
+  "interpretation": "All 10 M2 runs have successful linux.scp_archive receipts and raw scp observability, but Evidence Fabric labels the corresponding process events as command_family:remote_session rather than command_family:file_transfer. Formation retains remote_session evidence; offline matching therefore cannot credit the required file_transfer token. This is not an Episode Synthesis membership failure of an already-normalized file_transfer event.",
+  "raw_digest": "sha256:79dd91254076965e4250926cc9ed961c1af49643f27af4636f4e414d31b50679"
+}

@@ -1,0 +1,358 @@
+{
+  "contract_version": "trustepisode.scenario-cards.v3",
+  "required_valid_repetitions_per_card_and_mode": 10,
+  "achieved_repetitions": "pending",
+  "safety": "two isolated Linux endpoint containers, one inline NDR gateway, manifest-resolved test accounts, fixed harmless fixtures, offline-only success receipts, and snapshot-backed cleanup",
+  "execution_contract": {
+    "target_shell": "/bin/bash --noprofile --norc -euo pipefail -c",
+    "scheduler": "the orchestrator starts each ability at card_start_monotonic+offset_seconds with absolute error <=1 second",
+    "concurrency": "one formal card run owns the target pair; only the registered concurrent-benign card may overlap",
+    "collection_window": "starts 30 seconds before the earliest ability and ends after the last postcondition probe; cleanup telemetry is outside the evidence window",
+    "target_identity_firewall": "run_id, card_id, ability_id, operation_id, receipt_id, split, label, and marker values are unavailable to target commands and online objects"
+  },
+  "template_variables": {
+    "target_command_required": [
+      "target",
+      "test_user",
+      "service_url",
+      "fixture_dir",
+      "package_path",
+      "package_sha256",
+      "remote_dir",
+      "action_path",
+      "remote_action_path",
+      "output_path",
+      "stage_dir"
+    ],
+    "orchestrator_only_required": ["run_id", "card_id", "ability_id", "credential_ref", "work_order_id"],
+    "resolution": "resolve target variables from the frozen image/topology manifest and orchestrator variables from the sealed run manifest; unresolved or extra variables invalidate the run",
+    "quoting": "UTF-8 values are passed as typed executor arguments; no value is interpolated by a second shell",
+    "online_prohibition": "orchestrator-only names and values are recursively rejected before NormalizedEvent construction"
+  },
+  "image_contract": {
+    "allowed_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+    "instances": {
+      "edr_target_01": "ubuntu2204_edr_target_v1",
+      "edr_target_02": "ubuntu2204_edr_service_v1"
+    },
+    "resolution": "every key resolves to OCI image digest, filesystem baseline digest, installed-package manifest digest, and endpoint-sensor configuration digest before collection",
+    "reuse": "cleanup success, no remaining SSH/session/task objects, and filesystem baseline digest equality are required before reuse"
+  },
+  "receipt_contract": {
+    "storage": "Ground Truth Store only; receipts and their preimages are never ingested by EDR, NDR, NormalizedEvent, Episode Synthesis, detectors, scorer, calibrator, sufficiency, or online outcomes",
+    "receipt_id": "lowercase hex SHA-256(UTF8('TrustEpisode-receipt-v1')||0x1f||run_id||0x1f||card_id||0x1f||ability_id)",
+    "content": "RFC8785({run_id,card_id,ability_id,start_monotonic_us,end_monotonic_us,exit_code,postcondition_digest})",
+    "success": "ability exit_code=0, its fixed-path postcondition probe passes, and the offline receipt digest verifies",
+    "postcondition_timing": "probe immediately after the ability and before cleanup; probe events are quarantined from the evidence window",
+    "cleanup_success": "all fixed action/output/stage paths and temporary grants are absent and the registered filesystem baseline digest is restored"
+  },
+  "mode_matrix": {
+    "malicious": ["attack_only", "concurrent_benign"],
+    "benign": ["standalone_benign"],
+    "concurrent_benign_selection": "B[1 + uint64_be(SHA-256(UTF8('20260710')||0x1f||run_id)[0:8]) mod 8]",
+    "concurrent_start": "selected benign card starts exactly 60 seconds before malicious offset 0 and runs once",
+    "prohibited": ["two malicious cards in one run", "unregistered background workload", "mode change after split freeze", "target command containing an orchestrator-only value"]
+  },
+  "ability_catalog": {
+    "linux.discovery": {
+      "executor": "bash_no_profile",
+      "command": "hostname; id; ps -eo pid,ppid,comm --sort=pid | head -n 32"
+    },
+    "linux.peer_inventory": {
+      "executor": "bash_no_profile",
+      "command": "getent ahostsv4 '${target}'; ip route get '${target}'"
+    },
+    "linux.ssh_action": {
+      "executor": "bash_no_profile",
+      "command": "printf '%s\\n' 'TRUSTEPISODE_CONTROLLED_ACTION' | ssh -F '${fixture_dir}/ssh_config' '${test_user}@${target}' -- /usr/bin/install -D -m 0600 /dev/stdin '${remote_action_path}'"
+    },
+    "linux.local_action": {
+      "executor": "bash_no_profile",
+      "command": "install -d -m 0700 \"$(dirname '${action_path}')\"; printf '%s\\n' 'TRUSTEPISODE_CONTROLLED_ACTION' > '${action_path}'"
+    },
+    "linux.config_action": {
+      "executor": "bash_no_profile",
+      "command": "install -D -m 0644 '${fixture_dir}/registered-test.conf' '${action_path}'; cmp '${fixture_dir}/registered-test.conf' '${action_path}'"
+    },
+    "linux.stage_fixture": {
+      "executor": "bash_no_profile",
+      "command": "rm -rf -- '${stage_dir}'; install -d -m 0700 '${stage_dir}'; cp -a -- '${fixture_dir}/transfer/.' '${stage_dir}/'"
+    },
+    "linux.archive_fixture": {
+      "executor": "bash_no_profile",
+      "command": "tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -czf '${output_path}' -C '${stage_dir}' ."
+    },
+    "linux.scp_archive": {
+      "executor": "bash_no_profile",
+      "command": "scp -F '${fixture_dir}/ssh_config' '${output_path}' '${test_user}@${target}:${remote_dir}/controlled-transfer.tar.gz'"
+    },
+    "linux.delayed_local_action": {
+      "executor": "bash_no_profile",
+      "command": "install -d -m 0700 \"$(dirname '${action_path}')\"; cp -- '${fixture_dir}/delayed-action.txt' '${action_path}'"
+    },
+    "net.cadence": {
+      "executor": "bash_no_profile",
+      "command": "for i in 1 2 3 4 5; do curl --fail --silent --show-error --output /dev/null '${service_url}/health?probe=controlled&step='$i; [ \"$i\" -eq 5 ] || sleep 60; done"
+    },
+    "benign.inventory": {
+      "executor": "bash_no_profile",
+      "command": "{ uname -a; dpkg-query -W | sort; } > '${output_path}'"
+    },
+    "benign.package_install": {
+      "executor": "bash_no_profile",
+      "command": "printf '%s  %s\\n' '${package_sha256}' '${package_path}' | sha256sum -c -; sudo dpkg --install '${package_path}'"
+    },
+    "benign.rsync": {
+      "executor": "bash_no_profile",
+      "command": "rsync -a --delete --checksum -e \"ssh -F '${fixture_dir}/ssh_config'\" '${fixture_dir}/sync/' '${test_user}@${target}:${remote_dir}/benign-sync/'"
+    },
+    "benign.scan": {
+      "executor": "bash_no_profile",
+      "command": "nmap -Pn -sT --max-retries 1 --host-timeout 120s -p 22,80,443 '${target}' -oN '${output_path}'"
+    },
+    "benign.helpdesk": {
+      "executor": "bash_no_profile",
+      "command": "ssh -F '${fixture_dir}/ssh_config' '${test_user}@${target}' -- /usr/bin/supervisorctl status trustepisode-fixture > '${output_path}'"
+    },
+    "benign.logs": {
+      "executor": "bash_no_profile",
+      "command": "tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -czf '${output_path}' -C '${fixture_dir}' logs"
+    },
+    "benign.config": {
+      "executor": "bash_no_profile",
+      "command": "sudo install -D -m 0644 '${fixture_dir}/registered-benign.conf' '${action_path}'; cmp '${fixture_dir}/registered-benign.conf' '${action_path}'"
+    },
+    "benign.maintenance": {
+      "executor": "bash_no_profile",
+      "command": "sudo supervisorctl restart trustepisode-fixture; supervisorctl status trustepisode-fixture > '${output_path}'"
+    },
+    "cleanup.local": {
+      "executor": "bash_no_profile",
+      "command": "rm -f -- '${action_path}' '${output_path}'"
+    },
+    "cleanup.remote_action": {
+      "executor": "bash_no_profile",
+      "command": "ssh -F '${fixture_dir}/ssh_config' '${test_user}@${target}' -- rm -f -- '${remote_action_path}'"
+    },
+    "cleanup.stage": {
+      "executor": "bash_no_profile",
+      "command": "rm -rf -- '${stage_dir}'; rm -f -- '${output_path}'"
+    },
+    "cleanup.remote_transfer": {
+      "executor": "bash_no_profile",
+      "command": "ssh -F '${fixture_dir}/ssh_config' '${test_user}@${target}' -- rm -rf -- '${remote_dir}/controlled-transfer.tar.gz' '${remote_dir}/benign-sync'"
+    },
+    "cleanup.package": {
+      "executor": "bash_no_profile",
+      "command": "sudo dpkg --purge trustepisode-benign-fixture"
+    },
+    "cleanup.config": {
+      "executor": "bash_no_profile",
+      "command": "sudo rm -f -- '${action_path}'"
+    }
+  },
+  "malicious_cards": [
+    {
+      "id": "M1",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["linux.discovery", "linux.peer_inventory", "linux.ssh_action"],
+      "required_action_tokens": ["command_family:discovery", "command_family:remote_session", "network.flow"],
+      "offset_seconds": [0, 30, 60],
+      "success_receipt_abilities": ["linux.ssh_action"],
+      "cleanup_ability_ids": ["cleanup.remote_action"],
+      "preconditions": ["two isolated Linux EDR targets", "temporary fixture-only SSH key", "registered peer address"],
+      "expected": ["EDR process lineage", "NDR SSH session"],
+      "failure_predicates": ["any ability exit nonzero", "offset error exceeds 1 second", "SSH host-key mismatch", "postcondition digest mismatch", "EDR or NDR collection incident"],
+      "cleanup_success": "remote action path and temporary SSH grant absent; both target baseline digests restored"
+    },
+    {
+      "id": "M2",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["linux.stage_fixture", "linux.archive_fixture", "linux.scp_archive", "linux.delayed_local_action"],
+      "required_action_tokens": ["command_family:file_change", "command_family:archive", "command_family:file_transfer", "network.flow"],
+      "offset_seconds": [0, 30, 60, 120],
+      "success_receipt_abilities": ["linux.archive_fixture", "linux.scp_archive", "linux.delayed_local_action"],
+      "cleanup_ability_ids": ["cleanup.local", "cleanup.stage", "cleanup.remote_transfer"],
+      "preconditions": ["two isolated Linux EDR targets", "checksum-pinned transfer fixture", "temporary fixture-only SSH key"],
+      "expected": ["EDR file/process sequence", "NDR transfer flow"],
+      "failure_predicates": ["any ability exit nonzero", "offset error exceeds 1 second", "archive checksum mismatch", "remote copy mismatch", "cleanup failure"],
+      "cleanup_success": "local stage/archive/action and remote transfer absent; both target baseline digests restored"
+    },
+    {
+      "id": "M3",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["linux.discovery", "linux.ssh_action"],
+      "required_action_tokens": ["command_family:discovery", "command_family:remote_session", "network.flow"],
+      "offset_seconds": [0, 30],
+      "success_receipt_abilities": ["linux.ssh_action"],
+      "cleanup_ability_ids": ["cleanup.remote_action"],
+      "preconditions": ["two isolated Linux EDR targets", "temporary fixture-only SSH key"],
+      "expected": ["Linux EDR process lineage", "NDR SSH flow"],
+      "failure_predicates": ["any ability exit nonzero", "SSH host-key mismatch", "postcondition digest mismatch", "namespace mismatch"],
+      "cleanup_success": "SSH session closed, temporary key revoked, remote action absent, and baseline digests restored"
+    },
+    {
+      "id": "M4",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["net.cadence", "linux.local_action"],
+      "required_action_tokens": ["command_family:http_client", "network.flow", "command_family:file_change"],
+      "offset_seconds": [0, 300],
+      "success_receipt_abilities": ["net.cadence", "linux.local_action"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "preconditions": ["isolated instrumented service", "registered service URL", "five-request cadence fixture"],
+      "expected": ["NDR five-request cadence", "EDR local action"],
+      "failure_predicates": ["any request exit nonzero", "cadence error exceeds 1 second", "postcondition digest mismatch", "service health degradation"],
+      "cleanup_success": "test client exited, local action absent, service healthy, and baseline digest restored"
+    },
+    {
+      "id": "M5",
+      "image_keys": ["ubuntu2204_edr_target_v1"],
+      "ability_ids": ["linux.discovery", "linux.config_action"],
+      "required_action_tokens": ["command_family:discovery", "command_family:file_change"],
+      "offset_seconds": [0, 30],
+      "success_receipt_abilities": ["linux.config_action"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "preconditions": ["isolated Linux EDR target", "checksum-pinned test configuration"],
+      "expected": ["EDR-only process/file sequence", "NDR no_detection is valid"],
+      "failure_predicates": ["any ability exit nonzero", "postcondition digest mismatch", "Identity or receipt value appears in an online object"],
+      "cleanup_success": "test configuration absent and target baseline digest restored"
+    },
+    {
+      "id": "M6",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["linux.discovery", "linux.ssh_action"],
+      "required_action_tokens": ["command_family:discovery", "command_family:remote_session", "network.flow"],
+      "offset_seconds": [0, 30],
+      "success_receipt_abilities": ["linux.ssh_action"],
+      "cleanup_ability_ids": ["cleanup.remote_action"],
+      "preconditions": ["same SSH client/configuration family as B5", "two isolated Linux EDR targets"],
+      "expected": ["context-dependent EDR sequence", "NDR SSH action"],
+      "failure_predicates": ["any ability exit nonzero", "postcondition digest mismatch", "remote target differs from run manifest"],
+      "cleanup_success": "remote action, session, and temporary grant absent; baseline digests restored"
+    },
+    {
+      "id": "M7",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["linux.discovery", "linux.ssh_action", "linux.local_action"],
+      "required_action_tokens": ["command_family:discovery", "command_family:remote_session", "command_family:file_change", "network.flow"],
+      "offset_seconds": [0, 300, 3900],
+      "success_receipt_abilities": ["linux.ssh_action", "linux.local_action"],
+      "cleanup_ability_ids": ["cleanup.local", "cleanup.remote_action"],
+      "preconditions": ["two isolated Linux EDR targets", "monotonic orchestrator clock", "temporary fixture-only SSH key"],
+      "expected": ["EDR/NDR observations at the 300 second gap and 3600 second post-second-action max-span boundaries"],
+      "failure_predicates": ["any ability exit nonzero", "offset error exceeds 1 second", "postcondition digest mismatch"],
+      "cleanup_success": "all fixed action paths, sessions, and temporary grants absent; baseline digests restored"
+    }
+  ],
+  "identity_exploratory_card": {
+    "id": "M5-ID",
+    "admission": "only after timestamp, provenance, health, and support pilot passes",
+    "ability_ids": ["linux.discovery", "linux.config_action"],
+    "forbidden": ["NormalizedEvent ingestion", "Episode Synthesis input", "feature input", "calibrator manifest input", "primary RQ result"]
+  },
+  "benign_cards": [
+    {
+      "id": "B1",
+      "image_keys": ["ubuntu2204_edr_target_v1"],
+      "ability_ids": ["benign.inventory"],
+      "registered_action_tokens": ["command_family:package_manager"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.inventory"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "expected": ["routine process and package inventory evidence"],
+      "failure_predicates": ["exit nonzero", "target state changed", "inventory output empty"],
+      "cleanup_success": "inventory output absent and target baseline digest unchanged"
+    },
+    {
+      "id": "B2",
+      "image_keys": ["ubuntu2204_edr_target_v1"],
+      "ability_ids": ["benign.package_install"],
+      "registered_action_tokens": ["command_family:package_manager"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.package_install"],
+      "cleanup_ability_ids": ["cleanup.package"],
+      "expected": ["benign package-manager lineage and file writes"],
+      "failure_predicates": ["package digest mismatch", "dpkg exit nonzero", "unexpected dependency or reboot", "purge failure"],
+      "cleanup_success": "fixture package absent and target baseline digest restored"
+    },
+    {
+      "id": "B3",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["benign.rsync"],
+      "registered_action_tokens": ["command_family:file_transfer", "network.flow"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.rsync"],
+      "cleanup_ability_ids": ["cleanup.remote_transfer"],
+      "expected": ["benign burst file operations and SSH transfer flow"],
+      "failure_predicates": ["rsync exit nonzero", "source or destination checksum mismatch", "undeclared target"],
+      "cleanup_success": "remote sync tree absent and source fixture digest unchanged"
+    },
+    {
+      "id": "B4",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["benign.scan"],
+      "registered_action_tokens": ["command_family:network_scan", "network.flow"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.scan"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "expected": ["registered fan-out NDR flow and service logs"],
+      "failure_predicates": ["nmap exit nonzero", "target differs from manifest", "service health degradation"],
+      "cleanup_success": "scanner exited, output absent, service healthy, and baseline digest restored"
+    },
+    {
+      "id": "B5",
+      "image_keys": ["ubuntu2204_edr_target_v1", "ubuntu2204_edr_service_v1"],
+      "ability_ids": ["benign.helpdesk"],
+      "registered_action_tokens": ["command_family:remote_session", "network.flow"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.helpdesk"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "expected": ["same SSH administration tool family as M6 without a remote write"],
+      "failure_predicates": ["SSH or supervisorctl exit nonzero", "undeclared privilege change", "status output empty"],
+      "cleanup_success": "session and output absent; no target state change"
+    },
+    {
+      "id": "B6",
+      "image_keys": ["ubuntu2204_edr_target_v1"],
+      "ability_ids": ["benign.logs"],
+      "registered_action_tokens": ["command_family:archive"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.logs"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "expected": ["benign repeated reads and compression"],
+      "failure_predicates": ["tar exit nonzero", "collector backlog exceeds 120 seconds", "archive missing"],
+      "cleanup_success": "archive absent and collector backlog at or below 120 seconds"
+    },
+    {
+      "id": "B7",
+      "image_keys": ["ubuntu2204_edr_target_v1"],
+      "ability_ids": ["benign.config"],
+      "registered_action_tokens": ["command_family:file_change"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.config"],
+      "cleanup_ability_ids": ["cleanup.config"],
+      "expected": ["registered benign file/configuration update"],
+      "failure_predicates": ["install or cmp exit nonzero", "manifest drift", "cleanup failure"],
+      "cleanup_success": "registered baseline digest restored"
+    },
+    {
+      "id": "B8",
+      "image_keys": ["ubuntu2204_edr_service_v1"],
+      "ability_ids": ["benign.maintenance"],
+      "registered_action_tokens": ["command_family:service_admin"],
+      "offset_seconds": [0],
+      "success_receipt_abilities": ["benign.maintenance"],
+      "cleanup_ability_ids": ["cleanup.local"],
+      "expected": ["declared supervisor service maintenance with healthy EDR/NDR"],
+      "failure_predicates": ["offline work-order mismatch", "service unhealthy", "status output empty"],
+      "cleanup_success": "service healthy, output absent, work order closed, and baseline digest restored"
+    }
+  ],
+  "global_failure_rules": {
+    "collection_failure": "retain in RT1 and failure log; exclude from RT2-RT7 primary metrics",
+    "scenario_action_failure_with_healthy_collectors": "retain in sensitivity cohort only",
+    "cleanup_failure": "block the next run on the same target image",
+    "receipt_or_label_leakage": "invalidate the run and halt formal collection until the firewall regression passes",
+    "run_id_reuse": "forbidden"
+  }
+}

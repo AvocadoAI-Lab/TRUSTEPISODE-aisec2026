@@ -1,0 +1,2016 @@
+{
+  "result_type": "trustepisode.table4-amended-live-cohort.v1",
+  "scope": "descriptive formation evaluation only; no fitted calibration or held-out claim",
+  "cohort": {
+    "sealed_runs": 110,
+    "standalone_benign_runs": 40,
+    "table4_malicious_runs": 70,
+    "families": [
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M7"
+    ],
+    "repetitions_per_family_mode": 5,
+    "registry_sha256": "b637017ba7908610207e3fb1da30a48223f1f85e9c1b32e514cec7142e60b9ed"
+  },
+  "cells": [
+    {
+      "card_id": "M1",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.3,
+          "sample_sd": 0.11180339887498948,
+          "min": 0.25,
+          "max": 0.5,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M2",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 0.75,
+          "sample_sd": 0.0,
+          "min": 0.75,
+          "max": 0.75,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 0.75,
+          "sample_sd": 0.0,
+          "min": 0.75,
+          "max": 0.75,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.35,
+          "sample_sd": 0.09128709291752769,
+          "min": 0.25,
+          "max": 0.5,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M3",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.35,
+          "sample_sd": 0.09128709291752769,
+          "min": 0.25,
+          "max": 0.5,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M4",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.36666666666666664,
+          "sample_sd": 0.2173067468400883,
+          "min": 0.0,
+          "max": 0.5,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M5",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.4333333333333333,
+          "sample_sd": 0.09128709291752769,
+          "min": 0.3333333333333333,
+          "max": 0.5,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M6",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": 0.3333333333333333,
+          "sample_sd": 0.25685058345704065,
+          "min": 0.0,
+          "max": 0.6666666666666666,
+          "defined": 5,
+          "undefined": 0
+        },
+        "episode_f1": {
+          "mean": 1.0,
+          "sample_sd": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M7",
+      "mode": "attack_only",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": null,
+          "sample_sd": null,
+          "min": null,
+          "max": null,
+          "defined": 0,
+          "undefined": 5
+        },
+        "episode_f1": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    },
+    {
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "achieved": 5,
+      "failed": 0,
+      "metrics": {
+        "action_coverage": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "fragmentation": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "over_merge": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        },
+        "contamination": {
+          "mean": null,
+          "sample_sd": null,
+          "min": null,
+          "max": null,
+          "defined": 0,
+          "undefined": 5
+        },
+        "episode_f1": {
+          "mean": 0.0,
+          "sample_sd": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "defined": 5,
+          "undefined": 0
+        }
+      }
+    }
+  ],
+  "per_run": [
+    {
+      "run_id": "run-3fed85ff49dfac73e43bbbc3f9b49a02",
+      "card_id": "B1",
+      "mode": "standalone_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:ed68d57a2fd0a1e56d88d0dec9104f3b6057e2bfae511d339856b6e73960aafe",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-49d6a93d1fd015dbc0dfc14fc2b57a81",
+      "card_id": "B1",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:134aff79fd87979e6af3c456dfd71d18081bbbbd5f93ac12a80ed9835c9bc50f",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-91a21d2713c434def0d08b305429eb5a",
+      "card_id": "B1",
+      "mode": "standalone_benign",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:c7ba4ea747d6464de257f72724b0ab1ffc9f479730d061c8ad80f012c2a7bab4",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-a2a7175605f0ca071aa52047ee5607f6",
+      "card_id": "B1",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:3e9ff48a90219bdf71bccb04a5601b22ec6b8247e4c0872e17f79a32ed6373ec",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-db3a19a54ecde6968180be6455e8deff",
+      "card_id": "B1",
+      "mode": "standalone_benign",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:2111b5a7fb4039e7fde2b804a6b48307e7b550ea6d9f6530e8fc424b4db1ada6",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-3d4cf918620fbfc42c9ffa5daf24a57e",
+      "card_id": "B2",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:169c41d62b8a6d8127f81c1b550996444830ae2bdda597bf1a9c89e82d5eea1a",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-48efc2d6008eb4971b05c36f85a082c8",
+      "card_id": "B2",
+      "mode": "standalone_benign",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:f24b38a13b7baf0a49dd7a363f50143f36688881fbe722f4542fefa11de7f6dc",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-6f1ecd013c2dfe56ddf66d563b09fac5",
+      "card_id": "B2",
+      "mode": "standalone_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:61f2b6e35ad57d44990c367d4a8c699eda6e698d74d623e1a8121ea106d9c79b",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-88516b78951d2ddbc8f652e565e5611b",
+      "card_id": "B2",
+      "mode": "standalone_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:91f868017f0186c522cab91c75470a4d405ff39cc2aee51c9a0374ec1e9cdc44",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-cbbd32650dd183c2c53c1124fabe91df",
+      "card_id": "B2",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:e8684275d67ea1ccee3ff4ce9a3d5911c1339df72a35ee96d12d1f6e4f222040",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-3c7d06ad314dabdac8fb77cd29186982",
+      "card_id": "B3",
+      "mode": "standalone_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:3f4921705f2d85a10be07c5bae00861acd351890a9848082d7dfcc4443496898",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-453ea724192f1aea2a659898463e53f7",
+      "card_id": "B3",
+      "mode": "standalone_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:6d21ba95bf1eaeaaf9089bd8bb599e64fb94b9dce78027726705fe0f701f8497",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-7c6e87da00a9d68e1d29e279755b33ae",
+      "card_id": "B3",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:c9289221df822e20c675722f1f59a666e39e01cd5670b0c9de201acbcd7b0fa4",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-894e43a78e68c2f824d4c0e14e9dd5e1",
+      "card_id": "B3",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:778cf7e28b3e05dfa21a041dd297ce4684027f84e8a4597d1b604b8bf67a7876",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-c4f21b61c886e1f02dcda1b93d7dea12",
+      "card_id": "B3",
+      "mode": "standalone_benign",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:2acb1f0cb726a8545f418e016da97c7c9455b4d099300e821a392d6dbe5a7210",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-020b38b09e323d521f49c4f3328a0f7f",
+      "card_id": "B4",
+      "mode": "standalone_benign",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:742c2ef3a58afce14698f7da2129e2e3c460fecb7faa847ef90e45c3101db077",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-0e9991d87e911f1228d0acfc5c9abb32",
+      "card_id": "B4",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:86e2868c0465d447d06451863e8607521590437aa8dc58bc051337bd96ebf35c",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-134c98c77989886f9da35cca84515059",
+      "card_id": "B4",
+      "mode": "standalone_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:4902d2f3a5011c8ee67aa48fdf8b30935c32aff141e25d08c0b871192e253c6b",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-b59a0d0f2eceefc5a70117f6d6618e3d",
+      "card_id": "B4",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:d542702a120a32835913ac57e4e58528ca382ba192b2c0bc2f735a4a1bb9110d",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-d77836cb42bc9fdc81e5fe29fff65fab",
+      "card_id": "B4",
+      "mode": "standalone_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:d315210c05570159d1f717a4a31e550eb14606ff646021f5c632eafa17e5a916",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-0d6ca861b456f8e76d19d57fe5544a49",
+      "card_id": "B5",
+      "mode": "standalone_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:68dcb27ee2bec0b45950aaabf5d7a1e97b34bfe0e3acb83e2834977379807172",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-8d434b54e26de5db1a2f275ef5ddfeac",
+      "card_id": "B5",
+      "mode": "standalone_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:f42337ed875ec6b25eb6b598ca1aa0bffcdcfd9adaff00ca9a3794b3222c8d4b",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-a124c889d7a8d3f6c65862cfbc688456",
+      "card_id": "B5",
+      "mode": "standalone_benign",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:35005e1ab39759c2dde33d3833fdab0729cde734dc138eb46816dd96fe2bec57",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-cb6a3201873aa8aa27d6988e54cc8e40",
+      "card_id": "B5",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:fd071562a5cd13b6eee78eee39acebf8b5281c041cd5e3ec3c465031e8f8df8c",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-e9a559ab75098ba2b92cd285bb6effef",
+      "card_id": "B5",
+      "mode": "standalone_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:c86c41dc48c8d6d11b4dcc1aadf85bb5e467ff772fd5866b2a7b22a0e4b2a663",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-32c3176359d420461d2a1c7779d1a698",
+      "card_id": "B6",
+      "mode": "standalone_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:f65a57fb0d6ee2960b326c6131310a4f55d0a156d63dcfc851a2d52b3d0f9b35",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-5a4cd499f367689d3c706cec486671ba",
+      "card_id": "B6",
+      "mode": "standalone_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:da5b9e67fa9b603e72266ff862e7206fa1e886083634dff1f0defdb766499b44",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-669b1461b32eb6a9e3d0c6611b2ab265",
+      "card_id": "B6",
+      "mode": "standalone_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:e3302ae1fc55dd866c30a6f9923a83ae027608abe4edf7a100bdff7de3a60224",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-dfd63fd2f69651246a9d979363b02cc9",
+      "card_id": "B6",
+      "mode": "standalone_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:49dd7bfec9c107f3c195af84df2125c4e72999732908179ccf5d9da1abd7598f",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-eb8b1d6d5ac92538288c53113e1406cb",
+      "card_id": "B6",
+      "mode": "standalone_benign",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:43a4a50af8b6a77eb528f341b44b87c07f022e43a4d8a51dcf207ab9d64163d9",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-65e086079fa9cefe3712a26117866fc1",
+      "card_id": "B7",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:fae910a92bb66e61feb1e822ba0c85a9406466d806172f46156b665e37e76683",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-72e4fb634fc6d40d3625f79cc7cc44c2",
+      "card_id": "B7",
+      "mode": "standalone_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:ee021b7615009f7587c1ccaf62e773ce27eee989fe7e328c4e6982d058bcd59a",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-7eb4db822e1855f2d8431f0c77c2d165",
+      "card_id": "B7",
+      "mode": "standalone_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:055dfe4ae7b1bf295a1d07d437ffc413cc5d1ffa37d4d227d491ccf0155b9d5a",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-9833356f910a2e97029822c04343c425",
+      "card_id": "B7",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:79b06075eff76d85a5ad075defbd50109478827911370547f7fd68875755596d",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-f8a086ca62ef335ca4fff1333253ce28",
+      "card_id": "B7",
+      "mode": "standalone_benign",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:b9b2281b5593d388da80e7b88ecde5ddb1902b4b9c16551d383e32e5e380a052",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-4277ef7c421fd079b535d223851bc408",
+      "card_id": "B8",
+      "mode": "standalone_benign",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:f42fb46ae13cd5337a4fbb836f11f43c81a05d27454ac540e49888572d2081ea",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-4794fbcf75209da9b758d6870bf58acf",
+      "card_id": "B8",
+      "mode": "standalone_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:88fde29d78c11d1b640dee3e04e7f6ef818c29dd3dbd09f8f3dcd3939d1337af",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-4c19185cca2a6e560593aaed7047b2d3",
+      "card_id": "B8",
+      "mode": "standalone_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:69b3cd0c0836808ea8da0f30e07f964ddb1879972cb26825e62321c01bceeb73",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-9eef3ee4bd13d39e80b91f38a564d946",
+      "card_id": "B8",
+      "mode": "standalone_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:878abccda8810494610a647d56a116252c42979ac7457df7f0cda77ae8a69064",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-be9d0df0f9c4aa80f18bd55d73d20feb",
+      "card_id": "B8",
+      "mode": "standalone_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:bcb2ea553e5d7006a0d31a8ca86527ef287b55b524df6cecd5a881f6ad8ee019",
+      "action_coverage": null,
+      "fragmentation": null,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": null
+    },
+    {
+      "run_id": "run-4820a7be7cc96a4dbc50165dc7bbb6ed",
+      "card_id": "M1",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:af5eca99bcb84c71d72bcc780adad4c1728a3339c7df70dcbddb844fd3d17557",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-61a57b8dc95cff44a41a663ea994218d",
+      "card_id": "M1",
+      "mode": "attack_only",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:7bcbfe6c65d5b1629c589d00739d0b5196e6ce2f90b9acbec308d03c34f41255",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-945c7d8b199eb44b1df14a22ed2cd2a9",
+      "card_id": "M1",
+      "mode": "attack_only",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:8d3e1fcb34645f42d34a55eb1d63c3cfe1040b7dab1ee9c75304db085f5c47c7",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-d38f85be73a144b46d522dcdc0e66b63",
+      "card_id": "M1",
+      "mode": "attack_only",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:8ee98286ba4e985f5b9a5ea1835c23da91fef6c6a2f24ab261d1cae02a8ad292",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-dc4969dd02cd443c5f16d198b241e74f",
+      "card_id": "M1",
+      "mode": "attack_only",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:a4f5b6e01c8592e4c4e3f385265f4314f8d5a385bbd7411db3297277ddf4f468",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-0f297b0d5120da7a5599d0287f40b4f9",
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:78f68b531bb29efa64b95e366ea6b50d6fd9f9401f3ff44b3535bb83602b82e7",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b1963c61e7689afd3b4cababd08cf304",
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:85554d86cf01ea309f40b1ffcadd5d6e5dd3317dc7d802bc7fecd889e3f4f91d",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-df68ecb33d9f2109da04f96f90a70437",
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:35f96a714858f685730f221d16ec3e69c9350abe0f0386ad06a3a7acf5ac634b",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-e1be5b0494bff88985ad506dbf3481c8",
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:f62241e1d65316a898b55bd43f1b9bcd122becc75dbc60402f30be40d411189c",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-f53359ba7ccbb3351b93bbfb99d0fd22",
+      "card_id": "M1",
+      "mode": "concurrent_benign",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:d976d056249b1f6b08ca8f90f9091589f091fc826c8427f6b5efb7b635767c96",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-012930f3314e360d0e737b69cb1169a5",
+      "card_id": "M2",
+      "mode": "attack_only",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:d16b6bc7a19a7cef9e071cdd1503d4f9306ef1b97a5dbd939ce2ccaa39300d8c",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-11d66ffe7f81d6300883097dd2ef2b4e",
+      "card_id": "M2",
+      "mode": "attack_only",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:8d22d338fad1fb9570d05b0fd5a716c4e19727f0701290f9e049d96fe8b3d383",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-1c9de2854631bfc2a4e8df78e305360f",
+      "card_id": "M2",
+      "mode": "attack_only",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:c9a2f0bca129ec686c3cd278e5b54d4e1eac67873a9c6acb6415e7d061f0d28f",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-6640798366b3afb9cde4b8c8c19b4503",
+      "card_id": "M2",
+      "mode": "attack_only",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:d8e463e9889653763805249d103344b58dc87379c3d2ba3683905822349ce2b3",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-dd2aabad9d6bd7f429a78e7cf7b8bd9f",
+      "card_id": "M2",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:7329a057253e4b998e3507942274db6e1d8c9742543682e28db9842f6ff4c6cf",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-02ce0e3669a4f557e7e90368a59bedd3",
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:b8d9249b9415bfd77a24e066d3d75937b27f3f8a2d4dbd11f2156bc79f1a222f",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-90dd42e29e4ee460145ce0792b2bcd67",
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:851587f632f829d1a45f16bf93f719e6ee0782bb28ed0009cd75e93ea1fc4645",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b6bc6722dde571318db7a9242fd3bc91",
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:aef988bf9e5fde56a7a442dd6e0322b5141601694f8175a968ad616e9a3410ea",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-bf495b90d557d68befe482058c79c332",
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:aa54e1adc95b3633fdf3f7b013531d1bfdaeb31408984af98ec4d2181b700ea5",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-c6c84df6f102474f19195d4d2aada95d",
+      "card_id": "M2",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:029f4babc1d7d7cafc60063f84760f0d62600e6f2d07652ef5f03e6fc435964f",
+      "action_coverage": 0.75,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-57d6ab581271f6696798c05990977aca",
+      "card_id": "M3",
+      "mode": "attack_only",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:122dd4d2d61694057aec1c255787c84be7716a7bea7eb40a5fdbfeca1db1aca0",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-a07c0e045904f560ad22e2b0617bd492",
+      "card_id": "M3",
+      "mode": "attack_only",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:e06dcf497a9694cfbcf42a8cd36ec890750f12d2759def899bd70f10ea7fbe3a",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b52b695fdce1e6396311336d21bb8c92",
+      "card_id": "M3",
+      "mode": "attack_only",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:8c7b73bbc2ae63a2d8510ce752a83fc6f74bd5c39347c8a84952d26d5d39a858",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-c3326c1e05e622daab0c4595ebbb398e",
+      "card_id": "M3",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:3c3000735a55845e614886c96a1823e229d64b4fc711e0e4c27c0b1f7236a733",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-e9eff7f89736f032ffb4506a5d2cd586",
+      "card_id": "M3",
+      "mode": "attack_only",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:59d9feea1f1f89561edd09959256b1c041f9db926a16942ed58dc74df48ce958",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-1794fb5ba1d37c12ab5367bd8f3bab79",
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:4a60ed5fd506a501779bf4fd80a09dc76a79122db1f187e0df2bf06ae15621d9",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-2a4dc4cb06f03911b015d19fcfd4a6b3",
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:9cb21a2635d0bc5e1c75f93586582e1db12b77d429f4fb343c98da0f3d525fa2",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-8788281fbd85d5cae1244e50cd13c2b6",
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:66ea3c785e503a39ff37386779550b892b4b1589a12a63c42dafe28bec44c294",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-8aed2b6970db018f28ff29760b239d98",
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:33d49af919a11fbbe469448b76bad528da3fec88f0ab4f7136067a48118029af",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b05b6989443d858add1ed04125a1fe09",
+      "card_id": "M3",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:e172cb2a0b0090367e546b80ac4e2c095d7f2b4ea9e561d4a8faa1cb0dcd48d8",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-0b86a725bdacfb183aefce09857c8a6e",
+      "card_id": "M4",
+      "mode": "attack_only",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:8481b6241fc7a5fb3f4a1971884f4f8db735992556ff5bbec32b962fe84a2df1",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-1851f65007ed2771ee4928df9e6a4fae",
+      "card_id": "M4",
+      "mode": "attack_only",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:1a10ef47f6cbf69b3109ec8df96b76feae84910b98815ce2e8a281f93dd08e80",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-2f9143eb78f330c7d97d9b2c88496445",
+      "card_id": "M4",
+      "mode": "attack_only",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:0ee8a78bf99f1f76920605a483a7e2b0a2563e3430df45ce6c5f984c3aa3e1d0",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-7d02cfb1746ba0a0e7a95843f2e28216",
+      "card_id": "M4",
+      "mode": "attack_only",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:8eff066339bba131b62e129aa54d29db355f6be76dabd32f9b8debf906611091",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-dc996a0604eaecfff1df24b9295a3601",
+      "card_id": "M4",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:143c6a950e215e259f1bc95d6eac1f1a534e28736b469eb223131ee550a3cdbc",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-7a04323a57ec9b33ce6e7ec10739c227",
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:15a0e627243779c96ea36a935505e5517b438e17d3690f51b832f7ec323fb6cf",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b048c1ad9b3746aab63abc1095061842",
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:7362c23014342c2858ac397f3126ffd6548b1a382809e9c34fb77dcc79ae7d88",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-cb99c790aef97976be781f280683255f",
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:c1f58c91034a24c74151c142b9c0c2cd55d0908cf7c805c4d10ae923e2014156",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-f38216e54261d785c8ba455e21b2f28a",
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:3f2f193d020f8adc6e7503f8218c0980ecf8e75d3d23518445e90b161ac7bd6b",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-f76322a9bce34ef9ad71069439a9f287",
+      "card_id": "M4",
+      "mode": "concurrent_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:464c0bb94d88b9b1b416f89da71188facb6099fa7d6d85eeeb2107aeb2e51ceb",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-0ea445361e1d25c0b5738fb4cfe840f7",
+      "card_id": "M5",
+      "mode": "attack_only",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:394484e9096ca9540a3fc4ee844287bc8be88dd504f73e87bfb566838055b9cd",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-5c69f6c0958c9efacfde7c4301990f8a",
+      "card_id": "M5",
+      "mode": "attack_only",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:2dde081f7effb49d249beb566fc5bc0c620457e695967782f74b4b2dae9ef10d",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-66932a333e60b8c3383dab4caa413340",
+      "card_id": "M5",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:738cd6bb7b777f81b41b4a22ddcbe5449ad0bf7331b75509bbebe7906248248a",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-9fe44802ac1b09aa9b06c637d3c77e82",
+      "card_id": "M5",
+      "mode": "attack_only",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:0294dda4295400ad91bc542995808933fa047a28ed7327254671fabf89285bd1",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-c50629b78c9e3314f7ba01a5abcaa0fa",
+      "card_id": "M5",
+      "mode": "attack_only",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:fc19088625ba3242f85ad9fe095e99ba8948d02a6a60a5669c189bfdaea28f21",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-9e7b2d07e3b6f56c8bc168b67c888aba",
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:463fede81137dfdff8af851a6f9e4dd83498bf2485207fd936686bb0daf56efd",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-a38380f7f27ff3bf748d18f13e74cda6",
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:f73a74b30a8a10dddfac134471f1df48d641d521e57146a9905d5c2d00e01690",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-aefd6f5d83560d56b2400f04a54d09b5",
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:b7110512328fb3cc1ed87d8c031d3e49541b1095f9ed47bb773b5265a4ca47cc",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.3333333333333333,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-b57ba90fc712c1c80b6277f23e370b69",
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:91c32adff06dc7aec246900f8765feedd64378efd80735bc7b3abf826fac8287",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-f00b03bf930506f44172ed9481b6d414",
+      "card_id": "M5",
+      "mode": "concurrent_benign",
+      "repetition_index": 2,
+      "manifest_digest": "sha256:8d1bb40fc179ab32c6aeb9daada5997c76c212ebf735bdb60a3a59373229936e",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-0918a70aee39b54e83d1d0a4977845f7",
+      "card_id": "M6",
+      "mode": "attack_only",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:fbfb574df166952e6ede23fa00317f58552932199c82d57e12bcdb6f32f899dc",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-97d86ae9e6447dcd951466fbe68a17ed",
+      "card_id": "M6",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:ace370619cbebaa0c3b2dcc4fe69a94ea76945e17e94b89f8ee6682e6c4049ce",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-9c61451bfb02c0aeb17f5910e27dda96",
+      "card_id": "M6",
+      "mode": "attack_only",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:36db9b164271600314cfb26c250d031477ba78c3154bb730bb7c73200162b6c4",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-d9ea65a1baa8d726ef46af5416b30062",
+      "card_id": "M6",
+      "mode": "attack_only",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:d19d8607df03fbe930d6e0816f6c259964ab9c7dccb174b2f59d017ab2ef996e",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-e3121b576c8cb78b6462ca65f07dd1de",
+      "card_id": "M6",
+      "mode": "attack_only",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:5ba03ef5b0b65a360305565a2507164e9cbd8dfde583f7b1d5b257aee2247118",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-3e533d51bacdb58bf169aba980f6e5c3",
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:72909b45701dcfc5fbceca787d0970767b39763ddcbbb8c2e21ea4aba142e929",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-8cff688103b59fac4ec9551582693790",
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "repetition_index": 7,
+      "manifest_digest": "sha256:53af3b38fd9ef6c25536a9550511694506fd941b1d8a875e4163200e00c618f4",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.6666666666666666,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-cbac2a56dbf0083a9c6b8c2feaed752e",
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:b48526f951f04532f2f7b23a1f398c5be304a18a475c8d3ca3bde0d1de8efa38",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.5,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-dac16809a54f83951965b56b48ac92a6",
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "repetition_index": 4,
+      "manifest_digest": "sha256:606cd8bc7a3faab49f13b17df9bea1bb512ecf73f82ec6e3dc662e978ed3e61e",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.0,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-dd70ed48fa519ca91a62a0d310ec5946",
+      "card_id": "M6",
+      "mode": "concurrent_benign",
+      "repetition_index": 3,
+      "manifest_digest": "sha256:ed50896128dcd46f1c633777abb5a67ac9ec82e591dc5f83f8915dccef83009c",
+      "action_coverage": 1.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": 0.25,
+      "episode_f1": 1.0
+    },
+    {
+      "run_id": "run-6f09d75fc6a3ca4e05485f33d1703192",
+      "card_id": "M7",
+      "mode": "attack_only",
+      "repetition_index": 5,
+      "manifest_digest": "sha256:3219ae6bcb78792dc039d7b2d6ff2cdbcf0e363ea3fb210972403c42c136d915",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-76c2ca6ff7a23db497260953f7ec11dd",
+      "card_id": "M7",
+      "mode": "attack_only",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:398b7aaf425b8b1cd5bacf23577f47eb782c99881fe64a609385248a61d2af4e",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-7ffc2289602660494274faf16847771b",
+      "card_id": "M7",
+      "mode": "attack_only",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:f29ec6f6c856e23faad3f6540fea4c8613262bec320d723060e649ad670b8976",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-accb1edcec122ed43d7513fbf93b34cc",
+      "card_id": "M7",
+      "mode": "attack_only",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:cf447e5b78bdff6d6804d6c485f0cf112490094a69fdec054d07b614dd547ed9",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-febf81fe65d36c9f5943db8ff39f0c03",
+      "card_id": "M7",
+      "mode": "attack_only",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:c5c1555ff15e6b21918dfa7fbd454bbd3f1df5679e3c2446d8d356af3211dc92",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-1424989b415184a4a791b397cc8e64e1",
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "repetition_index": 8,
+      "manifest_digest": "sha256:7879b4e2f24477bcf81abf5dc75f91d7d4ce425f4adf62aa0bb1e06d80ed1563",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-16bd94337924035437199655558476d2",
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "repetition_index": 0,
+      "manifest_digest": "sha256:a355a0e5ed75ac60bfdb5efe9ac2dff948d4831b8401d661f3760ee8ad8f2363",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-76b5204adc4976bf6871cc4fb6cd1cbd",
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "repetition_index": 9,
+      "manifest_digest": "sha256:9f1153b6d721e055249940c9d891a9c36ae24a91bbacea168bc6be4a540a9be8",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-77103ec21e3752a671cd4e21c09f8368",
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "repetition_index": 1,
+      "manifest_digest": "sha256:1c3f935af70e4825396391896d0d820970098923f480c1075b20a92304c8c4fd",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    },
+    {
+      "run_id": "run-ee27d58be2db032c44d0774d9358c4b1",
+      "card_id": "M7",
+      "mode": "concurrent_benign",
+      "repetition_index": 6,
+      "manifest_digest": "sha256:6863d7124c7db3192402cfe6b43fc983e54c086b0cf97ac70faee1a73d605912",
+      "action_coverage": 0.0,
+      "fragmentation": 0.0,
+      "over_merge": 0.0,
+      "contamination": null,
+      "episode_f1": 0.0
+    }
+  ]
+}

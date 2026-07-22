@@ -1,0 +1,19 @@
+\begin{table*}[!t]
+\caption{Determinism matrix on all \DetNRuns{} sealed malicious runs (D1--D5).}
+\label{tab:determinism}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lp{0.08\textwidth}p{0.12\textwidth}p{0.18\textwidth}ccp{0.18\textwidth}@{}}
+\toprule
+\textbf{Test} & \textbf{Runs} & \textbf{Variants} & \textbf{Expected invariant} & \textbf{Pass} & \textbf{Fail} & \textbf{Interpretation} \\
+\midrule
+D1 canonical replay & 60 & 10$\times$/run & byte-identical digests & 60 & 0 & canonical ordered input \\
+D2 raw delivery order & 60 & 6 perms & equals baseline without reorder & 0 & 60 & not order-robust \\
+D2 re-canonicalized & 60 & 6 perms & equals baseline after sort & 60 & 0 & canonicalization required \\
+D3 ingest delay & 60 & horizon grid & successor/late invariants & 60 & 0 & prior digest preserved \\
+D4 duplicates & 60 & conflict/idempotent & reject or no-op & 60 & 0 & fail-closed conflicts \\
+D5 single-writer & architecture & ownership & no same-run multi-writer & documented & 0 & not lock-free concurrency \\
+\bottomrule
+\end{tabular}
+\end{table*}

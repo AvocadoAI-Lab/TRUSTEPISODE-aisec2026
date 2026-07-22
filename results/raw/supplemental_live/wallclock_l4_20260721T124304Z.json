@@ -1,0 +1,61 @@
+{
+  "result_type": "trustepisode.supplemental-live.l4-wallclock.v1",
+  "partition": "supplemental_mechanism",
+  "primary_untouched": true,
+  "runs": [
+    {
+      "run_id": "run-supp-l4wc-within-01-20260721T120537Z",
+      "tag": "l4_wallclock_within",
+      "partition": "supplemental_mechanism",
+      "hold_seconds": 180.0,
+      "L_watermark_seconds": 120,
+      "W_revision_seconds": 900,
+      "started_at": "2026-07-21T12:05:37.343182+00:00",
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "late_ability_exit": 0,
+      "late_ability_stderr": "",
+      "observed_hold_seconds": 180.001,
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4wc-within-01-20260721T120537Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T12:14:49.550069+00:00"
+    },
+    {
+      "run_id": "run-supp-l4wc-within-02-20260721T121449Z",
+      "tag": "l4_wallclock_within",
+      "partition": "supplemental_mechanism",
+      "hold_seconds": 180.0,
+      "L_watermark_seconds": 120,
+      "W_revision_seconds": 900,
+      "started_at": "2026-07-21T12:14:49.550295+00:00",
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "late_ability_exit": 0,
+      "late_ability_stderr": "",
+      "observed_hold_seconds": 180.001,
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4wc-within-02-20260721T121449Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T12:22:49.679597+00:00"
+    },
+    {
+      "run_id": "run-supp-l4wc-beyond-01-20260721T122249Z",
+      "tag": "l4_wallclock_beyond",
+      "partition": "supplemental_mechanism",
+      "hold_seconds": 930.0,
+      "L_watermark_seconds": 120,
+      "W_revision_seconds": 900,
+      "started_at": "2026-07-21T12:22:49.679755+00:00",
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "late_ability_exit": 0,
+      "late_ability_stderr": "",
+      "observed_hold_seconds": 930.0,
+      "sealed_path": "c:\\Users\\admin\\Desktop\\aisec\\sensel-caldera-linux-lab\\experiment-data\\runs\\run-supp-l4wc-beyond-01-20260721T122249Z",
+      "sealed_digest": null,
+      "status": "sealed",
+      "finished_at": "2026-07-21T12:43:04.856723+00:00"
+    }
+  ],
+  "within_sealed": 2,
+  "beyond_sealed": 1,
+  "completed_at": "2026-07-21T12:43:04.856856+00:00"
+}

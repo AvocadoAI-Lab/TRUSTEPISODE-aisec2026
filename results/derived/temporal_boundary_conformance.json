@@ -1,0 +1,61 @@
+{
+  "result_type": "trustepisode.temporal-boundary-conformance.v1",
+  "generated_at": "2026-07-21T14:12:41.210936+00:00",
+  "scope": "unit conformance on production EpisodeSynthesizer._candidate; inclusive W_gap=300s and W_max=3600s; includes M7 offset 3900s as ineligible",
+  "pytest_exit_code": 0,
+  "pytest_summary": ".......                                                                  [100%]",
+  "cases": [
+    {
+      "dimension": "W_gap",
+      "seconds": 299,
+      "expected_eligible": true,
+      "observed_eligible": true,
+      "pass": true
+    },
+    {
+      "dimension": "W_gap",
+      "seconds": 300,
+      "expected_eligible": true,
+      "observed_eligible": true,
+      "pass": true
+    },
+    {
+      "dimension": "W_gap",
+      "seconds": 301,
+      "expected_eligible": false,
+      "observed_eligible": false,
+      "pass": true
+    },
+    {
+      "dimension": "W_max",
+      "seconds": 3599,
+      "expected_eligible": true,
+      "observed_eligible": true,
+      "pass": true
+    },
+    {
+      "dimension": "W_max",
+      "seconds": 3600,
+      "expected_eligible": true,
+      "observed_eligible": true,
+      "pass": true
+    },
+    {
+      "dimension": "W_max",
+      "seconds": 3601,
+      "expected_eligible": false,
+      "observed_eligible": false,
+      "pass": true
+    },
+    {
+      "dimension": "W_max",
+      "seconds": 3900,
+      "expected_eligible": false,
+      "note": "M7 schedule offset",
+      "observed_eligible": false,
+      "pass": true
+    }
+  ],
+  "all_pass": true,
+  "n_cases": 7
+}

@@ -1,0 +1,68 @@
+{
+  "result_type": "trustepisode.supplemental-live.l4-wallclock-analysis.v1",
+  "scope": "Real forwarder hold/release wall-clock delay on supplemental live seals",
+  "within_pass": 2,
+  "beyond_pass": 0,
+  "rows": [
+    {
+      "run_id": "run-supp-l4wc-within-01-20260721T120537Z",
+      "tag": "l4_wallclock_within",
+      "kind": "within",
+      "hold_seconds": 180.0,
+      "observed_hold_seconds": 180.001,
+      "n_events": 133,
+      "max_revision": 98,
+      "n_late": 0,
+      "late_reasons": [],
+      "membership_digest": "sha256:ed2d1b19c85173ebdbed8d58c02b469ffd981db034258a1726a7281c9010337a",
+      "pass": true,
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "interpretation": "wall-clock delayed delivery produced successor and/or late store effect"
+    },
+    {
+      "run_id": "run-supp-l4wc-within-02-20260721T121449Z",
+      "tag": "l4_wallclock_within",
+      "kind": "within",
+      "hold_seconds": 180.0,
+      "observed_hold_seconds": 180.001,
+      "n_events": 109,
+      "max_revision": 110,
+      "n_late": 0,
+      "late_reasons": [],
+      "membership_digest": "sha256:9d591ece26a2e56dd250bf6a789910dc366564c0e3839c2f071a2d5e72f5855e",
+      "pass": true,
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "interpretation": "wall-clock delayed delivery produced successor and/or late store effect"
+    },
+    {
+      "run_id": "run-supp-l4wc-beyond-01-20260721T122249Z",
+      "tag": "l4_wallclock_beyond",
+      "kind": "beyond",
+      "hold_seconds": 930.0,
+      "observed_hold_seconds": 930.0,
+      "n_events": 272,
+      "max_revision": 260,
+      "n_late": 0,
+      "late_reasons": [],
+      "membership_digest": "sha256:9660ccfb98123dac6aff5f0e541018589cb24ba65ef7e01ea808b05ea195af9a",
+      "pass": false,
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "interpretation": "wall-clock hold sealed but expected late/successor path not observed"
+    },
+    {
+      "run_id": "run-supp-l4wc-beyond-v2-20260721T124444Z",
+      "tag": "l4_wallclock_beyond_v2",
+      "kind": "beyond",
+      "hold_seconds": 1080,
+      "observed_hold_seconds": 1080,
+      "n_events": 260,
+      "max_revision": 259,
+      "n_late": 0,
+      "late_reasons": [],
+      "membership_digest": "sha256:9dd1d6fe7e33a9a6deaae9126cee15f0fbdf73de1138519616dec5343f42690a",
+      "pass": false,
+      "delivery_mode": "wall_clock_forwarder_hold_and_release",
+      "interpretation": "wall-clock hold sealed but expected late/successor path not observed"
+    }
+  ]
+}

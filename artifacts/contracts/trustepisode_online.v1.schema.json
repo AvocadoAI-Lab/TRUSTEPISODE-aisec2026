@@ -1,0 +1,577 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:trustepisode:online:v1",
+  "title": "TrustEpisode online object contract v1",
+  "x-finite-number-rule": "JSON decimal grammar only; reject NaN, positive/negative Infinity, negative zero, and binary64 overflow",
+  "x-canonical-reference-order": ["relation_rank_membership_link_feature_health_contradiction", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"],
+  "x-array-order-rule": "RFC 8785 preserves array element order; producers MUST sort each reference array by x-canonical-reference-order before JCS serialization",
+  "x-assembly-input-order": ["EpisodeRevision", "FeatureVector", "RawLogit", "SupportDecision", "CalibratedProbability", "UProfile", "SourceCoverage"],
+  "x-failure-precedence": ["schema_invalid", "key_mismatch", "conflicting_duplicate", "digest_mismatch", "version_mismatch", "missing_input", "assembly_timeout"],
+  "oneOf": [
+    {"$ref": "#/$defs/NormalizedEvent"},
+    {"$ref": "#/$defs/SourceCoverage"},
+    {"$ref": "#/$defs/EpisodeRevision"},
+    {"$ref": "#/$defs/LateEvidenceRecord"},
+    {"$ref": "#/$defs/FeatureVector"},
+    {"$ref": "#/$defs/SupportDecision"},
+    {"$ref": "#/$defs/AuditRecord"},
+    {"$ref": "#/$defs/AssemblyFailureRecord"}
+  ],
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "x-finite": true,
+      "x-reject-negative-zero": true
+    },
+    "FiniteNonnegative": {
+      "type": "number",
+      "minimum": 0,
+      "x-finite": true,
+      "x-reject-negative-zero": true
+    },
+    "FiniteUnitInterval": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "x-finite": true,
+      "x-reject-negative-zero": true
+    },
+    "Digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "SourceFamily": {
+      "type": "string",
+      "enum": ["EDR", "NDR"]
+    },
+    "Health": {
+      "type": "string",
+      "enum": ["healthy", "degraded", "down", "unknown", "not_applicable"]
+    },
+    "DetectorState": {
+      "type": "string",
+      "enum": ["available", "no_detection", "collector_unavailable", "parser_invalid", "unknown"]
+    },
+    "DetectorObservation": {
+      "type": "string",
+      "enum": ["detected", "examined_none", "not_examined"]
+    },
+    "RawPointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "content_digest", "locator", "storage_schema_version"],
+      "properties": {
+        "object_id": {"$ref": "#/$defs/Identifier"},
+        "content_digest": {"$ref": "#/$defs/Digest"},
+        "locator": {"type": "string", "minLength": 1},
+        "storage_schema_version": {"$ref": "#/$defs/Identifier"}
+      }
+    },
+    "EvidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_kind", "raw_pointer", "dependency_group", "relation"],
+      "properties": {
+        "reference_kind": {"const": "object"},
+        "raw_pointer": {"$ref": "#/$defs/RawPointer"},
+        "dependency_group": {"$ref": "#/$defs/Identifier"},
+        "relation": {"type": "string", "enum": ["membership", "link", "feature", "health", "contradiction"]}
+      }
+    },
+    "ReferenceSentinel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_kind", "relation", "dependency_group", "sentinel_reason", "expected_object_id"],
+      "properties": {
+        "reference_kind": {"const": "sentinel"},
+        "relation": {"type": "string", "enum": ["membership", "link", "feature", "health", "contradiction"]},
+        "dependency_group": {"$ref": "#/$defs/Identifier"},
+        "sentinel_reason": {"type": "string", "enum": ["not_applicable", "not_observed", "redacted_by_policy", "unresolved_optional"]},
+        "expected_object_id": {"oneOf": [{"$ref": "#/$defs/Identifier"}, {"type": "null"}]}
+      }
+    },
+    "EvidenceReferenceEntry": {
+      "oneOf": [
+        {"$ref": "#/$defs/EvidenceReference"},
+        {"$ref": "#/$defs/ReferenceSentinel"}
+      ]
+    },
+    "CoverageRefIdsByFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["EDR", "NDR"],
+      "properties": {
+        "EDR": {"$ref": "#/$defs/Identifier"},
+        "NDR": {"$ref": "#/$defs/Identifier"}
+      },
+      "x-ordering": ["EDR", "NDR"]
+    },
+    "VersionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "digest"],
+      "properties": {
+        "version": {"$ref": "#/$defs/Identifier"},
+        "digest": {"$ref": "#/$defs/Digest"}
+      }
+    },
+    "VersionSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "parser", "formation_policy", "detector_registry", "feature_policy",
+        "normalizer", "raw_model", "calibrator", "support_policy", "sufficiency_policy",
+        "assembly_policy", "manifest"
+      ],
+      "properties": {
+        "schema": {"$ref": "#/$defs/VersionBinding"},
+        "parser": {"$ref": "#/$defs/VersionBinding"},
+        "formation_policy": {"$ref": "#/$defs/VersionBinding"},
+        "detector_registry": {"$ref": "#/$defs/VersionBinding"},
+        "feature_policy": {"$ref": "#/$defs/VersionBinding"},
+        "normalizer": {"$ref": "#/$defs/VersionBinding"},
+        "raw_model": {"$ref": "#/$defs/VersionBinding"},
+        "calibrator": {"$ref": "#/$defs/VersionBinding"},
+        "support_policy": {"$ref": "#/$defs/VersionBinding"},
+        "sufficiency_policy": {"$ref": "#/$defs/VersionBinding"},
+        "assembly_policy": {"$ref": "#/$defs/VersionBinding"},
+        "manifest": {"$ref": "#/$defs/VersionBinding"}
+      },
+      "x-ordering": ["schema", "parser", "formation_policy", "detector_registry", "feature_policy", "normalizer", "raw_model", "calibrator", "support_policy", "sufficiency_policy", "assembly_policy", "manifest"]
+    },
+    "DetectorStateByFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["EDR", "NDR"],
+      "properties": {
+        "EDR": {"$ref": "#/$defs/DetectorState"},
+        "NDR": {"$ref": "#/$defs/DetectorState"}
+      }
+    },
+    "DetectorObservationByFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["EDR", "NDR"],
+      "properties": {
+        "EDR": {"$ref": "#/$defs/DetectorObservation"},
+        "NDR": {"$ref": "#/$defs/DetectorObservation"}
+      }
+    },
+    "SourceMask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["EDR", "NDR"],
+      "properties": {
+        "EDR": {"type": "integer", "enum": [0, 1]},
+        "NDR": {"type": "integer", "enum": [0, 1]}
+      }
+    },
+    "HealthByFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["EDR", "NDR"],
+      "properties": {
+        "EDR": {"$ref": "#/$defs/Health"},
+        "NDR": {"$ref": "#/$defs/Health"}
+      }
+    },
+    "UProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage", "provenance", "lateness", "contradiction", "calibration"],
+      "properties": {
+        "coverage": {"type": "string", "enum": ["complete", "degraded", "unavailable", "unknown"]},
+        "provenance": {"type": "string", "enum": ["complete", "partial", "missing"]},
+        "lateness": {"type": "string", "enum": ["stable", "revisable", "late_accepted"]},
+        "contradiction": {"type": "string", "enum": ["none", "present", "unevaluable"]},
+        "calibration": {"type": "string", "enum": ["supported_global", "supported_group", "out_of_support"]}
+      }
+    },
+    "NormalizedEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "event_id", "event_time", "ingest_time",
+        "source_family", "source_instance", "subject", "object", "action",
+        "raw_pointer", "dependency_group", "parser_version"
+      ],
+      "properties": {
+        "object_type": {"const": "NormalizedEvent"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "event_id": {"$ref": "#/$defs/Identifier"},
+        "event_time": {"$ref": "#/$defs/Timestamp"},
+        "ingest_time": {"$ref": "#/$defs/Timestamp"},
+        "source_family": {"$ref": "#/$defs/SourceFamily"},
+        "source_instance": {"$ref": "#/$defs/Identifier"},
+        "subject": {"$ref": "#/$defs/Identifier"},
+        "object": {"$ref": "#/$defs/Identifier"},
+        "action": {"$ref": "#/$defs/Identifier"},
+        "raw_pointer": {"$ref": "#/$defs/RawPointer"},
+        "dependency_group": {"$ref": "#/$defs/Identifier"},
+        "parser_version": {"$ref": "#/$defs/Identifier"},
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {"type": ["string", "number", "boolean", "null"], "x-finite": true, "x-reject-negative-zero": true}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"eligible_detector_count": {"const": 0}}, "required": ["eligible_detector_count"]},
+          "then": {"properties": {"D": {"const": 0}}}
+        }
+      ]
+    },
+    "SourceCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "source_family", "source_instance",
+        "interval_start", "interval_end", "expected", "health", "parser_valid",
+        "observed_lag_seconds", "heartbeat_period_seconds", "missed_heartbeat_count",
+        "transport_live", "reason_code", "monitor_version", "policy_version"
+      ],
+      "properties": {
+        "object_type": {"const": "SourceCoverage"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "source_family": {"$ref": "#/$defs/SourceFamily"},
+        "source_instance": {"$ref": "#/$defs/Identifier"},
+        "interval_start": {"$ref": "#/$defs/Timestamp"},
+        "interval_end": {"$ref": "#/$defs/Timestamp"},
+        "expected": {"type": "boolean"},
+        "health": {"$ref": "#/$defs/Health"},
+        "parser_valid": {"type": "boolean"},
+        "observed_lag_seconds": {"$ref": "#/$defs/FiniteNonnegative"},
+        "heartbeat_period_seconds": {"const": 30},
+        "missed_heartbeat_count": {"type": "integer", "minimum": 0},
+        "transport_live": {"type": "boolean"},
+        "reason_code": {"$ref": "#/$defs/Identifier"},
+        "monitor_version": {"$ref": "#/$defs/Identifier"},
+        "policy_version": {"$ref": "#/$defs/Identifier"},
+        "diagnostic_reference": {"$ref": "#/$defs/RawPointer"}
+      }
+    },
+    "EpisodeRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "revision", "state",
+        "ordered_event_ids", "ordered_link_reasons", "parent_episode_ids",
+        "predecessor_revision", "late_evidence_reason", "first_finalized_at",
+        "revision_deadline", "event_time_start", "event_time_end", "watermark",
+        "formation_policy_version", "membership_digest"
+      ],
+      "properties": {
+        "object_type": {"const": "EpisodeRevision"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "revision": {"type": "integer", "minimum": 0},
+        "state": {"type": "string", "enum": ["open", "finalized", "closed"]},
+        "ordered_event_ids": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/Identifier"},
+          "x-ordering": ["event_time", "ingest_time", "source_instance", "event_id"]
+        },
+        "ordered_link_reasons": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["process_causal", "authenticated_session", "endpoint_connection", "specific_entity"]},
+          "x-ordering": "parallel to ordered_event_ids after the first event"
+        },
+        "parent_episode_ids": {
+          "type": "array", "uniqueItems": true,
+          "items": {"$ref": "#/$defs/Identifier"},
+          "x-ordering": "lexicographic"
+        },
+        "predecessor_revision": {"type": ["integer", "null"], "minimum": 0},
+        "late_evidence_reason": {"type": ["string", "null"], "enum": [null, "accepted_within_horizon"]},
+        "first_finalized_at": {
+          "oneOf": [{"$ref": "#/$defs/Timestamp"}, {"type": "null"}]
+        },
+        "revision_deadline": {
+          "oneOf": [{"$ref": "#/$defs/Timestamp"}, {"type": "null"}]
+        },
+        "event_time_start": {"$ref": "#/$defs/Timestamp"},
+        "event_time_end": {"$ref": "#/$defs/Timestamp"},
+        "watermark": {"$ref": "#/$defs/Timestamp"},
+        "formation_policy_version": {"$ref": "#/$defs/Identifier"},
+        "membership_digest": {"$ref": "#/$defs/Digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"const": "open"}}, "required": ["state"]},
+          "then": {"properties": {"first_finalized_at": {"type": "null"}, "revision_deadline": {"type": "null"}}},
+          "else": {"properties": {"first_finalized_at": {"$ref": "#/$defs/Timestamp"}, "revision_deadline": {"$ref": "#/$defs/Timestamp"}}}
+        },
+        {
+          "if": {"properties": {"late_evidence_reason": {"const": "accepted_within_horizon"}}, "required": ["late_evidence_reason"]},
+          "then": {"properties": {"state": {"const": "finalized"}, "predecessor_revision": {"type": "integer"}}}
+        }
+      ]
+    },
+    "LateEvidenceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "latest_revision", "latest_revision_digest", "event_id",
+        "arrival_time", "revision_deadline", "reason", "raw_pointer", "dependency_group",
+        "ordered_lineage_references", "versions", "canonical_digest"
+      ],
+      "properties": {
+        "object_type": {"const": "LateEvidenceRecord"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "latest_revision": {"type": "integer", "minimum": 0},
+        "latest_revision_digest": {"$ref": "#/$defs/Digest"},
+        "event_id": {"$ref": "#/$defs/Identifier"},
+        "arrival_time": {"$ref": "#/$defs/Timestamp"},
+        "revision_deadline": {"$ref": "#/$defs/Timestamp"},
+        "reason": {
+          "type": "string",
+          "enum": ["beyond_revision_horizon", "closed_lineage_match", "duplicate_after_terminal_outcome"]
+        },
+        "raw_pointer": {"$ref": "#/$defs/RawPointer"},
+        "dependency_group": {"$ref": "#/$defs/Identifier"},
+        "ordered_lineage_references": {
+          "type": "array", "minItems": 1,
+          "items": {"$ref": "#/$defs/EvidenceReferenceEntry"},
+          "x-ordering": ["relation_rank", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"]
+        },
+        "versions": {"$ref": "#/$defs/VersionSet"},
+        "canonical_digest": {"$ref": "#/$defs/Digest"}
+      },
+      "x-canonical-digest-algorithm": "SHA-256 over RFC 8785 JSON Canonicalization Scheme bytes",
+      "x-canonical-digest-fields": [
+        "object_type", "schema_version", "episode_id", "latest_revision", "latest_revision_digest", "event_id",
+        "arrival_time", "revision_deadline", "reason", "raw_pointer", "dependency_group",
+        "ordered_lineage_references", "versions"
+      ]
+    },
+    "FeatureVector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "revision", "D", "C",
+        "source_mask", "detector_observation", "detector_registry_digest",
+        "eligible_detector_count", "corroboration_support", "feature_version", "normalizer_hashes",
+        "ordered_input_references"
+      ],
+      "properties": {
+        "object_type": {"const": "FeatureVector"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "revision": {"type": "integer", "minimum": 0},
+        "D": {"$ref": "#/$defs/FiniteUnitInterval"},
+        "C": {"type": "integer", "enum": [0, 1]},
+        "source_mask": {"$ref": "#/$defs/SourceMask"},
+        "detector_observation": {"$ref": "#/$defs/DetectorObservationByFamily"},
+        "detector_registry_digest": {"$ref": "#/$defs/Digest"},
+        "eligible_detector_count": {"type": "integer", "minimum": 0},
+        "corroboration_support": {"$ref": "#/$defs/SourceMask"},
+        "feature_version": {"$ref": "#/$defs/Identifier"},
+        "normalizer_hashes": {
+          "type": "object", "additionalProperties": false,
+          "required": ["EDR", "NDR"],
+          "properties": {"EDR": {"$ref": "#/$defs/Digest"}, "NDR": {"$ref": "#/$defs/Digest"}}
+        },
+        "ordered_input_references": {
+          "type": "array", "items": {"$ref": "#/$defs/EvidenceReferenceEntry"},
+          "x-ordering": ["relation_rank", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"eligible_detector_count": {"const": 0}}, "required": ["eligible_detector_count"]},
+          "then": {"properties": {"D": {"const": 0}}}
+        }
+      ]
+    },
+    "SupportDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "revision",
+        "resolved_detector_state", "eligible_detector_count", "eligibility_reason", "kappa", "calibration_group_key",
+        "decision_eligible", "support_manifest_digest", "coverage_ref_ids",
+        "health_snapshot_digest", "ordered_coverage_references"
+      ],
+      "properties": {
+        "object_type": {"const": "SupportDecision"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "revision": {"type": "integer", "minimum": 0},
+        "resolved_detector_state": {"$ref": "#/$defs/DetectorStateByFamily"},
+        "eligible_detector_count": {"type": "integer", "minimum": 0},
+        "eligibility_reason": {"type": "string", "enum": ["eligible", "no_eligible_detector_value", "source_out_of_support", "parser_out_of_support", "version_out_of_support", "calibration_out_of_support"]},
+        "kappa": {"type": "string", "enum": ["supported_global", "supported_group", "out_of_support"]},
+        "calibration_group_key": {
+          "oneOf": [{"$ref": "#/$defs/Digest"}, {"type": "null"}]
+        },
+        "decision_eligible": {"type": "boolean"},
+        "support_manifest_digest": {"$ref": "#/$defs/Digest"},
+        "coverage_ref_ids": {"$ref": "#/$defs/CoverageRefIdsByFamily"},
+        "health_snapshot_digest": {"$ref": "#/$defs/Digest"},
+        "ordered_coverage_references": {
+          "type": "array", "items": {"$ref": "#/$defs/EvidenceReferenceEntry"},
+          "minItems": 2,
+          "x-ordering": ["relation_rank", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kappa": {"const": "supported_group"}}, "required": ["kappa"]},
+          "then": {"properties": {"calibration_group_key": {"$ref": "#/$defs/Digest"}}},
+          "else": {"properties": {"calibration_group_key": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"eligible_detector_count": {"const": 0}}, "required": ["eligible_detector_count"]},
+          "then": {"properties": {"kappa": {"const": "out_of_support"}, "decision_eligible": {"const": false}, "eligibility_reason": {"const": "no_eligible_detector_value"}}}
+        },
+        {
+          "if": {"properties": {"kappa": {"enum": ["supported_global", "supported_group"]}}, "required": ["kappa"]},
+          "then": {"properties": {"eligible_detector_count": {"minimum": 1}, "decision_eligible": {"const": true}, "eligibility_reason": {"const": "eligible"}}}
+        },
+        {
+          "if": {"properties": {"eligible_detector_count": {"minimum": 1}, "kappa": {"const": "out_of_support"}}, "required": ["eligible_detector_count", "kappa"]},
+          "then": {"properties": {"decision_eligible": {"const": false}, "eligibility_reason": {"enum": ["source_out_of_support", "parser_out_of_support", "version_out_of_support", "calibration_out_of_support"]}}}
+        }
+      ]
+    },
+    "AuditRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "revision", "episode_revision_digest",
+        "D", "C", "z", "P", "kappa", "calibration_group_key", "decision_eligible",
+        "U", "source_mask", "detector_observation", "health_snapshot", "resolved_detector_state",
+        "eligible_detector_count", "eligibility_reason",
+        "coverage_ref_ids", "health_snapshot_digest", "ordered_evidence_references",
+        "versions", "canonical_digest"
+      ],
+      "properties": {
+        "object_type": {"const": "AuditRecord"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "revision": {"type": "integer", "minimum": 0},
+        "episode_revision_digest": {"$ref": "#/$defs/Digest"},
+        "D": {"$ref": "#/$defs/FiniteUnitInterval"},
+        "C": {"type": "integer", "enum": [0, 1]},
+        "z": {"$ref": "#/$defs/FiniteNumber"},
+        "P": {"oneOf": [{"$ref": "#/$defs/FiniteUnitInterval"}, {"type": "null"}]},
+        "kappa": {"type": "string", "enum": ["supported_global", "supported_group", "out_of_support"]},
+        "calibration_group_key": {
+          "oneOf": [{"$ref": "#/$defs/Digest"}, {"type": "null"}]
+        },
+        "decision_eligible": {"type": "boolean"},
+        "U": {"$ref": "#/$defs/UProfile"},
+        "source_mask": {"$ref": "#/$defs/SourceMask"},
+        "detector_observation": {"$ref": "#/$defs/DetectorObservationByFamily"},
+        "health_snapshot": {"$ref": "#/$defs/HealthByFamily"},
+        "resolved_detector_state": {"$ref": "#/$defs/DetectorStateByFamily"},
+        "eligible_detector_count": {"type": "integer", "minimum": 0},
+        "eligibility_reason": {"type": "string", "enum": ["eligible", "no_eligible_detector_value", "source_out_of_support", "parser_out_of_support", "version_out_of_support", "calibration_out_of_support"]},
+        "coverage_ref_ids": {"$ref": "#/$defs/CoverageRefIdsByFamily"},
+        "health_snapshot_digest": {"$ref": "#/$defs/Digest"},
+        "ordered_evidence_references": {
+          "type": "array", "items": {"$ref": "#/$defs/EvidenceReferenceEntry"},
+          "x-ordering": ["relation_rank", "dependency_group_unsigned_UTF8", "reference_kind_object_before_sentinel", "object_id_or_empty_unsigned_UTF8", "content_digest_or_empty"]
+        },
+        "versions": {"$ref": "#/$defs/VersionSet"},
+        "canonical_digest": {"$ref": "#/$defs/Digest"},
+        "runtime_envelope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "host_name": {"type": "string"},
+            "process_id": {"type": "integer", "minimum": 0},
+            "execution_started_at": {"$ref": "#/$defs/Timestamp"},
+            "execution_duration_ms": {"$ref": "#/$defs/FiniteNonnegative"}
+          },
+          "x-canonical": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kappa": {"const": "out_of_support"}}, "required": ["kappa"]},
+          "then": {"properties": {"P": {"type": "null"}, "decision_eligible": {"const": false}}},
+          "else": {"properties": {"P": {"$ref": "#/$defs/FiniteUnitInterval"}, "decision_eligible": {"const": true}}}
+        },
+        {
+          "if": {"properties": {"eligible_detector_count": {"const": 0}}, "required": ["eligible_detector_count"]},
+          "then": {"properties": {"D": {"const": 0}, "P": {"type": "null"}, "kappa": {"const": "out_of_support"}, "decision_eligible": {"const": false}, "eligibility_reason": {"const": "no_eligible_detector_value"}}}
+        },
+        {
+          "if": {"properties": {"kappa": {"enum": ["supported_global", "supported_group"]}}, "required": ["kappa"]},
+          "then": {"properties": {"eligible_detector_count": {"minimum": 1}, "eligibility_reason": {"const": "eligible"}}}
+        },
+        {
+          "if": {"properties": {"eligible_detector_count": {"minimum": 1}, "kappa": {"const": "out_of_support"}}, "required": ["eligible_detector_count", "kappa"]},
+          "then": {"properties": {"eligibility_reason": {"enum": ["source_out_of_support", "parser_out_of_support", "version_out_of_support", "calibration_out_of_support"]}}}
+        },
+        {
+          "if": {"properties": {"kappa": {"const": "supported_group"}}, "required": ["kappa"]},
+          "then": {"properties": {"calibration_group_key": {"$ref": "#/$defs/Digest"}}},
+          "else": {"properties": {"calibration_group_key": {"type": "null"}}}
+        }
+      ],
+      "x-canonical-digest-algorithm": "SHA-256 over RFC 8785 JSON Canonicalization Scheme bytes",
+      "x-canonical-digest-fields": [
+        "object_type", "schema_version", "episode_id", "revision", "episode_revision_digest",
+        "D", "C", "z", "P", "kappa", "calibration_group_key", "decision_eligible",
+        "U", "source_mask", "detector_observation", "health_snapshot", "resolved_detector_state",
+        "eligible_detector_count", "eligibility_reason",
+        "coverage_ref_ids", "health_snapshot_digest", "ordered_evidence_references", "versions"
+      ],
+      "x-canonical-digest-excludes": ["canonical_digest", "runtime_envelope"]
+    },
+    "AssemblyFailureRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type", "schema_version", "episode_id", "revision",
+        "episode_revision_digest", "failure_code", "observed_input_types",
+        "assembly_policy_version", "canonical_digest"
+      ],
+      "properties": {
+        "object_type": {"const": "AssemblyFailureRecord"},
+        "schema_version": {"const": "trustepisode.online.v1"},
+        "episode_id": {"$ref": "#/$defs/Identifier"},
+        "revision": {"type": "integer", "minimum": 0},
+        "episode_revision_digest": {"$ref": "#/$defs/Digest"},
+        "failure_code": {
+          "type": "string",
+          "enum": [
+            "assembly_timeout", "missing_input", "conflicting_duplicate", "key_mismatch",
+            "version_mismatch", "schema_invalid", "digest_mismatch"
+          ],
+          "x-precedence": ["schema_invalid", "key_mismatch", "conflicting_duplicate", "digest_mismatch", "version_mismatch", "missing_input", "assembly_timeout"]
+        },
+        "observed_input_types": {
+          "type": "array", "uniqueItems": true,
+          "items": {"type": "string", "enum": [
+            "EpisodeRevision", "FeatureVector", "RawLogit", "SupportDecision",
+            "CalibratedProbability", "UProfile", "SourceCoverage"
+          ]},
+          "x-ordering": ["EpisodeRevision", "FeatureVector", "RawLogit", "SupportDecision", "CalibratedProbability", "UProfile", "SourceCoverage"]
+        },
+        "assembly_policy_version": {"$ref": "#/$defs/Identifier"},
+        "canonical_digest": {"$ref": "#/$defs/Digest"}
+      },
+      "x-canonical-digest-algorithm": "SHA-256 over RFC 8785 JSON Canonicalization Scheme bytes",
+      "x-canonical-digest-fields": [
+        "object_type", "schema_version", "episode_id", "revision",
+        "episode_revision_digest", "failure_code", "observed_input_types",
+        "assembly_policy_version"
+      ]
+    }
+  }
+}

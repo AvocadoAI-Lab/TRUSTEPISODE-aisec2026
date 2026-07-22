@@ -1,0 +1,10 @@
+{
+  "manifest_type": "trustepisode.offline-formation-eval.v1",
+  "files": {
+    "raw\\formation_baselines_per_run.json": "87e8793c1a93a0b6667046897a2b8e5e651e644b67fa75c54b8c5757560bba8a",
+    "derived\\formation_baselines_ablations.json": "99b52f75fb40df66ad0ff9ff403f2bb618130e444c438ea86ca44700a3e18e27",
+    "derived\\matching_sensitivity.json": "f3b630976856c35f350935040ac4224502f23ac6bf4272eccec798e7245d58c8",
+    "derived\\formation_replay_equality.json": "8feca57dda550cf2783f56696e5ad57a386a7824704bcd774678608dc74d1619",
+    "tables\\formation_builder_overall.csv": "ae422253ba97423f31c4711a607dd468430070336f493c65412a780be323b5a1"
+  }
+}

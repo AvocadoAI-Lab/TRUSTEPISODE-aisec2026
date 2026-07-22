@@ -1,40 +1,55 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Multi-step attacks rarely produce one conclusive alert. A remote connection, script execution,
-file transfer, or administrative action can be benign alone yet material when connected by
-time, entity, session, and process relations. Endpoint detection and response (EDR) and network
-detection and response (NDR) also fail differently: an event may be absent because no action
-was observed, because no detector fired, or because a collector or parser was unavailable.
-Treating all three states as zero evidence silently changes both correlation and probability
-semantics.
+Security operations and digital-forensic investigations reconstruct multi-step attacks from
+temporally dispersed endpoint and network observations~\cite{alertfatigue2025,nist80086,breitinger2025sok}.
+Isolated EDR or NDR records may appear benign alone yet become material when linked by time,
+entity, session, and process relations. Reconstruction is not only a clustering problem:
+investigators need a contract that fixes who owns episode membership, how late evidence is
+admitted, how collector health differs from ``no detection,'' and how every revision leaves an
+independently verifiable terminal outcome~\cite{casey2011digitalevidence,carrier2005filesystem,vanini2024timeanchors}.
 
-Existing alert correlation and provenance systems reconstruct causal context, but their
-candidate boundaries, late-data behavior, and calibration contracts are often not explicit
-enough for byte-identical replay~\cite{ning2002attackscenarios,holmes2019,nodlink2024,kairos2024}.
-Conversely, an anomaly or severity score is not automatically a probability, and calibration
-is meaningful only for the candidate population and pipeline version on which it was
-validated~\cite{guo2017calibration,gneiting2007proper}. These gaps are coupled: changing
-episode membership changes the scored population, while hiding source failure behind a zero
-feature can make an unsupported mapping appear confidently benign.
+Prior alert-correlation and provenance systems motivate multi-stage context using rules, graphs,
+and learned representations~\cite{ning2002attackscenarios,holmes2019,unicorn2020,nodlink2024,kairos2024,captain2025}.
+Those lines do not remove the need for fixed ownership of membership, immutable revision history,
+and replayable audit semantics under incomplete observability. This submission evaluates
+\trustepisode as a \emph{deterministic, auditable reconstruction contract} for EDR/NDR evidence.
+A compact scorer and calibrator remain optional schema interfaces and are not empirically
+validated here.
 
-\trustepisode addresses this problem with a deliberately narrow contract. It transforms only
-EDR/NDR observations into deterministic EpisodeRevisions, computes a compact raw logit from
-detector deviation and independent corroboration, emits a calibrated probability only under
-an exact manifest match, reports evidence sufficiency independently, and assembles one
-        canonical terminal assembly outcome per revision. Ground truth is unavailable to every online producer and
-is joined only after inference.
+\paragraph{Research questions.}
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item[\textbf{RQ1}] Under identical sealed EDR/NDR evidence, does TrustEpisode reproduce
+        byte-identical membership, revision history, late-evidence records, and digests on all
+        60 malicious runs?
+  \item[\textbf{RQ2}] Do open, finalized, late-successor, closed, beyond-horizon, duplicate, and
+        all seven AssemblyFailureRecord codes yield explicit immutable audit outcomes without
+        rewriting earlier history?
+  \item[\textbf{RQ3}] When a required action is absent from a reconstructed episode, can the
+        pipeline localize loss across the closed A--G taxonomy, and is that taxonomy instantiated
+        on sealed live evidence?
+  \item[\textbf{RQ4}] Which relation, hub, merge, and late-revision mechanisms does the live
+        M1--M6 cohort exercise, and which require targeted conformance cards?
+  \item[\textbf{RQ5}] What portion of observed formation gain comes from replacing fixed bins
+        with sliding sessionization, and does relation-aware logic provide additional measurable
+        benefit on the sealed cohort?
+\end{enumerate}
 
 \paragraph{Contributions.}
-This paper makes four contributions:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item a single-owner online object model and deterministic episode state machine with fixed
-        guards, total ordering, watermark, and revision policy;
-  \item a compact scorer plus manifest-scoped affine calibration that returns canonical null
-        outside validated support;
-  \item explicit detector-availability and five-axis sufficiency truth tables, together with a
-        schema-ready AuditRecord contract with closed types, nullability, and digest sets; and
-  \item a CALDERA-based validation protocol on isolated live Linux systems, with fixed scenario
-        cards, paired telemetry perturbations, physical outages, sufficiency-transition analysis,
-        matching, and run-level statistics.
+  \item a single-owner immutable reconstruction contract: Episode Synthesis alone owns
+        membership; late evidence yields successors or LateEvidenceRecords; deadlines do not
+        extend; terminal history is append-only;
+  \item replayable forensic audit outcomes with exactly one terminal AssemblyOutcome per
+        revision, canonical references, SHA-256 digests, and a complete seven-code failure matrix;
+  \item a stage-localized A--G evidence-loss taxonomy, conformance-tested across classes and
+        instantiated on sealed M2 as \texttt{D\_token\_mapping\_failure};
+  \item a fair negative-result evaluation: legacy fixed bins underperform sliding sessionization,
+        while fair sliding EB1--EB4 show no observed difference on 60 sealed runs; advanced
+        guards require targeted cards not mixed into primary effectiveness;
+  \item a determinism boundary on all 60 sealed malicious runs: canonical ordered replay and
+        duplicate retries are stable; raw delivery-order permutations are not order-robust
+        without re-canonicalization; formation is single-writer per run;
+  \item a contract-ablation comparison (AB0--AB3) isolating which forensic failure modes mutable,
+        noncanonical, and silent-failure stores admit relative to TrustEpisode.
 \end{enumerate}
