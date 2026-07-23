@@ -1,5 +1,6 @@
 {
   "result_type": "trustepisode.audit-contract-ablation.v1",
+  "canonicalization": "RFC 8785/JCS for AB0/AB2/AB3; AB1 intentionally noncanonical",
   "scope": "synthetic isolation study; not commercial SOTA comparison",
   "seed": 20260721,
   "fixtures": [

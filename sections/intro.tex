@@ -1,27 +1,39 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Security operations and digital-forensic investigations reconstruct multi-step attacks from
-temporally dispersed endpoint and network observations~\cite{alertfatigue2025,nist80086,breitinger2025sok}.
-Isolated EDR or NDR records may appear benign alone yet become material when linked by time,
-entity, session, and process relations. Reconstruction is not only a clustering problem:
-investigators need a contract that fixes who owns episode membership, how late evidence is
-admitted, how collector health differs from ``no detection,'' and how every revision leaves an
-independently verifiable terminal outcome~\cite{casey2011digitalevidence,carrier2005filesystem,vanini2024timeanchors}.
+AI-assisted SOC systems increasingly use language-model agents to gather tool outputs, correlate
+alerts, and draft incident narratives~\cite{react2023,cortex2025,auditableddos2026}. Their output
+can be no more reviewable than the evidence interface below it: if arrival order changes episode
+membership, collector failure is encoded as benign silence, or a late event rewrites history, a
+fluent explanation may cite a case state that cannot be reproduced.
+
+Security operations and digital-forensic investigations therefore need more than alert
+clustering. Multi-step attacks appear as dispersed EDR and NDR observations that become material
+when linked by time, entity, session, and process relations
+~\cite{alertfatigue2025,nist80086,breitinger2025sok}. Investigators need a contract that fixes who
+owns episode membership, how late evidence is admitted, how collector health differs from ``no
+detection,'' and how every revision leaves an independently verifiable terminal outcome
+~\cite{casey2011digitalevidence,carrier2005filesystem,vanini2024timeanchors}.
 
 Prior alert-correlation and provenance systems motivate multi-stage context using rules, graphs,
 and learned representations~\cite{ning2002attackscenarios,holmes2019,unicorn2020,nodlink2024,kairos2024,captain2025}.
 Those lines do not remove the need for fixed ownership of membership, immutable revision history,
 and replayable audit semantics under incomplete observability. This submission evaluates
-\trustepisode as a \emph{deterministic, auditable reconstruction contract} for EDR/NDR evidence.
-A compact scorer and calibrator remain optional schema interfaces and are not empirically
-validated here.
+\trustepisode as a \emph{deterministic, auditable reconstruction contract} for EDR/NDR evidence
+and as a typed, read-only boundary for downstream analyst or AI reasoning. The downstream model
+is deliberately outside the trusted computing base: it may summarize versioned AuditRecords but
+cannot own membership, infer source health, overwrite history, or convert unsupported evidence
+into a numeric probability. A compact scorer and calibrator remain optional schema interfaces and
+are not empirically validated here. Thus, our AI-security claim concerns \emph{evidence
+truthfulness and containment}, not broad LLM effectiveness. We additionally report a small,
+held-out Qwen pilot and a post-result locked replication on the deployment-default Gemma model
+to measure extraction, citation, and abstention over the typed record. They are boundary stress
+tests rather than a preregistered model comparison.
 
 \paragraph{Research questions.}
-\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item[\textbf{RQ1}] Under identical sealed EDR/NDR evidence, does TrustEpisode reproduce
-        byte-identical membership, revision history, late-evidence records, and digests on all
-        60 malicious runs?
+\begin{enumerate}
+  \item[\textbf{RQ1}] Can TrustEpisode reproduce byte-identical membership, revision history,
+        late-evidence records, and digests on 60 sealed malicious runs?
   \item[\textbf{RQ2}] Do open, finalized, late-successor, closed, beyond-horizon, duplicate, and
         all seven AssemblyFailureRecord codes yield explicit immutable audit outcomes without
         rewriting earlier history?
@@ -29,27 +41,33 @@ validated here.
         pipeline localize loss across the closed A--G taxonomy, and is that taxonomy instantiated
         on sealed live evidence?
   \item[\textbf{RQ4}] Which relation, hub, merge, and late-revision mechanisms does the live
-        M1--M6 cohort exercise, and which require targeted conformance cards?
+        M1--M7 cohort exercise, and which require targeted conformance cards?
   \item[\textbf{RQ5}] What portion of observed formation gain comes from replacing fixed bins
         with sliding sessionization, and does relation-aware logic provide additional measurable
         benefit on the sealed cohort?
+  \item[\textbf{RQ6}] Do closed schemas and digest bindings fail closed when a downstream
+        consumer injects asserted facts, labels, or unsupported probability; removes provenance;
+        or tampers with revision and evidence digests; what remains possible after a schema-valid
+        reseal; and how reliably do two local models follow the resulting read-only extraction,
+        citation, and abstention interface?
 \end{enumerate}
+These questions evaluate the evidence substrate. The deployed interface trace reported later
+checks end-to-end materialization but is not counted as an effectiveness trial, and its displayed
+operational confidence is not the unevaluated calibrated probability field defined by the
+contract.
 
 \paragraph{Contributions.}
-\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item a single-owner immutable reconstruction contract: Episode Synthesis alone owns
-        membership; late evidence yields successors or LateEvidenceRecords; deadlines do not
-        extend; terminal history is append-only;
-  \item replayable forensic audit outcomes with exactly one terminal AssemblyOutcome per
-        revision, canonical references, SHA-256 digests, and a complete seven-code failure matrix;
-  \item a stage-localized A--G evidence-loss taxonomy, conformance-tested across classes and
-        instantiated on sealed M2 as \texttt{D\_token\_mapping\_failure};
-  \item a fair negative-result evaluation: legacy fixed bins underperform sliding sessionization,
-        while fair sliding EB1--EB4 show no observed difference on 60 sealed runs; advanced
-        guards require targeted cards not mixed into primary effectiveness;
-  \item a determinism boundary on all 60 sealed malicious runs: canonical ordered replay and
-        duplicate retries are stable; raw delivery-order permutations are not order-robust
-        without re-canonicalization; formation is single-writer per run;
-  \item a contract-ablation comparison (AB0--AB3) isolating which forensic failure modes mutable,
-        noncanonical, and silent-failure stores admit relative to TrustEpisode.
+\begin{enumerate}
+  \item a single-owner reconstruction and audit contract with immutable late-data semantics,
+        canonical references and digests, exactly one terminal AssemblyOutcome per revision, and a
+        read-only agent boundary;
+  \item a sealed evaluation separating evidence classes: 110 live executions, fair EB0--EB4
+        baselines, a 60-run determinism matrix, a complete seven-code failure matrix, contract
+        ablations, and an A--G loss taxonomy that localizes M2 to token mapping;
+  \item downstream stress tests that reject six schema-invalid or unsealed mutations, deliberately
+        accept a resealed allowed-field negative control to expose the writer-authorization
+        dependency, and reveal extraction/citation/abstention failures in held-out Qwen and
+        locked same-card Gemma audits, without claiming model superiority; and
+  \item an executable anonymous companion plus a deployed read-only trace showing
+        source-separated Suricata/Wazuh evidence and ATT\&CK support at the analyst surface.
 \end{enumerate}

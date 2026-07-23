@@ -5,17 +5,31 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+import rfc8785
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_SRC = Path(r"C:\Users\admin\Desktop\coreAPP\TRUSTEPISODE-aisec2026\experiment_runtime\src")
+
+
+def locate_runtime() -> Path:
+    packaged = ROOT / "experiment_runtime"
+    if packaged.exists():
+        return packaged
+    for base in ROOT.parents:
+        matches = sorted(base.glob("*/TRUSTEPISODE-aisec2026/experiment_runtime"))
+        if matches:
+            return matches[0]
+    raise FileNotFoundError("TrustEpisode experiment_runtime not found")
+
+
+RUNTIME_SRC = locate_runtime() / "src"
 sys.path.insert(0, str(RUNTIME_SRC))
 from trustepisode_runtime.pipeline import ASSEMBLY_INPUT_ORDER, classify_failure  # noqa: E402
 
 
 def digest(value: dict[str, Any]) -> str:
-    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    encoded = rfc8785.dumps(value)
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
@@ -146,6 +160,7 @@ def main() -> int:
 
     payload = {
         "result_type": "trustepisode.audit-conformance.a12.v1",
+        "canonicalization": "RFC 8785/JCS",
         "scope": "synthetic forensic audit conformance; sealed primary Table-4 and M1-M6 are untouched",
         "fixtures": fixtures,
         "pass_count": sum(row["pass"] for row in fixtures),

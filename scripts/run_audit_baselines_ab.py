@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import rfc8785
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ SEED = 20260721
 
 
 def digest(obj: Any) -> str:
-    raw = json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    raw = rfc8785.dumps(obj)
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 
 
@@ -333,6 +334,7 @@ def evaluate() -> dict[str, Any]:
 
     payload = {
         "result_type": "trustepisode.audit-contract-ablation.v1",
+        "canonicalization": "RFC 8785/JCS for AB0/AB2/AB3; AB1 intentionally noncanonical",
         "scope": "synthetic isolation study; not commercial SOTA comparison",
         "seed": SEED,
         "fixtures": list(fixtures.keys()),

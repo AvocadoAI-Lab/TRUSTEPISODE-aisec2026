@@ -4,32 +4,37 @@
 \subsection{Evidence Classes and Cohorts}
 \label{sec:research-questions}
 
-\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\begin{itemize}
   \item \textbf{RQ1} reproducibility --- sealed offline replay on all 60 primary malicious runs.
   \item \textbf{RQ2} lifecycle auditability --- A1--A12 synthetic audit conformance covering
         seven failure codes + late/beyond-horizon cards.
   \item \textbf{RQ3} evidence-loss localization --- A--G taxonomy conformance + sealed M2 waterfall.
-  \item \textbf{RQ4} mechanism coverage --- live M1--M6 + synthetic T1--T8; M7 only as
-        supplemental boundary stress.
-  \item \textbf{RQ5} baseline interpretation --- sealed fair EB0--EB4 comparison on M1--M6.
+  \item \textbf{RQ4} mechanism coverage --- live M1--M7 + synthetic T1--T8, with M7 as
+        boundary stress.
+  \item \textbf{RQ5} baseline interpretation --- sealed fair EB0--EB4 comparison on M1--M7.
+  \item \textbf{RQ6} downstream boundary and reading --- synthetic AI0--AI7 canonical-record
+        validation plus two once-run 20-card local-model grounding audits.
 \end{itemize}
-Evidence classes used below are disjoint: (i)~primary live empirical (M1--M6 formation cells);
+Evidence classes used below are disjoint: (i)~primary live empirical (M1--M7 formation cells);
 (ii)~sealed offline replay on those primary seals; (iii)~synthetic conformance (A1--A12, T1--T8,
-AB0--AB3, A--G fixtures); (iv)~unit/integration boundary fixtures; (v)~supplemental partition
-artifacts (L1--L4, wall-clock, sealed M7) that are \emph{not} mixed into primary estimators.
+AB0--AB3, AI0--AI7, A--G fixtures); (iv)~two once-run synthetic held-out LLM audits;
+(v)~unit/integration boundary fixtures; (vi)~supplemental partition artifacts (L1--L4,
+wall-clock) that are \emph{not} mixed into primary estimators.
 Synthetic cards are never mixed into primary live effectiveness. Sealed
 Table~\ref{tab:table4-amended-results} primary cells were not overwritten.
 
-\subsection{Primary Live M1--M6 Cohort}
+\subsection{Primary Live M1--M7 Cohort}
 \label{sec:datasets}
 
 CALDERA v5.3.0 executes frozen Bash abilities on two isolated Ubuntu 22.04 targets with an EDR
 wrapper and inline Suricata NDR. Online schemas reject labels and receipts. The primary sealed
-cohort has 60 malicious runs (M1--M6 $\times$ two modes $\times$ five) and 40 standalone benign
-runs. Fair sliding baselines and paired comparisons are computed on this M1--M6 set only.
+cohort has 70 malicious runs (M1--M7 $\times$ two modes $\times$ five) and 40 standalone benign
+execution controls. Because no fitted scorer or decision rule is evaluated, those controls do not
+define an alert false-positive rate and are not mixed into the malicious formation estimator.
+Fair sliding baselines and paired comparisons are computed on the M1--M7 set.
 
 \begin{table*}[!t]
-\caption{Primary M1--M6 scenario families (simplified). ``Live EB1--EB4 delta?'' reports whether
+\caption{Primary M1--M7 scenario families (simplified). ``Live EB1--EB4 delta?'' reports whether
 fair builders differed on the sealed primary cohort for the intended advanced mechanism.}
 \label{tab:scenario-families}
 \centering
@@ -44,6 +49,7 @@ M3 & privilege / persistence steps & process; file & causal/entity & identical \
 M4 & lateral-style dual-host steps & process; flows & session/endpoint & identical \\
 M5 & staged tooling / execution & process; file/net & entity/time & identical \\
 M6 & cleanup / cover tracks & process; file & entity/time & identical \\
+M7 & boundary actions at 0/300/3900\,s & process; flows & span boundary & boundary failure \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -63,7 +69,7 @@ Exact-complete recovery requires $A_{cov}=1$. Online builders never read evaluat
 \subsection{Fair Reconstruction Baselines}
 \label{sec:baselines}
 
-\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\begin{itemize}
   \item \textbf{EB0\_FIXED\_BIN\_300s} (legacy): fixed bins; boundary reference only.
   \item \textbf{EB1\_SLIDING\_TIME}: same $W_{gap}=300$\,s, $W_{max}=3600$\,s; time only.
   \item \textbf{EB2\_SLIDING\_ENTITY}: same lifecycle; entity overlap only.
@@ -77,11 +83,12 @@ Configuration digests are sealed in \texttt{results/derived/fair\_baselines.json
 \label{sec:formation-results}
 
 Table~\ref{tab:table4-amended-results} reports production-formation cells for the primary live
-M1--M6 cohort ($n=5$ per cell). Concurrent-benign mean contamination remains \ConcConcurrent{}
-for fair builders.
+M1--M7 cohort ($n=5$ per cell). M7 is a boundary-stress family: the final action occurs at
+3900\,s, beyond the frozen $W_{max}=3600$\,s span, so zero coverage/F1 is contract-conformant
+rather than a collection failure.
 
 \begin{table*}[!t]
-\caption{Primary live M1--M6 cells under production formation (mean $\pm$ sample SD; $n=5$).}
+\caption{Primary live M1--M7 cells under production formation (mean $\pm$ sample SD; $n=5$).}
 \label{tab:table4-amended-results}
 \centering
 \scriptsize
@@ -102,41 +109,88 @@ M5 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\
 M5 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.433\pm0.091$ & $1.000\pm0.000$ \\
 M6 & attack-only & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $1.000\pm0.000$ \\
 M6 & concurrent-benign & $1.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.333\pm0.257$ & $1.000\pm0.000$ \\
+M7 & attack-only & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & undef. & $0.000\pm0.000$ \\
+M7 & concurrent-benign & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & undef. & $0.000\pm0.000$ \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \input{results/tables/tab_fair_baselines}
 
-Relative to legacy EB0, sliding policies raise coverage (\EbZeroCov{}$\rightarrow$\TeCov{}) and
-exact-complete recovery (\EbZeroExact{}$\rightarrow$\TeExact{}) on the sealed primary cohort.
+Relative to legacy EB0, sliding policies raise coverage from \EbZeroCov{} to \TeCov{} and
+exact-complete recovery from \EbZeroExact{} to \TeExact{} on the sealed primary cohort.
 Fixed bins cut multi-minute chains at arbitrary boundaries; sliding gap/sessionization preserves
 those chains under the same span cap.
 
 \input{results/tables/tab_paired}
 
-Under fair sliding baselines, EB1--EB4 are identical on every primary metric and every family:
-paired EB4$-$EB1 differences are zero with 60 ties and CIs $[0,0]$. We report \emph{no observed
-difference} (not a formal equivalence test). Relation-aware formation is \emph{not} reported as
-better than fair sliding-time.
+The fair sliding baselines are not identical. EB4 matches EB2 on all action-coverage pairs
+(\EbTwoActionWTL{} W/T/L). Against EB1, action coverage and exact-complete recovery have
+\EbOneActionWTL{} W/T/L, mean $\Delta=\EbOneActionDelta{}$, and 95\% CI
+$[\EbOneActionCILo{},\EbOneActionCIHi{}]$; episode-F1 has mean $\Delta=-0.010$ and 95\% CI
+$[-0.029,0]$. The single loss is the concurrent-benign M7 run
+\texttt{run-ee27d58be2db032c44d0774d9358c4b1}: EB1 recovers its truth group while EB4 does not.
+We therefore report the EB4--EB1 result as \emph{not statistically resolved}, not ``no observed
+difference,'' equivalence, or relation-aware superiority. EB3 shows the same one-run
+action-coverage pattern.
 
-\paragraph{Why sliding-time already suffices on M1--M6.}
-The sealed primary cohort does not make advanced relations the unique linkage path: time and
-entity sessionization already recover the same matched episodes. Hub, parent-merge, and late
-guards therefore show no end-to-end metric delta. End-to-end F1 alone can misleadingly suggest
-that complex policy is ``validated'' when the benchmark never stresses it. Future BAS cohorts
-should register mechanism-coverage requirements (session-only, endpoint-only, hub over-merge,
-late horizon, beyond-$W_{max}$ span) before claiming relation-aware gains.
+\paragraph{Why sliding-time already suffices on M1--M7.}
+The sealed primary cohort does not make advanced relations the unique linkage path: EB4 and EB2
+match on all 70 action-coverage pairs, and EB4 matches EB1 on 69. On the remaining
+concurrent-benign M7 run, EB1 and EB3 recover a truth group that EB4 and EB2 do not. Thus the
+advanced-guard policy incurs one observed boundary-case loss in this cohort rather than an
+end-to-end gain. End-to-end F1 alone can misleadingly suggest that complex policy is ``validated''
+when the benchmark rarely stresses it. Future BAS cohorts should register mechanism-coverage
+requirements (session-only, endpoint-only, hub over-merge, late horizon, beyond-$W_{max}$ span)
+before claiming relation-aware gains. M7 intentionally places the final action at 3900\,s,
+outside the frozen $W_{max}=3600$\,s span; production EB4's zero coverage/F1 is the expected
+boundary-stress outcome rather than a collection failure.
+
+\subsection{Deployed Case-Materialization Trace}
+\label{sec:deployed-case-trace}
+
+We additionally recorded a read-only trace from the deployed investigation surface on
+2026-07-23. This trace is artifact-level integration evidence, not another experimental sample
+and not part of any estimator above. Figure~\ref{fig:deployed-case-trace}(a) shows six
+workspace-scoped cases, five marked high risk, with both native and NDR-derived sources retained.
+The selected laboratory case in Figure~\ref{fig:deployed-case-trace}(b) materializes three
+normalized events---one Suricata NDR event and two Wazuh events---and exposes evidence references
+for ATT\&CK T1018 and T1041. The interface's 98\% operational confidence and
+\texttt{isolate\_or\_investigate} recommendation belong to the downstream case engine; they are
+\emph{not} \trustepisode's nullable calibrated $P$ and are not used as evidence of model accuracy.
+The trace supports only the narrower claim that source-separated evidence and technique support
+survive into a human-reviewable case view.
+
+\begin{figure*}[!t]
+  \centering
+  \begin{minipage}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,trim=165bp 0bp 15bp 58.5bp,clip]{system_case_list_20260723.png}
+    \par\smallskip\scriptsize (a) Workspace-scoped case queue and selected case summary.
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,trim=360bp 30bp 15bp 52.5bp,clip]{system_case_attack_chain_20260723.png}
+    \par\smallskip\scriptsize (b) Source-separated evidence cards and ATT\&CK support map.
+  \end{minipage}
+  \caption{Read-only deployed case trace from the isolated TrustEpisode laboratory. The capture
+  panels are cropped to remove account-identifying chrome. They demonstrate end-to-end evidence
+  materialization, not calibrated probability or LLM effectiveness.}
+  \Description{Two screenshots from a dark-themed investigation interface. The left panel shows
+  six workspace-scoped cases, five high-risk cases, two evidence modalities, and a selected case.
+  The right panel shows one Suricata and two Wazuh evidence cards with ATT\&CK technique support
+  references for T1018 and T1041.}
+  \label{fig:deployed-case-trace}
+\end{figure*}
 
 \subsection{Inclusive Temporal Boundary Fixtures}
 \label{sec:boundary-fixtures}
 
-Unit fixtures on production \texttt{EpisodeSynthesizer.\_candidate} confirm inclusive equality at
-the frozen contracts: $W_{gap}\in\{299,300\}$ eligible and $301$ ineligible;
-$W_{max}\in\{3599,3600\}$ eligible and $\{3601,3900\}$ ineligible (Table~\ref{tab:boundary-fixtures}).
-The $3900$\,s case matches the sealed M7 schedule offset and is \emph{not} a substitute for live
-M7 formation metrics. Results are sealed in
-\texttt{results/derived/temporal\_boundary\_conformance.json}.
+Unit fixtures on the production candidate function confirm inclusive equality at the frozen
+contracts (Table~\ref{tab:boundary-fixtures}). For $W_{gap}$, 299 and 300\,s are eligible while
+301\,s is not. For $W_{max}$, 3599 and 3600\,s are eligible while 3601 and 3900\,s are not.
+The 3900\,s case matches the sealed M7 schedule offset and is \emph{not} a substitute for live
+M7 formation metrics. The companion seals the complete boundary result.
 
 \begin{table}[!t]
 \caption{Inclusive $W_{gap}$/$W_{max}$ boundary fixtures (unit; all pass).}
@@ -228,73 +282,131 @@ results are unchanged; any mapper fix requires a new version digest and a post-a
 AB0--AB3 are reference implementations for an isolation study: which contract property prevents
 which forensic failure mode. They are reference implementations for isolation, not product comparisons.
 
+\subsection{Agent-Facing Boundary Conformance}
+\label{sec:agent-boundary-conformance}
+
+\input{results/tables/tab_agent_boundary}
+
+AI0 accepts an unchanged canonical AuditRecord. AI1--AI4 inject a generated fact, leak a label,
+force an unsupported 0.98 probability, or remove provenance; the closed schema rejects each.
+AI5--AI6 change a revision or evidence digest without resealing the record; canonical digest
+verification rejects both. AI7 changes the allowed $D$ field and recomputes the unkeyed
+RFC~8785/SHA-256 digest; validation accepts it, as expected. Thus
+\AgentBoundaryPass{}/\AgentBoundaryTotal{} cards match their specifications. The negative control
+shows that schema/digest validation provides integrity checks, not writer authentication.
+These are synthetic canonical-record checks, not LLM factuality, deployed authorization, or
+agent-runtime security tests.
+
+\subsection{Held-Out Local-Model Grounding Audits}
+\label{sec:llm-grounding-pilot}
+
+\input{results/tables/tab_llm_grounding}
+
+After a separate unscored 18-card interface smoke test, we froze the system prompt, output schema,
+four newly valued and re-digested schema-valid AuditRecords, and 20 held-out tasks. We then ran
+\texttt{qwen2.5:7b} (model digest prefix \texttt{845dbda0ea48}, Ollama 0.20.5) once with
+temperature 0 and seed 20260723. Tasks require exact scalar extraction, null/missing-field
+abstention, or resistance to a task instruction that supplies a false value. The frozen artifact
+retains prompts, raw responses, token counts, card/record/prompt digests, and per-field scoring.
+
+After observing Qwen, but before downloading or querying the deployment configuration's default
+\texttt{gemma3:1b}, we timestamped a locked replication protocol fixing the same prompt, schema,
+cards, records, seed, and scoring. Gemma (digest prefix \texttt{8648f39daa8f}) then ran once.
+Because this replication was registered after the Qwen result, Table~\ref{tab:llm-grounding} is
+an exploratory transfer audit, not a preregistered or statistical model comparison.
+
+Qwen yields \LlmPilotAnswers{}/20 exact answers, \LlmPilotCitations{}/20 exact citation sets,
+and \LlmPilotExact{}/20 fully exact responses; one pointer is invalid. Gemma yields only
+\GemmaPilotJson{}/20 schema-shaped responses, \GemmaPilotAnswers{}/20 exact answers,
+\GemmaPilotCitations{}/20 exact citation sets, and \GemmaPilotExact{}/20 fully exact responses,
+with \GemmaPilotInvalidRefs{} invalid pointers. Its raw H17, H18, and H20 responses echo injected
+numeric or object fragments; this lexical observation was not a frozen metric and is illustrative.
+The observed cross-model variability is the point of the boundary: typed input makes failure
+measurable, but does not make a model accurate. Neither run is field effectiveness,
+authorization testing, or evidence for general LLM safety.
+
 \subsection{Mechanism Conformance Cards}
 \label{sec:mechanism}
 
 \input{results/tables/tab_mechanism}
 
-T1--T8 are synthetic. T2/T3 were redesigned so that \texttt{specific\_entity} is disabled and
+T1--T8 are synthetic. T2/T3 were redesigned so that \path{specific_entity} is disabled and
 session/endpoint becomes the sole legal relation; ablation then fragments. Passes are
-conformance, not live effectiveness. Live EB1--EB4 remain tied.
+conformance, not live effectiveness. In the live cohort, EB4 matches EB2 but differs from
+EB1/EB3 on one concurrent-benign M7 run.
 
 \subsection{Supplemental Partition (Not Primary)}
 \label{sec:supplemental-live}
 
-Artifacts below live under a separate \texttt{supplemental\_mechanism} partition (or sealed M7
-membership). They do \emph{not} enter Table~\ref{tab:table4-amended-results} or the 60-run fair
+Artifacts below live under a separate \texttt{supplemental\_mechanism} partition. They do
+\emph{not} enter Table~\ref{tab:table4-amended-results} or the 70-run fair
 baseline estimator. Evidence classes are stated per row.
 
-\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item \textbf{L1 (live base + offline ablation):} three sealed live M3 SSH cross-host bases;
-        offline ablation links under \texttt{authenticated\_session} alone and fragments when
-        that relation is disabled (3/3). Not a claim of organic session-only BAS stress.
-  \item \textbf{L2 (offline ablation on L1 seals):} on the same live SSH seals,
-        \texttt{endpoint\_connection} alone (entity/session/causal disabled) links denser than
-        ablating endpoint (3/3). Offline-only mechanism check.
+\begin{itemize}
+  \item \textbf{L1 (live base + offline ablation):} three sealed live M3 SSH bases. With only
+        session linking enabled, the offline ablation links each base; disabling it fragments all
+        three. This is not organic session-only BAS stress.
+  \item \textbf{L2 (offline ablation on L1 seals):} on the same seals, endpoint-only linking is
+        denser than the endpoint-disabled ablation (3/3). This is an offline mechanism check.
   \item \textbf{L3 (offline ablation + controlled inject):} organic hub load is \emph{not}
         observed (hub-on vs hub-off identical, 0/3 organic). Controlled hub-load inject on the
         live sealed bases (cutoff$+1$ peers) makes hub-on vs hub-off diverge (3/3). Controlled
         inject $\neq$ organic BAS hub stress.
   \item \textbf{L4 late evidence (two distinct classes):}
         (i)~\emph{controlled late inject} on live seals yields successors and
-        \texttt{beyond\_revision\_horizon} LateEvidenceRecords (3/3);
-        (ii)~\emph{wall-clock forwarder hold/release} with real delays: within-horizon 180\,s
-        holds seal and show multi-revision successors (2/2 pass); beyond-horizon attempts
+        \path{beyond_revision_horizon} records (3/3).
+        (ii)~A \emph{wall-clock hold/release} uses real delays: within-horizon 180\,s holds
+        seal and show multi-revision successors (2/2 pass); beyond-horizon attempts
         (930\,s hold-release; 1080\,s quiet wait) \emph{seal} but do \emph{not} emit
         LateEvidenceRecords under organic telemetry (2 sealed, 0/2 LateEvidence; new membership
         formed instead). Beyond-horizon localization is therefore supported by controlled inject,
         not by wall-clock beyond runs in this lab.
-  \item \textbf{M7 supplemental boundary-stress cohort:} ten sealed live runs (5 attack-only +
-        5 concurrent-benign) with ability offsets $0/300/3900$\,s. Production formation yields
-        coverage $0$, F1 $0$, and undefined contamination under $W_{max}=3600$\,s. M7 is a
-        descriptive long-horizon stress cell and is excluded from primary cell/mode aggregates.
 \end{itemize}
 
 \subsection{Artifact Reproducibility}
 \label{sec:artifact}
 
-The supplementary archive rebuilds macros from sealed JSON, regenerates tables, and re-runs
-D1--D5, A1--A12, A--G, AB0--AB3, T1--T8, temporal boundary fixtures, and
-\texttt{verify\_claims.py}. A clean-room extract of the companion ZIP reproduces those checks
-under \texttt{CLEANROOM\_REPRODUCTION\_REPORT\_20260721.md}. Digests are refreshed with each
-packing; stale hashes are not reused.
+The anonymous companion archive fails closed unless Python imports its packaged reference runtime,
+executes all 38 implementation tests, and re-runs A1--A12, A--G, AB0--AB3, AI0--AI7, T1--T8,
+and the temporal boundary fixtures. It regenerates tables from sealed JSON and checks the reported
+D1--D5, fair-baseline, and two local-model summaries; raw/derived equality is checked for both
+model audits. It does not re-run
+live collection, cohort re-synthesis that
+requires the omitted raw lab bundles, or Ollama. Every clean-room command executes inside the
+extracted ZIP; the adjacent report records the results. Digests are refreshed with each packing.
+
+\paragraph{Ethical scope.}
+All traffic and workloads were confined to isolated, author-controlled laboratory systems. The
+study used no production users, personal data, human subjects, or third-party targets; screenshots
+were cropped to exclude account-identifying chrome.
 
 \subsection{Limitations}
 \label{sec:discussion}
 
-Two Ubuntu targets; non-commercial EDR; $n=5$ per cell; controlled benign workloads; no
-production base rates; fair baselines tied on primary M1--M6; synthetic cards $\neq$ field
-validation; raw order not robust; no fitted scorer/calibration; no partial-telemetry/outage;
-M2 mapping not corrected in the primary cohort. Organic hub stress remains unobserved on live
-streams. Wall-clock \emph{within}-horizon holds are executed (2/2); wall-clock
+Two Ubuntu targets; non-commercial EDR; $n=5$ per cell; controlled benign workloads; standalone
+benign controls are not false-positive trials; no
+production base rates; fair sliding results largely overlap, but EB4 trails EB1/EB3 on one
+concurrent-benign M7 run; synthetic cards $\neq$ field validation; raw order not robust; no
+fitted scorer/calibration; no partial-telemetry/outage; M2 mapping not corrected in the primary
+cohort. Organic hub stress remains unobserved on live streams. Wall-clock
+\emph{within}-horizon holds are executed (2/2); wall-clock
 \emph{beyond}-horizon LateEvidenceRecord under organic telemetry was attempted (2 sealed) but
 not observed. L3 hub divergence and L4 beyond-horizon localization use controlled inject on live
-seals where noted. M7 is supplemental only.
+seals where noted. M7 is primary boundary stress and should not be interpreted as successful
+3900\,s recovery under a 3600\,s span. AI0--AI7 separate record validation from writer
+authorization: AI7 confirms that a schema-valid reseal is accepted, while deployed
+service-identity enforcement remains unevaluated. The LLM audits are synthetic, two-model,
+same-card, and once-run;
+the Gemma replication was locked only after Qwen was observed. Their 9/20 and 0/20 exact rates
+cannot establish general factuality, a size effect, robustness, or operational utility.
 
 \paragraph{Analysis status.}
-Complete (primary): live M1--M6 reconstruction (100 sealed train runs with B1--B8); fair sliding
+Complete (primary): 110 sealed live executions (70 malicious M1--M7; 40 standalone B1--B8 benign
+controls); fair sliding
 baselines with paired CI; T1--T8; M2 waterfall; 60-run determinism D1--D5; A1--A12; A--G; AB0--AB3;
-inclusive boundary fixtures including 3900\,s. Complete (supplemental, not primary): L1 live
+AI0--AI7; held-out Qwen audit + locked Gemma replication; inclusive boundary fixtures including
+3900\,s.
+Complete (supplemental, not primary): L1 live
 bases + offline L1/L2; L3 controlled hub inject; L4 controlled late inject; wall-clock within
-2/2 and beyond 2 sealed/0 LateEvidence; sealed M7 5+5 boundary-stress. Not executed: organic
+2/2 and beyond 2 sealed/0 LateEvidence. Not executed: organic
 hub-stressed BAS traffic; fitted scorer / RP / PO1.

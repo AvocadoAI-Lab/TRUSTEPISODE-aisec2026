@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -13,8 +14,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ZIP_NAME = "TrustEpisode_reproducibility_companion_v1.zip"
-CLEAN = ROOT / "tmp" / "cleanroom-dfrws-p0"
-REPORT = ROOT / "CLEANROOM_REPRODUCTION_REPORT_20260721.md"
+CLEAN = ROOT / "tmp" / "cleanroom-aisec"
+REPORT = ROOT / "CLEANROOM_REPRODUCTION_REPORT_AISEC_20260724.md"
 
 
 def sha256_file(path: Path) -> str:
@@ -26,10 +27,22 @@ def sha256_file(path: Path) -> str:
 
 
 def run(cmd: list[str], cwd: Path) -> dict:
-    proc = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True)
+    env = os.environ.copy()
+    runtime_src = (cwd / "experiment_runtime" / "src").resolve()
+    inherited = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(runtime_src) + (
+        os.pathsep + inherited if inherited else ""
+    )
+    proc = subprocess.run(
+        cmd,
+        cwd=str(cwd),
+        env=env,
+        capture_output=True,
+        text=True,
+    )
     return {
         "cmd": cmd,
-        "cwd": str(cwd),
+        "cwd": ".",
         "exit_code": proc.returncode,
         "stdout_tail": (proc.stdout or "").strip().splitlines()[-5:],
         "stderr_tail": (proc.stderr or "").strip().splitlines()[-5:],
@@ -53,18 +66,20 @@ def main() -> int:
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(CLEAN)
 
-    checks: list[dict] = []
-    # Regenerate tables from sealed derived JSON inside the clean room.
-    checks.append(run([sys.executable, "scripts/generate_tables.py"], CLEAN))
-    # Claim verification against companion digests / sealed derived results.
-    checks.append(run([sys.executable, "scripts/verify_claims.py"], CLEAN))
-    # Boundary fixtures need runtime; run from author tree but record as companion-adjacent check.
-    checks.append(
-        run(
-            [sys.executable, str(ROOT / "scripts" / "run_temporal_boundary_fixtures.py")],
-            ROOT,
-        )
-    )
+    commands = [
+        [sys.executable, "artifacts/contracts/validate_contracts.py"],
+        [sys.executable, "scripts/verify_runtime_origin.py"],
+        [sys.executable, "-m", "pytest", "-q", "experiment_runtime/tests"],
+        [sys.executable, "scripts/run_audit_conformance_a12.py"],
+        [sys.executable, "scripts/run_taxonomy_ag.py"],
+        [sys.executable, "scripts/run_audit_baselines_ab.py"],
+        [sys.executable, "scripts/run_agent_boundary_conformance.py"],
+        [sys.executable, "scripts/run_targeted_cards.py"],
+        [sys.executable, "scripts/run_temporal_boundary_fixtures.py", "--check-only"],
+        [sys.executable, "scripts/generate_tables.py"],
+        [sys.executable, "scripts/verify_claims.py"],
+    ]
+    checks = [run(command, CLEAN) for command in commands]
 
     all_ok = all(c["ok"] for c in checks)
     payload = {
@@ -72,7 +87,7 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "companion_zip": ZIP_NAME,
         "companion_sha256": digest,
-        "cleanroom_root": str(CLEAN),
+        "cleanroom_root": "isolated extraction; local path omitted",
         "checks": checks,
         "all_pass": all_ok,
     }
@@ -81,12 +96,12 @@ def main() -> int:
     out_json.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     lines = [
-        "# Clean-room reproduction report (DFRWS P0)",
+        "# Clean-room reproduction report (AISec revision)",
         "",
         f"- Generated (UTC): `{payload['generated_at']}`",
         f"- Companion ZIP: `{ZIP_NAME}`",
         f"- Companion SHA-256: `{digest}`",
-        f"- Clean-room root: `{CLEAN}`",
+        "- Clean-room root: isolated extraction (local path omitted)",
         f"- Overall: **{'PASS' if all_ok else 'FAIL'}**",
         "",
         "## Checks",
@@ -94,7 +109,11 @@ def main() -> int:
     ]
     for item in checks:
         status = "PASS" if item["ok"] else "FAIL"
-        lines.append(f"### `{item['cmd'][-1]}` — {status} (exit {item['exit_code']})")
+        if len(item["cmd"]) > 2 and item["cmd"][1:3] == ["-m", "pytest"]:
+            label = "experiment_runtime/tests"
+        else:
+            label = Path(item["cmd"][1]).name if len(item["cmd"]) > 1 else item["cmd"][0]
+        lines.append(f"### `{label}` — {status} (exit {item['exit_code']})")
         lines.append("")
         if item["stdout_tail"]:
             lines.append("```")
@@ -110,10 +129,14 @@ def main() -> int:
         [
             "## Interpretation",
             "",
-            "This clean-room extract verifies that the packed companion regenerates LaTeX macros,",
-            "passes `verify_claims.py`, and that temporal boundary fixtures",
-            "(299/300/301 and 3599/3600/3601/3900) pass against the production synthesizer.",
-            "It does not re-execute live CALDERA collection.",
+            "Every command above executed with the extracted archive as its working directory.",
+            "The companion validates contracts and the imported runtime's extracted-archive origin;",
+            "then runs all 38 packaged reference-runtime tests;",
+            "re-executes A1--A12, A--G, AB0--AB3, AI0--AI7, T1--T8, and temporal boundary",
+            "fixtures; regenerates tables; and checks sealed",
+            "determinism, baseline, M2, supplemental, and local-model summaries.",
+            "It byte-compares both frozen local-model raw/derived files without re-running Ollama.",
+            "It does not re-execute live collection or cohort re-synthesis from omitted raw lab bundles.",
             "",
             f"Machine-readable: `results/derived/cleanroom_reproduction.json` (sha256 `{sha256_file(out_json)}`).",
             "",

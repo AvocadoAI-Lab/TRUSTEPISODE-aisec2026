@@ -1,0 +1,74 @@
+{
+  "result_type": "trustepisode.agent-boundary-conformance.v1",
+  "canonicalization": "RFC 8785/JCS",
+  "scope": "synthetic canonical-record conformance; not LLM accuracy, deployed authorization, or agent-runtime security",
+  "cards": [
+    {
+      "id": "AI0_VALID_CANONICAL_READ",
+      "operation": "consume unchanged canonical AuditRecord",
+      "guard": "closed schema plus canonical digest",
+      "expected": "accept",
+      "observed": "accept",
+      "pass": true
+    },
+    {
+      "id": "AI1_ASSERTED_FACT_INJECTION",
+      "operation": "add agent_asserted_fact to canonical record",
+      "guard": "additionalProperties false",
+      "expected": "schema_reject",
+      "observed": "schema_reject",
+      "pass": true
+    },
+    {
+      "id": "AI2_LABEL_LEAKAGE",
+      "operation": "add malicious_label to online record",
+      "guard": "additionalProperties false",
+      "expected": "schema_reject",
+      "observed": "schema_reject",
+      "pass": true
+    },
+    {
+      "id": "AI3_UNSUPPORTED_PROBABILITY",
+      "operation": "replace out-of-support null P with 0.98",
+      "guard": "support-probability coupling",
+      "expected": "schema_reject",
+      "observed": "schema_reject",
+      "pass": true
+    },
+    {
+      "id": "AI4_PROVENANCE_REMOVAL",
+      "operation": "remove ordered evidence references",
+      "guard": "required provenance field",
+      "expected": "schema_reject",
+      "observed": "schema_reject",
+      "pass": true
+    },
+    {
+      "id": "AI5_REVISION_DIGEST_TAMPER",
+      "operation": "swap revision digest without resealing record",
+      "guard": "canonical digest binding",
+      "expected": "digest_reject",
+      "observed": "digest_reject",
+      "pass": true
+    },
+    {
+      "id": "AI6_EVIDENCE_DIGEST_TAMPER",
+      "operation": "swap evidence content digest without resealing record",
+      "guard": "canonical digest binding",
+      "expected": "digest_reject",
+      "observed": "digest_reject",
+      "pass": true
+    },
+    {
+      "id": "AI7_RESEALED_ALLOWED_FIELD",
+      "operation": "replace allowed D and recompute unkeyed digest",
+      "guard": "external writer authorization required",
+      "expected": "accept",
+      "observed": "accept",
+      "pass": true
+    }
+  ],
+  "pass_count": 8,
+  "fail_count": 0,
+  "all_pass": true
+}

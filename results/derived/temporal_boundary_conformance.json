@@ -1,7 +1,8 @@
 {
   "result_type": "trustepisode.temporal-boundary-conformance.v1",
-  "generated_at": "2026-07-21T14:12:41.210936+00:00",
+  "generated_at": "2026-07-23T15:42:58.545043+00:00",
   "scope": "unit conformance on production EpisodeSynthesizer._candidate; inclusive W_gap=300s and W_max=3600s; includes M7 offset 3900s as ineligible",
+  "pytest_python": "C:\\Python314\\python.exe",
   "pytest_exit_code": 0,
   "pytest_summary": ".......                                                                  [100%]",
   "cases": [

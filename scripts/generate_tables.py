@@ -32,6 +32,17 @@ def main() -> int:
     audit = json.loads((derived / "audit_conformance.json").read_text(encoding="utf-8"))
     tax = json.loads((derived / "taxonomy_ag.json").read_text(encoding="utf-8"))
     ab = json.loads((derived / "ab_contract_baselines.json").read_text(encoding="utf-8"))
+    agent = json.loads(
+        (derived / "agent_boundary_conformance.json").read_text(encoding="utf-8")
+    )
+    llm = json.loads(
+        (derived / "llm_grounding_pilot.json").read_text(encoding="utf-8")
+    )
+    gemma = json.loads(
+        (derived / "llm_grounding_replication_gemma3_1b.json").read_text(
+            encoding="utf-8"
+        )
+    )
 
     by = {b["builder"]: b for b in fair["builders"]}
     eb0, eb1, eb4 = by["EB0_FIXED_BIN_300s"], by["EB1_SLIDING_TIME"], by["EB4_TRUSTEPISODE"]
@@ -41,6 +52,9 @@ def main() -> int:
         block = builder["metrics"][metric]
         return block["mean"], block["sample_sd"]
 
+    paired_index = {
+        (row["baseline"], row["metric"]): row for row in fair["paired_comparisons"]
+    }
     paired_rows = []
     for row in fair["paired_comparisons"]:
         if row["baseline"] != "EB1_SLIDING_TIME":
@@ -55,8 +69,10 @@ def main() -> int:
             continue
         lo, hi = row["ci95"]
         interp = row["interpretation"].replace("_", " ")
-        if interp.strip() == "not statistically resolved":
+        if row["win"] == 0 and row["loss"] == 0:
             interp = "no observed difference"
+        elif interp.strip() == "not statistically resolved":
+            interp = "not resolved"
         paired_rows.append(
             f"{row['metric'].replace('_', '\\_')} & "
             f"${row['mean_delta']:.3f}$ & ${row['median_delta']:.3f}$ & "
@@ -191,6 +207,40 @@ def main() -> int:
             f"{str(p['evidence_type']).replace('_', ' ')} \\\\"
         )
 
+    agent_rows = []
+    for card in agent.get("cards", []):
+        card_id = str(card["id"]).split("_", 1)[0]
+        operation = str(card["operation"]).replace("_", "\\_")
+        guard = str(card["guard"]).replace("_", "\\_")
+        expected = str(card["expected"]).replace("_", " ")
+        observed = str(card["observed"]).replace("_", " ")
+        status = "pass" if card.get("pass") else "fail"
+        agent_rows.append(
+            f"{card_id} & {operation} & {guard} & {expected} & {observed} & {status} \\\\"
+        )
+    agent_pass = int(agent.get("pass_count", 0))
+    agent_total = len(agent.get("cards", []))
+
+    llm_summary = llm["summary"]
+    llm_total = int(llm_summary["total"])
+    gemma_summary = gemma["summary"]
+    gemma_total = int(gemma_summary["total"])
+
+    def llm_model_row(label: str, summary: dict, total: int) -> str:
+        return (
+            f"{label} & {summary['json_shape_pass']}/{total} & "
+            f"{summary['answer_pass']}/{total} & "
+            f"{summary['abstention_pass']}/{total} & "
+            f"{summary['citation_set_pass']}/{total} & "
+            f"{summary['exact_pass']}/{total} & "
+            f"{summary['invalid_reference_count']} \\\\"
+        )
+
+    llm_rows = [
+        llm_model_row("Qwen2.5-7B", llm_summary, llm_total),
+        llm_model_row("Gemma3-1B", gemma_summary, gemma_total),
+    ]
+
     out = root / "results" / "tables"
     out.mkdir(parents=True, exist_ok=True)
     (out / "fair_builder_rows.tex").write_text("\n".join(builder_rows) + "\n", encoding="utf-8")
@@ -200,6 +250,13 @@ def main() -> int:
     (out / "audit_fixture_rows.tex").write_text("\n".join(audit_fixture_rows) + "\n", encoding="utf-8")
     (out / "taxonomy_rows.tex").write_text("\n".join(tax_tex_rows) + "\n", encoding="utf-8")
     (out / "ab_property_rows.tex").write_text("\n".join(ab_prop_rows) + "\n", encoding="utf-8")
+    (out / "agent_boundary_rows.tex").write_text(
+        "\n".join(agent_rows) + "\n", encoding="utf-8"
+    )
+
+    eb1_action = paired_index[("EB1_SLIDING_TIME", "action_coverage")]
+    eb2_action = paired_index[("EB2_SLIDING_ENTITY", "action_coverage")]
+    eb1_action_lo, eb1_action_hi = eb1_action["ci95"]
 
     macros = f"""% Auto-generated from results/derived — do not edit by hand.
 \\newcommand{{\\TeCov}}{{{m(eb4,'action_coverage')[0]:.3f}}}
@@ -212,6 +269,11 @@ def main() -> int:
 \\newcommand{{\\EbOneSlideCov}}{{{m(eb1,'action_coverage')[0]:.3f}}}
 \\newcommand{{\\EbOneSlideExact}}{{{m(eb1,'exact_complete_recovery')[0]:.3f}}}
 \\newcommand{{\\EbOneSlideFOne}}{{{m(eb1,'episode_f1')[0]:.3f}}}
+\\newcommand{{\\EbOneActionDelta}}{{{eb1_action['mean_delta']:.3f}}}
+\\newcommand{{\\EbOneActionCILo}}{{{eb1_action_lo:.3f}}}
+\\newcommand{{\\EbOneActionCIHi}}{{{eb1_action_hi:.3f}}}
+\\newcommand{{\\EbOneActionWTL}}{{{eb1_action['win']}/{eb1_action['tie']}/{eb1_action['loss']}}}
+\\newcommand{{\\EbTwoActionWTL}}{{{eb2_action['win']}/{eb2_action['tie']}/{eb2_action['loss']}}}
 \\newcommand{{\\MTwoClass}}{{{m2['final_classification'].replace('_', '\\_')}}}
 \\newcommand{{\\MechPass}}{{{mech['pass_count']}}}
 \\newcommand{{\\MechFail}}{{{mech['fail_count']}}}
@@ -228,13 +290,27 @@ def main() -> int:
 \\newcommand{{\\TaxPass}}{{{tax_pass}}}
 \\newcommand{{\\TaxTotal}}{{{tax_total}}}
 \\newcommand{{\\TaxLive}}{{{tax_live}}}
+\\newcommand{{\\AgentBoundaryPass}}{{{agent_pass}}}
+\\newcommand{{\\AgentBoundaryTotal}}{{{agent_total}}}
+\\newcommand{{\\LlmPilotExact}}{{{llm_summary['exact_pass']}}}
+\\newcommand{{\\LlmPilotTotal}}{{{llm_total}}}
+\\newcommand{{\\LlmPilotAnswers}}{{{llm_summary['answer_pass']}}}
+\\newcommand{{\\LlmPilotAbstain}}{{{llm_summary['abstention_pass']}}}
+\\newcommand{{\\LlmPilotCitations}}{{{llm_summary['citation_set_pass']}}}
+\\newcommand{{\\LlmPilotInvalidRefs}}{{{llm_summary['invalid_reference_count']}}}
+\\newcommand{{\\GemmaPilotJson}}{{{gemma_summary['json_shape_pass']}}}
+\\newcommand{{\\GemmaPilotAnswers}}{{{gemma_summary['answer_pass']}}}
+\\newcommand{{\\GemmaPilotAbstain}}{{{gemma_summary['abstention_pass']}}}
+\\newcommand{{\\GemmaPilotCitations}}{{{gemma_summary['citation_set_pass']}}}
+\\newcommand{{\\GemmaPilotExact}}{{{gemma_summary['exact_pass']}}}
+\\newcommand{{\\GemmaPilotInvalidRefs}}{{{gemma_summary['invalid_reference_count']}}}
 \\newcommand{{\\ConcConcurrent}}{{{cont['summary_by_builder']['EB4_TRUSTEPISODE']['concurrent_contamination_mean']:.3f}}}
 """
     (out / "result_macros.tex").write_text(macros, encoding="utf-8")
 
     (out / "tab_fair_baselines.tex").write_text(
         rf"""\begin{{table*}}[!t]
-\caption{{Fair sliding-gap baselines versus legacy fixed bins on the sealed {fair_n}-run M1--M6 malicious cohort
+\caption{{Fair sliding-gap baselines versus legacy fixed bins on the sealed {fair_n}-run M1--M7 malicious cohort
 (mean $\pm$ sample SD). Primary comparisons share $W_{{gap}}=300$\,s and $W_{{max}}=3600$\,s.}}
 \label{{tab:fair-baselines}}
 \centering
@@ -380,6 +456,48 @@ Bootstrap: 2000 run-cluster resamples, seed 20260721. Zero deltas reported as no
         encoding="utf-8",
     )
 
+    (out / "tab_agent_boundary.tex").write_text(
+        r"""\begin{table*}[!t]
+\caption{Downstream-agent canonical-record boundary cards (synthetic conformance only; not LLM accuracy or deployed authorization).}
+\label{tab:agent-boundary}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.04\textwidth}p{0.34\textwidth}p{0.22\textwidth}llll@{}}
+\toprule
+\textbf{Card} & \textbf{Operation} & \textbf{Guard} & \textbf{Expected} & \textbf{Observed} & \textbf{Result} \\
+\midrule
+"""
+        + "\n".join(agent_rows)
+        + r"""
+\bottomrule
+\end{tabular}
+\end{table*}
+""",
+        encoding="utf-8",
+    )
+
+    (out / "tab_llm_grounding.tex").write_text(
+        r"""\begin{table}[!t]
+\caption{Held-out AuditRecord pilots. Gemma was locked after the Qwen result but before model download. Exact requires answer, abstention flag, and citation set to match.}
+\label{tab:llm-grounding}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Model} & \textbf{JSON} & \textbf{Answer} & \textbf{Abst.} & \textbf{Cite} & \textbf{Exact} & \textbf{Bad ptr.} \\
+\midrule
+"""
+        + "\n".join(llm_rows)
+        + r"""
+\bottomrule
+\end{tabular}
+\end{table}
+""",
+        encoding="utf-8",
+    )
+
     print(
         json.dumps(
             {
@@ -390,6 +508,12 @@ Bootstrap: 2000 run-cluster resamples, seed 20260721. Zero deltas reported as no
                 "audit_fail_codes": len(covered),
                 "tax_pass": tax_pass,
                 "tax_total": tax_total,
+                "agent_boundary_pass": agent_pass,
+                "agent_boundary_total": agent_total,
+                "llm_pilot_exact": llm_summary["exact_pass"],
+                "llm_pilot_total": llm_total,
+                "gemma_pilot_exact": gemma_summary["exact_pass"],
+                "gemma_pilot_total": gemma_total,
             }
         )
     )

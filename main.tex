@@ -1,8 +1,13 @@
-% TrustEpisode DFRWS submission
-% Format: Elsevier elsarticle 5p (two-column), 10pt, compliant with DFRWS
-%   10 single-spaced two-column pages @ ~1in margins / 10pt (refs+appendix extra).
+% TrustEpisode AISec 2026 anonymous submission
 % Compile: pdflatex + bibtex + pdflatex x2
-\documentclass[preprint,5p,times,twocolumn]{elsarticle}
+\documentclass[sigconf,anonymous,review]{acmart}
+
+\setcopyright{acmlicensed}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmDOI{XXXXXXX.XXXXXXX}
+\acmConference[AISec 2026]{19th ACM Workshop on Artificial Intelligence and Security}{November 2026}{The Hague, Netherlands}
+\acmISBN{978-1-4503-XXXX-X/2026/11}
 
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -11,99 +16,76 @@
 \usepackage{graphicx}
 \usepackage{url}
 \usepackage{xcolor}
-\usepackage{enumitem}
 \usepackage{balance}
 \usepackage{placeins}
 \usepackage{microtype}
 \usepackage{xspace}
-\usepackage{caption}
-\usepackage{hyperref}
 
-\journal{Forensic Science International: Digital Investigation}
-
-\graphicspath{{figs/}{trustepisode_figures/pdf/}{results/figures/}}
-\DeclareGraphicsExtensions{.pdf,.eps}
-
-% Float placement: prefer tops; avoid sparse float-only pages.
-\renewcommand{\topfraction}{0.9}
-\renewcommand{\bottomfraction}{0.8}
-\renewcommand{\textfraction}{0.07}
-\renewcommand{\floatpagefraction}{0.75}
-\renewcommand{\dbltopfraction}{0.9}
-\renewcommand{\dblfloatpagefraction}{0.75}
-\setcounter{topnumber}{3}
-\setcounter{bottomnumber}{2}
-\setcounter{totalnumber}{5}
-\setcounter{dbltopnumber}{3}
-\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\floatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{8pt plus 2pt minus 2pt}
-\setlength{\dbltextfloatsep}{10pt plus 2pt minus 2pt}
-\setlength{\dblfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\abovecaptionskip}{3pt}
-\setlength{\belowcaptionskip}{2pt}
-\captionsetup{font=small,skip=3pt}
-\setlength{\emergencystretch}{2em}
-\flushbottom
-\setlist[itemize]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
-\setlist[enumerate]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
+\graphicspath{{figs/}{figs/captured/}{trustepisode_figures/pdf/}{results/figures/}}
+\DeclareGraphicsExtensions{.pdf,.png,.eps}
 
 \newcommand{\trustepisode}{\textsc{TrustEpisode}\xspace}
 \input{results/tables/result_macros}
 
 \begin{document}
 
-\begin{frontmatter}
+\title{TrustEpisode: Auditable Evidence Contracts for AI-Assisted EDR/NDR Investigation}
 
-\title{TrustEpisode: Deterministic and Auditable Reconstruction of EDR/NDR Attack Episodes}
-
-\author[anon]{Anonymous Authors}
-\address{Anonymous Institution}
+\author{Anonymous Authors}
+\affiliation{\institution{Anonymous Institution}}
+\email{anonymous@anonymous.edu}
 
 \begin{abstract}
-Investigators reconstructing multi-step attacks from EDR and NDR telemetry need a deterministic,
-auditable reconstruction contract: single-owner episode membership, immutable revisions under late
-evidence, collector health distinct from ``no detection,'' and a replayable terminal outcome per
-revision.
+AI-assisted security investigation turns sparse tool outputs into confident narratives, yet
+arrival order, collector failure, and late evidence can silently alter the facts exposed to an
+analyst or agent. We present \trustepisode{}, a deterministic, auditable EDR/NDR
+episode-reconstruction contract. Episode Synthesis alone owns membership; revisions and terminal
+audit outcomes are append-only; source health differs from ``no detection;'' unsupported
+probabilities remain null; and downstream AI reads versioned evidence without authority over
+case facts.
 
-We present \trustepisode{} for sealed EDR/NDR attack-episode reconstruction. On the sealed primary
-live CALDERA cohort (60 M1--M6 malicious runs; 40 standalone benign), sliding sessionization raises
-mean coverage from \EbZeroCov{} to \TeCov{} versus fixed 300\,s bins, and fair sliding baselines
-EB1--EB4 show \emph{no observed difference} (60/60 paired ties; not an equivalence test). Canonical
-ordered replay is byte-identical on all 60 sealed malicious runs
-(\DetDOnePass{}/\DetNRuns{}); raw delivery order is not order-robust without re-canonicalization.
-Audit conformance covers all seven AssemblyFailureRecord codes
-(\AuditPass{}/\AuditTotal{} fixtures). The A--G evidence-loss taxonomy is
-conformance-tested (\TaxPass{}/\TaxTotal{}) and instantiated on sealed M2 as \MTwoClass{}.
-Contract-ablation baselines AB0--AB3 isolate which properties prevent history mutation, silent
-failure, and noncanonical replay. A separate supplemental partition reports live L1/L4 bases,
-offline L2/L3 ablations (including controlled hub load), controlled late inject, and wall-clock
-forwarder holds (within-horizon 2/2; beyond-horizon sealed but LateEvidenceRecord not observed
-organically). Sealed M7 is reported only as a supplemental 3900\,s boundary-stress cohort
-(coverage~$0$ under $W_{max}=3600$\,s), not as a primary estimator. Fitted scoring, calibration,
-and outage robustness remain out of scope.
+On 70 sealed live CALDERA M1--M7 malicious runs (40 standalone benign controls are not detection
+trials), sliding sessionization raises mean coverage from \EbZeroCov{} to \TeCov{}.
+Fair sliding baselines show no superiority: EB4 ties EB2 on all action-coverage pairs
+(\EbTwoActionWTL{} W/T/L) and trails EB1 on one concurrent-benign M7 run
+(\EbOneActionWTL{}; mean $\Delta=\EbOneActionDelta{}$, 95\% CI
+$[\EbOneActionCILo{},\EbOneActionCIHi{}]$). Canonical replay is byte-identical on \DetNRuns{}
+M1--M6 runs, whereas raw arrival order is not robust without re-canonicalization.
+\AuditPass{}/\AuditTotal{} audit fixtures cover seven terminal failure codes; an A--G
+taxonomy localizes M2's repeatable gap to class D (token mapping failure); and a deployed case trace preserves one
+Suricata and two Wazuh events with ATT\&CK references.
+
+All \AgentBoundaryPass{}/\AgentBoundaryTotal{} synthetic boundary cards behave as
+specified: the valid control is accepted, six invalid or unsealed mutations are rejected, and a
+resealed allowed-field mutation is accepted, showing digest integrity still requires external
+writer authorization. A once-run held-out 20-card Qwen2.5-7B pilot yields
+\LlmPilotExact{}/\LlmPilotTotal{} fully exact responses; locked same-card replication on
+deployment-default Gemma3-1B yields \GemmaPilotExact{}/20. These audited configurations support no
+general LLM-accuracy or fitted-calibration claim; typed evidence instead makes their errors reviewable.
 \end{abstract}
 
-\begin{keyword}
-digital forensics \sep attack episode reconstruction \sep EDR \sep NDR \sep
-replayable audit \sep evidence provenance
-\end{keyword}
+\keywords{AI-assisted security operations, attack episode reconstruction, EDR, NDR,
+replayable audit, evidence provenance}
+\ccsdesc[500]{Security and privacy~Intrusion/anomaly detection and malware mitigation}
+\ccsdesc[300]{Computing methodologies~Artificial intelligence}
 
-\end{frontmatter}
+\maketitle
 
 \input{sections/intro}
 \input{sections/related}
 \input{sections/arch}
 \input{sections/exps}
 \input{sections/conc}
-\paragraph{Generative AI use disclosure.}
-OpenAI Codex and Cursor agents assisted with language editing, experiment orchestration,
-consistency checking, and claim-to-evidence audits. The authors independently designed the
-study, verified code and reported results, and take responsibility for the manuscript.
-
 \input{sections/appendix_submission}
 
-\bibliographystyle{elsarticle-harv}
+\FloatBarrier
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{bib/references}
+
+\section*{Generative AI Use Disclosure}
+OpenAI Codex and Cursor agents assisted with language editing, experiment orchestration,
+consistency checking, figure preparation, citation verification, and claim-to-evidence audits.
+The authors independently designed the study, verified the code, experimental outputs, citations,
+screenshots, and reported results, and take responsibility for the manuscript.
 
 \end{document}

@@ -1,5 +1,6 @@
 {
   "result_type": "trustepisode.audit-conformance.a12.v1",
+  "canonicalization": "RFC 8785/JCS",
   "scope": "synthetic forensic audit conformance; sealed primary Table-4 and M1-M6 are untouched",
   "fixtures": [
     {

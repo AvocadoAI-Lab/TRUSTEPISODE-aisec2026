@@ -4,11 +4,12 @@
 \subsection{Alert Correlation and Attack Reconstruction}
 
 Classical alert correlation reconstructs multi-step scenarios from intrusion alerts by temporal
-and causal linking~\cite{ning2002attackscenarios}. Provenance-based detectors such as HOLMES,
-UNICORN, KAIROS, NODLINK, and CAPTAIN recover APT context from system graphs and alerts
-~\cite{holmes2019,unicorn2020,kairos2024,nodlink2024,captain2025}. Those systems motivate episode
-construction; they do not by themselves fix single-owner membership, late-data revision policy,
-or append-only terminal audit outcomes for mixed EDR/NDR streams.
+and causal linking~\cite{ning2002attackscenarios}. HOLMES and UNICORN recover APT context from
+system graphs~\cite{holmes2019,unicorn2020}; KAIROS, NODLINK, and CAPTAIN extend this line
+~\cite{kairos2024,nodlink2024,captain2025}. These systems motivate episode construction. Our
+research unit is instead the lifecycle contract governing mixed-EDR/NDR membership, late-data
+revisions, and terminal audit outcomes; detection and provenance context are complementary inputs,
+not effectiveness baselines.
 
 \subsection{Digital Forensic Event Reconstruction}
 
@@ -40,31 +41,48 @@ event~\cite{missingmodality2024,vaseghipanah2026blindspots}. Reconstruction cont
 therefore separate sensor observability, normalization/token mapping, formation membership, and
 offline attribution when diagnosing incomplete episodes.
 
+\subsection{Evidence-Grounded and Contained AI Investigation}
+
+Tool-using language-model systems interleave reasoning with external observations
+~\cite{react2023}. In security operations, CORTEX coordinates specialized agents over enterprise
+evidence, while Holmes packages network evidence into auditable anchors for an LLM investigator
+~\cite{cortex2025,auditableddos2026}. These systems motivate evidence-grounded AI assistance, but
+grounding also needs an upstream contract: citation presence does not by itself establish
+faithfulness~\cite{alce2023,ragfaithfulness2025}, and agent execution requires architectural
+containment rather than prompt-only trust~\cite{isolategpt2025}. \trustepisode addresses the
+complementary boundary below the agent. It fixes which EDR/NDR objects exist, which producer owns
+them, how missingness is represented, and which immutable references a later narrative may cite.
+We do not claim a superior LLM or better autonomous triage.
+
 \subsection{Positioning Summary}
 
-Table~\ref{tab:related-compare} contrasts representative lines along forensic-contract properties.
-Unknown cells are marked \emph{Not reported}; we do not infer undocumented product behavior.
-\trustepisode's novelty is the audit lifecycle and evidence-loss localization contract, not a new
-graph algorithm or classifier.
+Table~\ref{tab:related-compare} maps research units and objectives; it is not an effectiveness
+leaderboard. Our unit is \emph{versioned evidence state}, not a score, suspicious subgraph, or
+narrative. The novelty claim is their contract composition: one membership writer, immutable
+successor/late-store semantics, source health separate from silence, one terminal outcome per
+revision, stage-localized loss, and citable read-only records. Contract invariants and formation
+effectiveness are evaluated separately; no new detector or classifier is claimed.
 
 \begin{table*}[!t]
-\caption{Related-work comparison on forensic reconstruction contract properties (Not reported =
-not documented in the cited source).}
+\caption{Related-work scope map (not an effectiveness comparison).}
 \label{tab:related-compare}
 \centering
 \scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{@{}p{0.14\textwidth}cccccccc@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.18\textwidth}p{0.20\textwidth}p{0.25\textwidth}p{0.29\textwidth}@{}}
 \toprule
-\textbf{Work} & \textbf{EDR+NDR} & \textbf{Imm.\ rev.} & \textbf{Late evid.} & \textbf{Canon.\ replay} & \textbf{Term.\ fail} & \textbf{Src health} & \textbf{Loss loc.} & \textbf{Live} \\
+\textbf{Research line} & \textbf{Primary unit} & \textbf{Primary objective} & \textbf{Relation to this work} \\
 \midrule
-Alert correlation~\cite{ning2002attackscenarios} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
-HOLMES~\cite{holmes2019} & Partial & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
-UNICORN~\cite{unicorn2020} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
-KAIROS~\cite{kairos2024} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Not reported & Yes \\
-Timeline SoK~\cite{breitinger2025sok} & Survey & Survey & Survey & Survey & Survey & Survey & Survey & Survey \\
-Time anchors~\cite{vanini2024timeanchors} & No & Not reported & Not reported & Not reported & Not reported & Not reported & Clock skew & Yes \\
-\trustepisode (this) & Yes & Yes & Yes & Yes & Yes & Yes & A--G & Yes \\
+Alert correlation~\cite{ning2002attackscenarios} &
+alerts and scenario graphs & link multi-stage intrusion alerts & motivates temporal/causal linking; different output and evaluation target \\
+Provenance APT analysis~\cite{holmes2019,unicorn2020,kairos2024,nodlink2024,captain2025} &
+system/provenance graphs and suspicious subgraphs & detect, rank, or contextualize attack activity & complementary signal/context producers for a versioned evidence contract \\
+Forensic reconstruction~\cite{breitinger2025sok,casey2011digitalevidence,vanini2024timeanchors} &
+artifacts, time anchors, and timelines & reconstruct prior activity and document uncertainty & motivates chain-of-custody, late-evidence, and replay semantics \\
+Evidence-grounded agents~\cite{react2023,cortex2025,auditableddos2026} &
+tool observations, citations, and narratives & orchestrate evidence and assist investigation & downstream consumers that need stable citable object identity \\
+\trustepisode (this work) &
+versioned EDR/NDR episodes and terminal audit outcomes & make online reconstruction deterministic, append-only, loss-localized, and citable & evaluated contract; no detector or LLM-superiority claim \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -74,4 +92,6 @@ Time anchors~\cite{vanini2024timeanchors} & No & Not reported & Not reported & N
 \trustepisode does not claim a new graph detector, AI ranking effectiveness, attribution beyond
 observable EDR/NDR, enterprise impact estimation, or autonomous response. The evaluated
 contribution is a deterministic forensic reconstruction and audit contract for sealed EDR/NDR
-evidence under late arrival and incomplete observability.
+evidence under late arrival and incomplete observability. Its AISec relevance is architectural:
+AI assistance is constrained to read and cite versioned case facts rather than silently redefining
+them.

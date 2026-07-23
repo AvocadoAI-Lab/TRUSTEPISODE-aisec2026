@@ -1,172 +1,47 @@
 \appendix
 
-\section{Frozen Submission Contracts}
+\section{Frozen Submission Contract}
+\label{app:frozen-contract}
+\begingroup\small
 
-\subsection{Machine Schema and Audit Assembly}
-\label{app:data-contracts}
-
-The normative schema-ready in-PDF contract follows JSON Schema Draft 2020-12 closed-object
-semantics~\cite{jsonschema2020} for NormalizedEvent,
-SourceCoverage, EpisodeRevision,
+\paragraph{Machine and audit contract.}
+The normative companion uses closed JSON Schema Draft 2020-12
+objects~\cite{jsonschema2020} for NormalizedEvent, SourceCoverage, EpisodeRevision,
 LateEvidenceRecord, FeatureVector, SupportDecision, AuditRecord, and AssemblyFailureRecord.
-FeatureVector owns $D,C,m,o^{det}$ without health input. SupportDecision owns resolved
-$a^{det},\kappa,g$, detector count $n$, eligibility reason, \path{decision_eligible}, EDR/NDR
-\path{coverage_ref_ids}, and \path{health_snapshot_digest}. Count $n=0$ forces
-out-of-support, false eligibility, and null $P$ even if both detectors report
-\path{no_detection}. AuditRecord requires those outputs, $z,P,U$,
-the revision digest, health snapshot, ordered references, exact versions, and canonical digest;
-out-of-support requires JSON null $P$ and false eligibility. For each revision key the Assembler
-atomically inserts one terminal outcome: AuditRecord after a complete exact-version join, or
-AssemblyFailureRecord after conflict or deadline. The assembly deadline is
-$\texttt{revision.watermark}+120$ s. The unique-key store is an insert/select sink
-and cannot later replace failure with success.
+FeatureVector cannot consume health state. SupportDecision resolves detector availability,
+support, group key, and eligibility; zero eligible detectors forces out-of-support, false
+eligibility, and JSON null probability. For each revision, the Assembler inserts exactly one
+terminal AuditRecord after a complete version-matched join or one AssemblyFailureRecord after
+schema, key, duplicate, digest, version, missing-input, or timeout failure. Failure cannot later
+be replaced by success. Online objects reject labels, scenario/card IDs, receipts, and attack
+windows. Canonical bytes follow RFC 8785~\cite{rfc8785}; application-ordered reference arrays are
+sorted before SHA-256, and every schema, parser, formation, detector, model, support, sufficiency,
+assembly, and manifest version binds both identifier and content digest.
 
-Identifiers are ASCII and sort by unsigned UTF-8 bytes. AuditRecord uses string IDs/digests,
-nonnegative integer revision, finite $D,P\in[0,1]$, $C\in\{0,1\}$,
-numeric $z$, Boolean eligibility, closed enums/maps for $\kappa,U,m,h,a^{det}$, ordered reference
-arrays, and a closed version object. Only $P$ and group key are nullable: out-of-support requires
-$P=$ JSON null; only supported-group requires a non-null key. NaN, infinities, negative zero, and
-binary64 overflow are invalid. AssemblyFailureRecord contains no
-$D,C,z,P,U$ and has exactly one of the seven failure codes defined by the assembly contract
-(schema, key, duplicate, digest, version, missing-input, timeout).
-Canonical bytes follow RFC 8785 JSON canonicalization~\cite{rfc8785}. JCS sorts object
-properties but preserves array order, so the application sorts every reference array first.
-SHA-256 includes each outcome's declared
-digest-field set except \path{canonical_digest}. AuditRecord includes type/schema/key/revision,
-revision digest, $D,C,z,P,\kappa,g,e,U,m,h,o^{det},a^{det}$, detector count/reason, ordered
-references, and versions;
-AssemblyFailureRecord includes type/schema/key/revision, revision digest, failure code, observed
-input types, and assembly-policy version; LateEvidenceRecord includes type/schema/episode/latest
-revision and digest/event, arrival/deadline/reason, raw pointer/root, ordered lineage references,
-and VersionSet. Host,
-PID, wall time, and duration are an optional non-canonical envelope. References sort by relation
-rank, dependency-group bytes, object-before-sentinel, object-ID-or-empty bytes, then
-digest-or-empty bytes. Optional absence uses a closed sentinel; required absence fails assembly.
-Assembly input order is revision,
-feature, logit, support, probability, $U$, then coverage. Failure precedence is schema, key,
-duplicate, digest, version, missing, then timeout. Every VersionSet component closes both a
-version identifier and content digest for schema, parser, formation, detector registry, feature,
-normalizer, model, calibrator, support, sufficiency, assembly, and manifest.
-Conforming validation must accept supported, unsupported, late,
-and assembly-failure records and reject any online record containing \path{malicious_label}.
-Online objects reject all label, scenario, marker/window, and ability/operation fields.
+\paragraph{Episode and lifecycle constants.}
+Frozen values are $W_{gap}=300$\,s, $W_{max}=3600$\,s, watermark lag 120\,s, revision horizon
+900\,s, and closed-lineage retention 86400\,s. Candidate relations rank causal/session/endpoint/
+entity as $(4,3,2,1)$ and sort by relation rank, number of satisfied classes, time distance,
+start time, then episode ID. A hub has at least 25 relations in 600\,s; merge admits at most
+three causally/session/endpoint-connected parents and 500 events/200 entities. Events sort
+lexicographically by event time, ingest time, source-instance bytes, and event-ID bytes. First finalization fixes
+the revision deadline. A qualifying event before it creates an immutable successor without
+extending the horizon; a later related event creates only a LateEvidenceRecord. Replay equality
+covers states, successors, late records, ordered references, and digests.
 
-\subsection{Episode Algorithm and State Machine}
-\label{app:episode-algorithm}
-
-Fixed values are $W_{gap}=300$ s, $W_{max}=3600$ s, $L_{wm}=120$ s, $W_{rev}=900$ s, and
-$W_{ret}=86400$ s.
-Relations have $\rho=(4,3,2,1)$ for causal/session/endpoint/entity and $n_R$ counts satisfied
-classes; candidates sort by $(-\rho,-n_R,\Delta_t,t_{start},id)$. A hub has at least 25
-relations in 600 s. Merge permits at most three parents connected by causal, session, or
-endpoint relations and
-at most 500 events/200 entities; otherwise attach to the first candidate. The event order is
-$(t^{\mathrm{event}},t^{\mathrm{ingest}},\texttt{source\_instance},\texttt{event\_id})$.
-First finalization freezes $t_f$ and deadline $t_f+900$ s. The lineage then leaves the open
-index and remains in a revisable index; at closure, canonical relation keys remain in a
-closed-lineage index through deadline plus $W_{ret}$. Each event queries revisable/closed indexes
-first and returns after exactly one successor/LateEvidenceRecord; only no match permits open
-start/attach/merge. A qualifying late event before the fixed deadline creates
-a \texttt{finalized} successor without reopening or extending the horizon; the deadline creates
-a membership-identical \texttt{closed} successor. A later related event creates only a
-LateEvidenceRecord in the late store with reason \path{beyond_revision_horizon},
-\path{closed_lineage_match}, or \path{duplicate_after_terminal_outcome}. Replay equality covers every state, late record, output,
-reference, and digest.
-
-\subsection{Thresholds and Sufficiency Rules}
-\label{app:parameter-registry}
-
-Table~\ref{tab:submission-thresholds} is the single numeric and precedence registry for the
-submission PDF.
-
-\begin{table*}[!t]
-\caption{Frozen numeric registry and deterministic precedence.}
-\label{tab:submission-thresholds}
-\centering
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.05}
-\begin{tabular}{@{}
-  >{\raggedright\arraybackslash}p{0.16\textwidth}
-  >{\raggedright\arraybackslash}p{0.28\textwidth}
-  >{\raggedright\arraybackslash}p{0.26\textwidth}
-  >{\raggedright\arraybackslash}p{0.22\textwidth}@{}}
-\toprule
-\textbf{Contract owner} & \textbf{Parameter(s)} & \textbf{Frozen value / order} & \textbf{Validation rule} \\
-\midrule
-\multicolumn{4}{@{}l@{}}{\textbf{A. Numeric contract}} \\
-Formation & $W_{gap}$; $W_{max}$; $L_{wm}$; $W_{rev}$; $W_{ret}$ & 300; 3600; 120; 900; 86400 s & sealed before final training fit \\
-Formation guards & hub relations/window; parents; component cap & 25/600 s; 3; 500 events/200 entities & reject on violation; never learned \\
-Feature & detector IDs; top-$k$; source mask & 3 EDR + 3 NDR; $k=3$; EDR+NDR & finite $[0,1]$; mid-rank CDF \\
-Offline matching & $\theta_{mal}$; $\theta_{contam}$; $\theta_{match}$ & .50; .25; .50 & freeze before label release \\
-Match predicates & temporal IoU; entity Jaccard & .10; .50 & also require exact action/receipt \\
-Uncertainty (paired CI) & bootstrap repetitions; seed & 2000; 20260721 & resample complete run clusters \\
-\midrule
-\multicolumn{4}{@{}l@{}}{\textbf{B. Deterministic $U$ precedence (first match wins)}} \\
-$u_{coverage}$ & health/parser state & unknown $>$ unavailable $>$ degraded $>$ complete & evaluate authenticated coverage first \\
-$u_{provenance}$ & required references & missing $>$ complete & \texttt{partial} reserved; v1 emits only missing/complete \\
-$u_{lateness}$ & revision state & late\_accepted $>$ revisable $>$ stable & accepted successor; before deadline; closed \\
-$u_{contradiction}$ & CR1--CR3 & present $>$ unevaluable $>$ none & first applicable conflict rule wins \\
-$u_{support}$ & exact support enum & out\_of\_support; supported\_group; supported\_global & design-only; no fitted $P$ claimed \\
-\bottomrule
-\end{tabular}
-\renewcommand{\arraystretch}{1}
-\end{table*}
-
-Feature Extractor emits only \path{detected}, \path{examined_none}, or \path{not_examined}.
-At \path{EpisodeRevision.event_time_end}, Scope Resolver combines that observation with exactly
-one content-distinct covering SourceCoverage interval per expected instance and
-emits \path{available}, \path{no_detection}, \path{collector_unavailable},
-\path{parser_invalid}, or \path{unknown}; the first two are health-support states, but zero
-eligible detector values still force out-of-support. CR1 is an
-overlapping endpoint-to-host binding conflict, CR2 is canonical EDR/NDR flow-direction conflict,
-and CR3 is conflicting parent/root lineage for one process key. Health is healthy for zero missed
-30 s heartbeats, lag $\le120$ s, valid parser, and live transport; degraded for one missed
-heartbeat or lag $(120,600]$ s; and down for two misses or authenticated stop. Required
-provenance is every membership/root, selected link, scored input, coverage object, and version;
-diagnostics are optional. Any later executable threshold file must exactly match
-Table~\ref{tab:submission-thresholds}.
-
-\subsection{Probability Interface Contract (Unevaluated)}
-\label{app:calibration-manifest}
-
-Optional score fields may remain in schema. Binding rules only: version identifiers and digests
-must match; unsupported probability is JSON null; $U$ must not rewrite $P$; no fitted coefficients
-are reported in this submission. Affine objectives, group gates, fold assignment, and refit
-protocols are deferred to supplementary material and are not empirical contributions here.
-
-\subsection{Live-System Lab, Cards, and Offline Labels}
-\label{app:lab-label-policy}
-
-The lab, card, and label contract is exactly Sections~\ref{sec:datasets}--\ref{sec:ground-truth}
-and Equation~\ref{eq:match-weight}. It pins public CALDERA
-and OCSF versions; missing manifest fields fail closed. The amended primary cohort fixes five
-valid runs per M1--M6 card/mode and five standalone runs per B1--B8 card, all achieved.
-Each Linux-only M/B card closes image key and digest, ordered ability IDs, no-profile Bash
-executor plus exact command templates, monotonic offsets, fixed target paths, offline receipt
-preimage, success/failure predicates, cleanup commands and digest check, and allowed mode.
-Target commands cannot receive run/card/ability/operation/receipt identifiers or values;
-orchestrator-only receipts remain in Ground Truth Store. Template variables resolve only from
-the frozen run manifest. Malicious modes are attack-only or one hash-selected B1--B8 workload begun
-60 s earlier; benign cards also run standalone. Missing values and malformed inputs are counted,
-not zero-filled.
-
-\subsection{Unexecuted Extensions and Statistical Contract}
-\label{app:experimental-contract}
-
-Formation coverage, fragmentation, over-merge, exact-complete recovery, and one-to-one episode
-F1 are reported for the amended sealed cohort. Fitted calibration, locked-test ranking,
-RP0--RP7 partial-telemetry children, physical outage, and full assembly cost benchmarks remain
-registered but unexecuted. The pre-declared group-calibrator gate (50 positive, 50 negative, 10
-runs) is not lowered post hoc. If those protocols are later executed, resampling units must be
-complete runs; undefined and failed outcomes must be counted, never silently zeroed; and
-protocol amendments must be timestamped before inspecting estimates.
-
-The required supplementary archive is
-\path{TrustEpisode_reproducibility_companion_v1.zip}. Concatenating the following two
-hexadecimal lines gives its SHA-256:
+\paragraph{Evaluation and artifact boundary.}
+The achieved primary cohort contains five valid runs per M1--M7 card/mode and five standalone
+runs per B1--B8 card. The B1--B8 runs are execution controls, not false-positive trials because
+no fitted decision rule is evaluated. Offline matching freezes malicious coverage 0.50, contamination 0.25,
+match weight 0.50, temporal IoU 0.10, entity Jaccard 0.50, and a 2000-resample run-cluster
+bootstrap with seed 20260721. Fitted calibration, RP0--RP7 partial-telemetry replay, physical
+outage, and full cost benchmarking remain unexecuted and are not claimed. The companion contains
+the full schemas, thresholds, cards, validators, sealed result copies, and claim matrix.
+Its filename is \path{TrustEpisode_reproducibility_companion_v1.zip}; concatenating the following
+lines gives its SHA-256:
 \begin{flushleft}\scriptsize\ttfamily
-ef2081c2a04c3bda0efe518f824ad28f\\
-fb0793a15ca6aeb6d08053b0ec57829b
+cc4d451b50f975fdd7ab07c263a8ce20\\
+44ab771126808e485faac4033852a730
 \end{flushleft}
-The adjacent sidecar records the same digest.
+
+\endgroup

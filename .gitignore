@@ -37,4 +37,6 @@ tmp/
 *.spl
 **/__pycache__/
 *.pyc
+.pytest_cache/
+tmp_mech_test.tex
 

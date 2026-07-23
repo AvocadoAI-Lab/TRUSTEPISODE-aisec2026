@@ -23,7 +23,7 @@
     "execution_plane": {
       "card_executor": "the host orchestrator executes frozen bash_no_profile templates at monotonic offsets after the evidence collector is ready",
       "caldera_role": "the pinned Caldera container preserves the isolated control-plane topology and release manifest; ENABLE_SANDCAT=false during formal primary-evidence windows, so Caldera identifiers and agent control traffic cannot enter the primary telemetry",
-      "optional_mirrors": "Wazuh, guacamole-ai, and Aristaconnector-Control-Plane may consume a sealed copy only after primary bundle creation and are excluded from RT1-RT7 denominators"
+      "optional_mirrors": "operational EDR/NDR dashboards and downstream control-plane consumers may consume a sealed copy only after primary bundle creation and are excluded from RT1-RT7 denominators"
     },
     "evaluation_plane": {
       "runtime": "new TrustEpisode Section 3 reference runtime",

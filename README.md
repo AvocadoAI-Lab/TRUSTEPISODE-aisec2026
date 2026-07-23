@@ -1,22 +1,24 @@
 # TrustEpisode - AISec 2026 Paper
 
-TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿，研究重點是：將 EDR/NDR 異質遙測轉換成 deterministic、immutable episode revisions，並對每個 revision 產生 manifest-supported calibrated maliciousness probability、獨立的 evidence-sufficiency profile，以及 append-only terminal assembly outcome。
+TrustEpisode 是一份使用 ACM `sigconf` 雙欄格式撰寫的匿名論文稿，研究重點是：為 AI-assisted EDR/NDR 調查建立 deterministic、immutable、可稽核的 evidence contract，使下游 AI 或分析介面只能消費帶有來源、缺漏狀態與重播證據的案件物件，而不能憑空補寫 canonical evidence。
 
 論文標題：
 
-> **TrustEpisode: Deterministic Episode Formation and Manifest-Scoped Calibration for Partial EDR/NDR Telemetry**
+> **TrustEpisode: Auditable Evidence Contracts for AI-Assisted EDR/NDR Investigation**
 
 ## 目前輸出版本
 
 | 檔案 | 頁數 | 圖數 | 用途 |
 |---|---:|---:|---|
-| `main.pdf` | 12 | 4 | AISec 唯一投稿 PDF；Conclusion 於第 9 頁，References 位於第 11--12 頁 |
+| `main.pdf` | 11 | 3 | AISec 投稿 PDF；Conclusion 與明確標示的 Appendix 於第 10 頁銜接，References 位於第 10–11 頁，GenAI disclosure 在最後 |
 
 `main_full.pdf` 只屬於可選的內部審查輸出，不是投稿交付物，也不再封裝於 reproducibility companion。
 
 `main.pdf` 將 `TrustEpisode_reproducibility_companion_v1.zip` 定義為必要 supplementary artifact；正式投稿時必須上傳與論文及 `.sha256` sidecar 相同的 ZIP。缺件或 hash 不符均使 machine-readable contract 主張失效。
 
-[ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。`main.pdf` 目前為 12 頁，正文 Conclusion 位於第 9 頁；`Use of Generative AI` 尾段已依本次稿件決策移除，正式投稿前仍應由作者依當時 submission policy 自行確認 disclosure 欄位或文字要求。
+Companion 以白名單封裝倉庫內固定的 reference runtime、可重跑 synthetic checks、sealed／匿名化結果副本、contracts、generated tables 與 claim-to-evidence matrix；投稿原始碼留在外部正式交付，避免在 ZIP 內嵌「ZIP 自身 SHA-256」造成必然過期的自我參照。`requirements.txt` 會以 editable local package 安裝封包內的 runtime，並列出其餘測試依賴。ZIP 會先驗證 Python 實際載入的 `trustepisode_runtime.__file__` 位於解壓目錄，再執行全部 38 項 implementation tests，並重跑 A1–A12、A–G、AB0–AB3、AI0–AI7、T1–T8 與 temporal fixtures；D1–D5、fair baselines、live／supplemental 與模型結果只從封存 JSON 驗證，不會假裝重跑未附的 raw lab bundles、live collection 或 Ollama。封裝器若找不到本倉庫的 `experiment_runtime/` 會直接失敗，不會從其他 checkout 靜默取用版本。
+
+[ACM AISec 2026 官方 CFP](https://aisec.cc/) 規定：主文最多 10 頁，不含 bibliography 與明確標示的 appendix；bibliography/appendix 最多再使用 2 頁，PDF 全文最多 12 頁。`main.pdf` 目前為 11 頁，主文 Conclusion 與明確標示的 Appendix 在第 10 頁銜接，References 位於第 10–11 頁；`Generative AI Use Disclosure` 已置於 references/appendix 之後，不計入頁數。
 
 ## 方法範圍
 
@@ -66,7 +68,7 @@ Ground truth
 ## 專案結構
 
 ```text
-main.tex                         # 預設編譯 12 頁 AISec 投稿版
+main.tex                         # 預設編譯 11 頁 AISec 投稿版
 main_full.tex                    # 啟用完整 Appendix A--F
 main.pdf                         # 已驗證投稿版
 main_full.pdf                    # 已驗證完整重現版
@@ -176,41 +178,31 @@ Get-ChildItem trustepisode_figures\svg\*.svg | ForEach-Object {
 
 ## 編譯 AISec 投稿版
 
-本工作站已驗證的 PowerShell 指令：
+本 Windows／MiKTeX 工作站已驗證的 PowerShell 指令：
 
 ```powershell
-cd C:\Users\admin\Desktop\coreAPP\TRUSTEPISODE-aisec2026
+cd C:\Users\admin\Desktop\aisec\TRUSTEPISODE-aisec2026
 
-New-Item -ItemType Directory -Force tmp\build-submission | Out-Null
+$BuildDir = Join-Path (Get-Location) 'tmp\build-submission'
+New-Item -ItemType Directory -Force -Path $BuildDir | Out-Null
 
-.\tmp\tools\tectonic\tectonic.exe `
-  --keep-logs `
-  --keep-intermediates `
-  --outdir tmp\build-submission `
-  main.tex
+pdflatex -interaction=nonstopmode -halt-on-error -file-line-error `
+  -output-directory="$BuildDir" main.tex
+bibtex "$BuildDir\main"
+pdflatex -interaction=nonstopmode -halt-on-error -file-line-error `
+  -output-directory="$BuildDir" main.tex
+pdflatex -interaction=nonstopmode -halt-on-error -file-line-error `
+  -output-directory="$BuildDir" main.tex
 
-Copy-Item tmp\build-submission\main.pdf .\main.pdf -Force
+Copy-Item "$BuildDir\main.pdf" .\main.pdf -Force
 ```
 
-使用系統安裝的 Tectonic：
-
-```powershell
-New-Item -ItemType Directory -Force build-submission | Out-Null
-tectonic --keep-logs --keep-intermediates --outdir build-submission main.tex
-Copy-Item build-submission\main.pdf .\main.pdf -Force
-```
-
-使用完整 TeX distribution：
-
-```powershell
-latexmk -pdf -bibtex -outdir=build-submission main.tex
-Copy-Item build-submission\main.pdf .\main.pdf -Force
-```
+本機的 `latexmk` 需要額外安裝 Perl；目前不要把它當成已驗證路徑。
 
 ## 編譯完整重現版
 
 ```powershell
-cd C:\Users\admin\Desktop\coreAPP\TRUSTEPISODE-aisec2026
+cd C:\Users\admin\Desktop\aisec\TRUSTEPISODE-aisec2026
 
 New-Item -ItemType Directory -Force tmp\build-full | Out-Null
 
@@ -258,32 +250,27 @@ $script | python -
 目前驗證基準：
 
 ```text
-main.pdf       12 pages, 4 figures, 7 tables, no overfull hbox/undefined reference
-               (1.17 pt final-page output vbox; visually and geometrically in bounds)
+main.pdf       11 pages, 3 figures, 16 tables, no overfull hbox/undefined reference
+               (all pages visually and geometrically in bounds)
 ```
 
 目前 PDF SHA-256：
 
 ```text
-main.pdf       aca9399f0a2721ef6d69111eacbf27d590f3b1bc1d9eebf5ee6542a6eeac5f3b
-companion zip  45c191952c48411e0de534c2d99762c451e44f56f031277ceb8354715e1949ef
+main.pdf       69b5f49da8191d47b708bafafc15ef1b34aab30fcfefe524f36c538342efa6cb
+companion zip  cc4d451b50f975fdd7ab07c263a8ce2044ab771126808e485faac4033852a730
 ```
 
 ## 結果與投稿狀態
 
-實驗結果目前仍維持 `pending`。這是刻意的研究誠信限制：
-
-- 不填入假數據、假曲線、假 confidence intervals 或假樣本數。
-- 不將未執行的 result-shell 欄位序列化成零。
-- 正式投稿前必須用 frozen locked-test pipeline 的真實輸出取代 `pending`。
-- 頁數合規不代表 empirical evaluation 已完成。
+目前主文只報告已封存且可由 companion 驗證的結果：70 個 M1--M7 malicious runs、40 個 standalone-benign runs、60 個 M1--M6 determinism runs、18 個 audit-conformance fixtures、8 個 downstream canonical-record boundary cards、兩次各 20 張 held-out 本地模型卡，以及一個唯讀的部署案件物化 trace。AI0–AI7 包含一個刻意接受的 resealed allowed-field negative control，用來證明 unkeyed digest 不等於 writer authentication。Qwen2.5-7B 為 exact answer 15/20、exact citation set 15/20、fully exact 9/20；在看到 Qwen 結果後、下載前才鎖定的部署設定預設 Gemma3-1B replication 則為 7/20、0/20、0/20，並產生 18 個 invalid pointer。這是探索性 transfer failure，不是預先註冊的模型比較。案件畫面中的 98% 是下游 case engine 的 operational confidence，不是 TrustEpisode 的 calibrated probability，也不是 AI 效能結果。
 
 正式投稿前仍需完成：
 
-1. 執行 M1--M7、B1--B8 與 paired replay／physical-outage protocol。
-2. 產生 RQ1--RQ4 的 locked-test metrics、cluster-bootstrap intervals 與 reliability plots。
-3. 依 AISec 2026 CFP 完成最終匿名檢查與 artifact link 決策。
-4. 以真實 locked outputs 重新編譯並逐頁複核最終 PDF。
+1. 由所有作者確認匿名資訊、利益衝突、作者名單與 GenAI disclosure。
+2. 依 AISec 2026 CFP 在 HotCRP 完成 metadata 與 topics；官方鼓勵提供匿名 repository
+   連結，ZIP 則只在登入後表單有對應 supplementary 欄位時上傳。
+3. 若要主張跨模型或實務 AI/LLM 效能，仍須擴充到更多模型、多次重跑、真實案件 ground truth 與人工評分；目前兩個 once-run 20-card audit 只支撐受限的介面行為觀察。
 
 ## 協作規則
 
@@ -298,7 +285,14 @@ companion zip  45c191952c48411e0de534c2d99762c451e44f56f031277ceb8354715e1949ef
 
 ## 詳細報告
 
-- `AISEC_PAGE_LIMIT_OPTIMIZATION_REPORT.md`：12 頁投稿版的頁數與合規證據。
+- `AISEC_WEAK_ACCEPT_REVISION_REPORT_20260724_zh-TW.md`：AISec fit、誠信邊界、風險與投稿檢查。
+- `AISEC_HOTCRP_SUBMISSION_PACKET_20260724.md`：HotCRP 標題、展開後摘要、topics、GenAI disclosure 與上傳雜湊。
+- `CLEANROOM_REPRODUCTION_REPORT_AISEC_20260724.md`：companion 隔離解壓與重現驗證。
+- `FRESH_ENV_COMPANION_AUDIT_20260724.md`：全新 Python venv 安裝依賴後的獨立重跑證據。
+- `ANONYMOUS_ARTIFACT_PUBLISHING_CHECKLIST_20260724_zh-TW.md`：避免以作者 GitHub
+  remote 破壞匿名性的 artifact 發布流程。
+- `changereport/AISEC_PAGE_LIMIT_OPTIMIZATION_REPORT.md`：投稿版的頁數與合規證據；最終 PDF 已進一步壓縮為 11 頁。
+- `AISEC_CITATION_AUDIT_20260724.md`：25 筆實際引用的 DOI／官方來源稽核與修正紀錄。
 - `HTML_REVIEW_REMEDIATION_REPORT.md`：`preview.html` 的逐項修正與驗證矩陣。
 - `SECTION3_SECTION4_DETAILED_COMPARISON_REPORT.md`：Section 3/4 紅刪綠增中英比較。
 - `TRUSTEPISODE_V2_COMPLETION_REPORT.md`：v2 計畫需求矩陣與驗證結果。

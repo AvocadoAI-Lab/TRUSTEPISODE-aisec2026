@@ -1,0 +1,15 @@
+\begin{table}[!t]
+\caption{Held-out AuditRecord pilots. Gemma was locked after the Qwen result but before model download. Exact requires answer, abstention flag, and citation set to match.}
+\label{tab:llm-grounding}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Model} & \textbf{JSON} & \textbf{Answer} & \textbf{Abst.} & \textbf{Cite} & \textbf{Exact} & \textbf{Bad ptr.} \\
+\midrule
+Qwen2.5-7B & 20/20 & 15/20 & 14/20 & 15/20 & 9/20 & 1 \\
+Gemma3-1B & 15/20 & 7/20 & 13/20 & 0/20 & 0/20 & 18 \\
+\bottomrule
+\end{tabular}
+\end{table}

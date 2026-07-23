@@ -1,19 +1,140 @@
 {
   "result_type": "trustepisode.cleanroom-reproduction.v1",
-  "generated_at": "2026-07-21T14:12:41.240513+00:00",
+  "generated_at": "2026-07-23T18:49:06.165111+00:00",
   "companion_zip": "TrustEpisode_reproducibility_companion_v1.zip",
-  "companion_sha256": "ef2081c2a04c3bda0efe518f824ad28ffb0793a15ca6aeb6d08053b0ec57829b",
-  "cleanroom_root": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+  "companion_sha256": "cc4d451b50f975fdd7ab07c263a8ce2044ab771126808e485faac4033852a730",
+  "cleanroom_root": "isolated extraction; local path omitted",
   "checks": [
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "artifacts/contracts/validate_contracts.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "TrustEpisode contract validation: PASS"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/verify_runtime_origin.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"ok\": true, \"runtime_origin\": \"experiment_runtime/src/trustepisode_runtime/__init__.py\"}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "experiment_runtime/tests"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "......................................                                   [100%]"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_audit_conformance_a12.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"pass\": 18, \"fail\": 0}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_taxonomy_ag.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"pass\": 8, \"fail\": 0}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_audit_baselines_ab.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"builders\": [\"AB0_MUTABLE_RECORD\", \"AB1_NONCANONICAL_APPEND\", \"AB2_SILENT_FAILURE\", \"AB3_TRUSTEPISODE\"], \"properties\": 4}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_agent_boundary_conformance.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"pass_count\": 8, \"fail_count\": 0, \"all_pass\": true}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_targeted_cards.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"pass\": 8, \"fail\": 0}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
+    {
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "scripts/run_temporal_boundary_fixtures.py",
+        "--check-only"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout_tail": [
+        "{\"all_pass\": true, \"n_cases\": 7, \"output\": null, \"sha256\": null, \"check_only\": true, \"pytest_tail\": \".......                                                                  [100%]\"}"
+      ],
+      "stderr_tail": [],
+      "ok": true
+    },
     {
       "cmd": [
         "C:\\Python314\\python.exe",
         "scripts/generate_tables.py"
       ],
-      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+      "cwd": ".",
       "exit_code": 0,
       "stdout_tail": [
-        "{\"n_runs\": 60, \"d1_pass\": 60, \"d1_exec\": 600, \"audit_pass\": 18, \"audit_fail_codes\": 7, \"tax_pass\": 8, \"tax_total\": 8}"
+        "{\"n_runs\": 60, \"d1_pass\": 60, \"d1_exec\": 600, \"audit_pass\": 18, \"audit_fail_codes\": 7, \"tax_pass\": 8, \"tax_total\": 8, \"agent_boundary_pass\": 8, \"agent_boundary_total\": 8, \"llm_pilot_exact\": 9, \"llm_pilot_total\": 20, \"gemma_pilot_exact\": 0, \"gemma_pilot_total\": 20}"
       ],
       "stderr_tail": [],
       "ok": true
@@ -23,7 +144,7 @@
         "C:\\Python314\\python.exe",
         "scripts/verify_claims.py"
       ],
-      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\tmp\\cleanroom-dfrws-p0",
+      "cwd": ".",
       "exit_code": 0,
       "stdout_tail": [
         "{",
@@ -31,19 +152,6 @@
         "  \"failures\": [],",
         "  \"n_failures\": 0",
         "}"
-      ],
-      "stderr_tail": [],
-      "ok": true
-    },
-    {
-      "cmd": [
-        "C:\\Python314\\python.exe",
-        "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026\\scripts\\run_temporal_boundary_fixtures.py"
-      ],
-      "cwd": "C:\\Users\\admin\\Desktop\\aisec\\TRUSTEPISODE-aisec2026",
-      "exit_code": 0,
-      "stdout_tail": [
-        "{\"all_pass\": true, \"n_cases\": 7, \"output\": \"C:\\\\Users\\\\admin\\\\Desktop\\\\aisec\\\\TRUSTEPISODE-aisec2026\\\\results\\\\derived\\\\temporal_boundary_conformance.json\", \"sha256\": \"27aee2b801fec0e3ffc20d6901f3f51152d1910542409c327f4a64eaee51ae30\", \"pytest_tail\": \".......                                                                  [100%]\"}"
       ],
       "stderr_tail": [],
       "ok": true

@@ -23,11 +23,17 @@ We do \emph{not} assume complete telemetry, that collector silence equals downti
 attacks are observable, that ground truth is available online, that model scores are reliable, or
 that raw arrival order is fixed.
 
+\paragraph{Downstream-agent adversary.}
+An AI assistant may be mistaken, prompt-injected, or compromised: it may omit evidence, misquote a
+record, or recommend an unsafe action. It is outside the trusted computing base and has no
+capability to write canonical evidence objects. The contract does not make its narrative true; it
+makes any cited case claim checkable against an immutable revision and prevents the narrative from
+silently becoming the forensic record.
+
 \paragraph{Investigator workflow.}
-(1)~import sealed EDR/NDR; (2)~form EpisodeRevisions; (3)~inspect the terminal audit outcome;
-(4)~check coverage and provenance; (5)~accept a late successor or LateEvidenceRecord;
-(6)~if a required step is missing, run the A--G waterfall; (7)~replay and verify digests;
-(8)~report observed, unavailable, and unknown separately.
+Investigators import sealed EDR/NDR, form revisions, and inspect each terminal audit outcome.
+They then check coverage and provenance, resolve late evidence, run the A--G waterfall for a
+missing step, replay the digests, and report observed, unavailable, and unknown separately.
 
 \subsection{Evidence and Reconstruction Model}
 \label{sec:problem-formulation}
@@ -75,6 +81,9 @@ AssemblyOutcome & AuditRecord Assembler & Append-only store; replay & both succe
   \textit{Offline only: labels, matching, evaluation.}
   \end{minipage}
   \caption{Label-blind online reconstruction and offline evaluation boundary.}
+  \Description{A four-stage vertical flow from EDR and NDR events plus source health, through
+  Evidence Fabric and Health Monitor, Episode Synthesis, and AuditRecord assembly to an
+  append-only store; labels and evaluation remain offline.}
   \label{fig:method-architecture}
 \end{figure}
 
@@ -99,6 +108,9 @@ policy. Formation never reads labels, receipts, or scenario metadata.
   \includegraphics[width=\textwidth]{trustepisode_figures/pdf/fig02_episode_revision_lifecycle.pdf}
   \caption{Episode revision lifecycle: open $\rightarrow$ finalized $\rightarrow$ late successor or
   closed; beyond-horizon evidence enters LateEvidenceRecord without rewriting earlier membership.}
+  \Description{A timeline showing event and ingest time, an open episode, finalization at a
+  watermark, an immutable late-successor revision within the horizon, closure, and a separate
+  late record beyond the horizon.}
   \label{fig:episode-revision-lifecycle}
 \end{figure*}
 
@@ -118,6 +130,30 @@ $(episode\_id,revision)$: AuditRecord or AssemblyFailureRecord with a closed fai
 (schema, key, duplicate, digest, version, missing-input, timeout). Success cannot follow terminal
 failure. References are canonically ordered; RFC~8785/JCS serialization and SHA-256 digests bind
 versions. The store is append-only.
+
+\subsection{Agent-Facing Evidence Boundary}
+\label{sec:agent-boundary}
+
+Downstream analyst views and AI assistants are consumers, never producers, of canonical case
+facts. They receive a revision key, terminal AssemblyOutcome, ordered evidence references,
+SourceCoverage references, and the independent sufficiency profile. A generated explanation or
+recommended action is a noncanonical view: it cannot write EpisodeRevision, change $P$ or $U$, or
+replace an AssemblyFailureRecord with success. If required inputs are missing, the only canonical
+output is the failure record; an agent is not permitted to fill the gap from conversational
+context. This boundary makes a later narrative falsifiable against immutable source references
+without treating the language model as part of the forensic root of trust.
+Section~\ref{sec:agent-boundary-conformance} tests closed-schema, support-coupling, provenance,
+and digest guards. Section~\ref{sec:llm-grounding-pilot} then treats the model as an untrusted
+reader and scores exact values, abstention, and pointer citations; service-identity authorization
+remains a deployment assumption rather than an evaluated result.
+
+\paragraph{Integrity is not writer authorization.}
+The closed schema and unkeyed RFC~8785/SHA-256 digest validate object shape and detect an
+unresealed change; they do not authenticate the producer. A downstream principal with canonical
+write permission could change an allowed field and recompute the digest. The read-only boundary
+therefore requires two layers: externally enforced writer authorization, plus the evaluated
+schema/digest contract. AI7 is an expected-accept negative control that makes this dependency
+explicit rather than treating a hash as a signature.
 
 \subsection{Evidence-Loss Taxonomy}
 \label{sec:evidence-loss-taxonomy}
@@ -160,5 +196,6 @@ held-out ranking. Scoring and calibration are not empirical claims here.
 \label{sec:method-boundary}
 
 The \emph{evaluated} contribution is deterministic episode reconstruction and replayable audit
-semantics, including evidence-loss localization. Manifest-scoped probability is design-only.
-CTI, RAG/agents, impact scoring, and OT/ICS generalization are excluded.
+semantics, including evidence-loss localization and a deployed read-only case-materialization
+trace. Manifest-scoped probability is design-only. LLM generation quality, CTI enrichment, impact
+scoring, autonomous response, and OT/ICS generalization are excluded.

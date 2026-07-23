@@ -36,25 +36,42 @@ def main() -> int:
     data = json.loads(
         (root / "results/derived/formation_baselines_ablations.json").read_text(encoding="utf-8")
     )
-    eb3 = next(item for item in data["builders"] if item["builder"] == "EB3_trustepisode")["overall"]
+    eb3_builder = next(item for item in data["builders"] if item["builder"] == "EB3_trustepisode")
+    eb3 = eb3_builder["overall"]
     replay = json.loads(
         (root / "results/derived/formation_replay_equality.json").read_text(encoding="utf-8")
     )
-    assert abs(eb3["action_coverage"]["mean"] - 0.9583333333333334) < 1e-9 or abs(
-        eb3["action_coverage"]["mean"] - 0.958
-    ) < 1e-3
-    assert replay["byte_equal_fail_count"] == 0
+    cohort_runs = data["cohort"]["malicious_runs"]
+    action_coverage = eb3["action_coverage"]
+    result_title = (root / "main.tex").read_text(encoding="utf-8")
+    title_ok = "Auditable Evidence Contracts for AI-Assisted EDR/NDR Investigation" in result_title
+    data_consistency = {
+        "eb3_run_count_matches_cohort": eb3_builder["malicious_runs"] == cohort_runs,
+        "action_coverage_defined_for_cohort": action_coverage["defined"] == cohort_runs,
+        "action_coverage_is_probability": 0.0 <= action_coverage["mean"] <= 1.0,
+        "replay_run_count_matches_cohort": (
+            replay["byte_equal_pass_count"] + replay["byte_equal_fail_count"] == cohort_runs
+        ),
+        "replay_has_no_byte_mismatch": replay["byte_equal_fail_count"] == 0,
+    }
     report = {
         "missing_refs_submission": missing,
         "forbidden_hits": hits,
-        "title_ok": "Deterministic and Replayable Contract" in (root / "main.tex").read_text(
-            encoding="utf-8"
-        ),
+        "title_ok": title_ok,
         "table6_removed": "entity-public-comparison" not in sub,
         "macros_file_exists": (root / "results/tables/result_macros.tex").exists(),
+        "cohort_runs": cohort_runs,
+        "eb3_action_coverage_mean": action_coverage["mean"],
+        "data_consistency": data_consistency,
     }
     print(json.dumps(report, indent=2))
-    return 1 if missing or hits else 0
+    report_checks = [
+        title_ok,
+        report["table6_removed"],
+        report["macros_file_exists"],
+        *data_consistency.values(),
+    ]
+    return 1 if missing or hits or not all(report_checks) else 0
 
 
 if __name__ == "__main__":

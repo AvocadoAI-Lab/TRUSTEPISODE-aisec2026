@@ -1,19 +1,38 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\trustepisode provides a deterministic, auditable EDR/NDR episode-reconstruction contract:
+\trustepisode is a deterministic, auditable EDR/NDR reconstruction contract and a read-only
+evidence boundary for AI-assisted investigation:
 single-owner immutable revisions, append-only terminal outcomes with a complete failure-code
-matrix, and stage-localized A--G evidence-loss diagnosis. On the sealed M1--M6 cohort, sliding
+matrix, and stage-localized A--G evidence-loss diagnosis. On the sealed M1--M7 cohort, sliding
 sessionization improves completeness relative to fixed bins, but fair sliding time/entity/relation
-builders show \emph{no observed difference} from full TrustEpisode (60/60 ties). That negative
-result is forensic evidence about benchmark coverage: advanced guards require targeted
+builders do not establish TrustEpisode superiority. EB4 matches EB2 on all 70 action-coverage
+pairs, but trails EB1/EB3 on one concurrent-benign M7 run; the EB4--EB1 action-coverage estimate
+is $\Delta=\EbOneActionDelta{}$ with 95\% CI
+$[\EbOneActionCILo{},\EbOneActionCIHi{}]$. That mostly-overlapping result is forensic evidence
+about benchmark coverage and one boundary-case cost: advanced guards require targeted
 conformance cards, which we provide without treating them as live effectiveness. Canonical
 replay is byte-identical on all 60 sealed malicious runs; raw arrival-order robustness requires
 re-canonicalization. M2's missing \texttt{file\_transfer} token is
 \texttt{D\_token\_mapping\_failure}, not a demonstrated formation drop. Contract ablation shows
 which properties prevent mutable history, silent missing-input failure, and noncanonical replay.
+Eight downstream-boundary cards accept the valid canonical control, reject six schema-invalid or
+unsealed mutations, and accept a resealed allowed-field negative control. The latter shows why an
+unkeyed digest is not writer authentication; deployed authorization remains unevaluated.
+A separate once-run held-out Qwen2.5-7B pilot yields
+\LlmPilotAnswers{}/\LlmPilotTotal{} exact answers but only
+\LlmPilotExact{}/\LlmPilotTotal{} fully exact answer/abstention/citation triples. A same-card
+replication, locked after that result but before querying deployment-default Gemma3-1B, yields
+\GemmaPilotAnswers{}/20 exact answers, no exact citation sets, no fully exact responses, and
+\GemmaPilotInvalidRefs{} invalid pointers. This is evidence that a typed record makes
+model-dependent failure inspectable, not that either model is generally accurate or that
+the observed gap estimates a size effect.
 Supplemental partition artifacts (not primary estimators) include L1 live bases with offline
 L1/L2 ablations, L3 controlled hub inject, L4 controlled late inject, wall-clock within-horizon
 holds (2/2), and sealed beyond-horizon attempts without organic LateEvidenceRecord. Sealed M7 is
-a supplemental 3900\,s boundary-stress cohort only. Fitted scoring, calibration, and
-telemetry-outage robustness remain unevaluated and outside these claims.
+a primary 3900\,s boundary-stress family with expected zero recovery beyond $W_{max}$. Fitted scoring, calibration, and
+telemetry-outage robustness remain unevaluated and outside these claims. A deployed read-only
+trace confirms that source-separated Suricata/Wazuh evidence and ATT\&CK references reach the
+analyst case view; its displayed confidence is not treated as the contract's probability or as
+LLM-effectiveness evidence. The result is a falsifiable evidence substrate for future AI
+reasoning; both negative audits reinforce rather than remove the need to distrust the model.

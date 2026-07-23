@@ -28,7 +28,20 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_SRC = Path(r"c:\Users\admin\Desktop\coreAPP\TRUSTEPISODE-aisec2026\experiment_runtime\src")
+
+
+def locate_runtime() -> Path:
+    packaged = ROOT / "experiment_runtime"
+    if packaged.exists():
+        return packaged
+    for base in ROOT.parents:
+        matches = sorted(base.glob("*/TRUSTEPISODE-aisec2026/experiment_runtime"))
+        if matches:
+            return matches[0]
+    raise FileNotFoundError("TrustEpisode experiment_runtime not found")
+
+
+RUNTIME_SRC = locate_runtime() / "src"
 sys.path.insert(0, str(RUNTIME_SRC))
 
 from trustepisode_runtime.canonical import parse_timestamp, sha256_digest, utf8_key  # noqa: E402
@@ -466,15 +479,16 @@ def main() -> int:
     parser.add_argument(
         "--lab-root",
         type=Path,
-        default=Path(r"c:\Users\admin\Desktop\aisec\sensel-caldera-linux-lab"),
+        default=ROOT / "external_lab_data_not_included",
+        help="Path to the separately distributed sealed lab bundle.",
     )
     parser.add_argument("--contracts", type=Path, default=ROOT / "artifacts" / "contracts")
     parser.add_argument("--output-root", type=Path, default=ROOT / "results")
     parser.add_argument(
         "--families",
         choices=("m1-m6", "m1-m7"),
-        default="m1-m6",
-        help="Primary fair comparison stays on M1--M6; M1--M7 is the amended descriptive cohort.",
+        default="m1-m7",
+        help="Primary amended fair comparison uses M1--M7; M1--M6 is retained for legacy determinism comparisons.",
     )
     args = parser.parse_args()
 

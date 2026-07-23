@@ -1,0 +1,8 @@
+AI0 & consume unchanged canonical AuditRecord & closed schema plus canonical digest & accept & accept & pass \\
+AI1 & add agent\_asserted\_fact to canonical record & additionalProperties false & schema reject & schema reject & pass \\
+AI2 & add malicious\_label to online record & additionalProperties false & schema reject & schema reject & pass \\
+AI3 & replace out-of-support null P with 0.98 & support-probability coupling & schema reject & schema reject & pass \\
+AI4 & remove ordered evidence references & required provenance field & schema reject & schema reject & pass \\
+AI5 & swap revision digest without resealing record & canonical digest binding & digest reject & digest reject & pass \\
+AI6 & swap evidence content digest without resealing record & canonical digest binding & digest reject & digest reject & pass \\
+AI7 & replace allowed D and recompute unkeyed digest & external writer authorization required & accept & accept & pass \\

@@ -12,7 +12,20 @@ from pathlib import Path
 from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_SRC = Path(r"c:\Users\admin\Desktop\coreAPP\TRUSTEPISODE-aisec2026\experiment_runtime\src")
+
+
+def locate_runtime() -> Path:
+    packaged = ROOT / "experiment_runtime"
+    if packaged.exists():
+        return packaged
+    for base in ROOT.parents:
+        matches = sorted(base.glob("*/TRUSTEPISODE-aisec2026/experiment_runtime"))
+        if matches:
+            return matches[0]
+    raise FileNotFoundError("TrustEpisode experiment_runtime not found")
+
+
+RUNTIME_SRC = locate_runtime() / "src"
 sys.path.insert(0, str(RUNTIME_SRC))
 
 from trustepisode_runtime.canonical import sha256_digest  # noqa: E402

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trustepisode-experiment-runtime"
+version = "0.1.0"
+description = "Reference runtime for the frozen TrustEpisode Section 3/4 contracts"
+requires-python = ">=3.10"
+dependencies = [
+  "jsonschema[format]>=4.21,<5",
+  "numpy>=1.26,<3",
+  "psutil>=5.9,<8",
+  "rfc8785>=0.1.4,<0.2",
+  "scipy>=1.12,<2",
+]
+
+[project.scripts]
+trustepisode-runtime = "trustepisode_runtime.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
