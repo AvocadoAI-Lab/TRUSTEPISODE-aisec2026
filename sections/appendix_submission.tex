@@ -32,9 +32,11 @@ covers states, successors, late records, ordered references, and digests.
 \paragraph{Evaluation and artifact boundary.}
 The achieved primary cohort contains five valid runs per M1--M7 card/mode and five standalone
 runs per B1--B8 card. The B1--B8 runs are execution controls, not false-positive trials because
-no fitted decision rule is evaluated. Offline matching freezes malicious coverage 0.50, contamination 0.25,
-match weight 0.50, temporal IoU 0.10, entity Jaccard 0.50, and a 2000-resample run-cluster
-bootstrap with seed 20260721. Fitted calibration, RP0--RP7 partial-telemetry replay, physical
+no fitted decision rule is evaluated. Offline evaluation freezes malicious-coverage $0.50$, match
+weight $0.50$, temporal IoU $0.10$, and entity Jaccard $0.50$; contamination $0.25$ is only a
+positive/mixed offline-label diagnostic and does not reject a qualified match. Paired comparisons
+use a 2000-resample run-cluster bootstrap with seed 20260721. Fitted calibration, RP0--RP7
+partial-telemetry replay, physical
 outage, and full cost benchmarking remain unexecuted and are not claimed. The companion contains
 the full schemas, thresholds, cards, validators, sealed result copies, and claim matrix.
 Its filename is \path{TrustEpisode_reproducibility_companion_v1.zip}; concatenating the following

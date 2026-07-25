@@ -19,7 +19,8 @@ Prior alert-correlation and provenance systems motivate multi-stage context usin
 and learned representations~\cite{ning2002attackscenarios,holmes2019,unicorn2020,nodlink2024,kairos2024,captain2025}.
 Those lines do not remove the need for fixed ownership of membership, immutable revision history,
 and replayable audit semantics under incomplete observability. This submission evaluates
-\trustepisode as a \emph{deterministic, auditable reconstruction contract} for EDR/NDR evidence
+\trustepisode as a \emph{reconstruction contract that is deterministic over canonicalized,
+version-bound inputs} for EDR/NDR evidence
 and as a typed, read-only boundary for downstream analyst or AI reasoning. The downstream model
 is deliberately outside the trusted computing base: it may summarize versioned AuditRecords but
 cannot own membership, infer source health, overwrite history, or convert unsupported evidence
@@ -42,9 +43,9 @@ tests rather than a preregistered model comparison.
         on sealed live evidence?
   \item[\textbf{RQ4}] Which relation, hub, merge, and late-revision mechanisms does the live
         M1--M7 cohort exercise, and which require targeted conformance cards?
-  \item[\textbf{RQ5}] What portion of observed formation gain comes from replacing fixed bins
-        with sliding sessionization, and does relation-aware logic provide additional measurable
-        benefit on the sealed cohort?
+  \item[\textbf{RQ5}] What descriptive coverage change accompanies replacing fixed bins with
+        sliding sessionization on the sealed cohort, and do fair relation-aware builders show
+        additional measurable benefit?
   \item[\textbf{RQ6}] Do closed schemas and digest bindings fail closed when a downstream
         consumer injects asserted facts, labels, or unsupported probability; removes provenance;
         or tampers with revision and evidence digests; what remains possible after a schema-valid
@@ -61,8 +62,9 @@ contract.
   \item a single-owner reconstruction and audit contract with immutable late-data semantics,
         canonical references and digests, exactly one terminal AssemblyOutcome per revision, and a
         read-only agent boundary;
-  \item a sealed evaluation separating evidence classes: 110 live executions, fair EB0--EB4
-        baselines, a 60-run determinism matrix, a complete seven-code failure matrix, contract
+  \item a sealed evaluation separating evidence classes: 70 primary malicious formation runs plus
+        40 standalone benign execution controls, fair EB0--EB4 baselines, a 60-run determinism
+        matrix, a matrix covering all seven predefined AssemblyFailureRecord codes, contract
         ablations, and an A--G loss taxonomy that localizes M2 to token mapping;
   \item downstream stress tests that reject six schema-invalid or unsealed mutations, deliberately
         accept a resealed allowed-field negative control to expose the writer-authorization

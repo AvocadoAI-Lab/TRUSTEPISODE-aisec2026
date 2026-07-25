@@ -38,16 +38,16 @@
 \begin{abstract}
 AI-assisted security investigation turns sparse tool outputs into confident narratives, yet
 arrival order, collector failure, and late evidence can silently alter the facts exposed to an
-analyst or agent. We present \trustepisode{}, a deterministic, auditable EDR/NDR
-episode-reconstruction contract. Episode Synthesis alone owns membership; revisions and terminal
-audit outcomes are append-only; source health differs from ``no detection;'' unsupported
-probabilities remain null; and downstream AI reads versioned evidence without authority over
-case facts.
+analyst or agent. We present \trustepisode{}, a deterministic (over canonicalized, version-bound
+inputs), auditable EDR/NDR episode-reconstruction contract. Episode Synthesis alone owns membership;
+revisions and terminal audit outcomes are append-only; source health differs from ``no detection;''
+unsupported probabilities remain null; and downstream AI reads versioned evidence without authority
+over case facts.
 
-On 70 sealed live CALDERA M1--M7 malicious runs (40 standalone benign controls are not detection
-trials), sliding sessionization raises mean coverage from \EbZeroCov{} to \TeCov{}.
-Fair sliding baselines show no superiority: EB4 ties EB2 on all action-coverage pairs
-(\EbTwoActionWTL{} W/T/L) and trails EB1 on one concurrent-benign M7 run
+On 70 primary malicious formation runs (40 standalone benign controls are not detection trials),
+the sealed cohort shows a descriptive mean coverage increase from \EbZeroCov{} to \TeCov{} relative
+to the legacy fixed-bin reference. Fair sliding baselines show no superiority: EB4 ties EB2 on all
+action-coverage pairs (\EbTwoActionWTL{} W/T/L) and trails EB1 on one concurrent-benign M7 run
 (\EbOneActionWTL{}; mean $\Delta=\EbOneActionDelta{}$, 95\% CI
 $[\EbOneActionCILo{},\EbOneActionCIHi{}]$). Canonical replay is byte-identical on \DetNRuns{}
 M1--M6 runs, whereas raw arrival order is not robust without re-canonicalization.

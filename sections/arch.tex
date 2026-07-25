@@ -1,13 +1,14 @@
 \section{TrustEpisode Reconstruction Contract}
 \label{sec:method}
 
-\trustepisode converts EDR/NDR telemetry into deterministic episode revisions and version-scoped
-forensic audit records. Evidence Fabric and Health Monitor own events and source health; Episode
-Synthesis alone owns membership; optional Feature Extractor / Scorer / Calibrator fields remain
-schema interfaces without fitted artifacts in this submission. For each revision, the AuditRecord
-Assembler emits exactly one terminal AssemblyOutcome: a canonical AuditRecord or an immutable
-AssemblyFailureRecord. Ground truth is joined only offline. Figure~\ref{fig:method-architecture}
-shows these boundaries.
+\trustepisode converts EDR/NDR telemetry into episode revisions and version-scoped forensic audit
+records that are deterministic over canonicalized, version-bound inputs. Evidence Fabric and Health
+Monitor own events and source health; Episode Synthesis alone owns membership; optional Feature
+Extractor / Scorer / Scope Resolver / Calibrator fields and sufficiency $U$ remain design-only schema
+interfaces without fitted artifacts in this submission and are outside the formation-effectiveness
+claim. For each revision, the AuditRecord Assembler emits exactly one terminal AssemblyOutcome: a
+canonical AuditRecord or an immutable AssemblyFailureRecord. Ground truth is joined only offline.
+Figure~\ref{fig:method-architecture} shows these boundaries.
 
 \subsection{Investigation and Threat Model}
 \label{sec:threat-model}
@@ -21,7 +22,8 @@ fault; the offline evaluator is isolated from online formation.
 \paragraph{Non-assumptions.}
 We do \emph{not} assume complete telemetry, that collector silence equals downtime, that all
 attacks are observable, that ground truth is available online, that model scores are reliable, or
-that raw arrival order is fixed.
+that raw arrival order is fixed. Compromise of the Health Monitor identity, signing keys, or an
+external writer-authorization layer is outside scope; SHA-256 digests do not authenticate producers.
 
 \paragraph{Downstream-agent adversary.}
 An AI assistant may be mistaken, prompt-injected, or compromised: it may omit evidence, misquote a
@@ -38,9 +40,10 @@ missing step, replay the digests, and report observed, unavailable, and unknown 
 \subsection{Evidence and Reconstruction Model}
 \label{sec:problem-formulation}
 
-Online objects are NormalizedEvent, SourceCoverage, EpisodeRevision, LateEvidenceRecord,
-AuditRecord, and AssemblyFailureRecord. Offline labels never enter online schemas. Table~\ref{tab:ownership}
-assigns every object to one producer.
+The core evaluated objects are NormalizedEvent, SourceCoverage, EpisodeRevision,
+LateEvidenceRecord, AuditRecord, and AssemblyFailureRecord; optional design-only schema objects
+are FeatureVector, SupportDecision, nullable $P$, and structured $U$. Offline labels never enter
+online schemas. Table~\ref{tab:ownership} assigns producers and forbidden behaviors for both.
 
 \begin{table*}[!t]
 \caption{Single-owner online object contract.}
@@ -54,7 +57,7 @@ assigns every object to one producer.
 NormalizedEvent & Evidence Fabric & Episode Synthesis & label, scenario, or health fields \\
 SourceCoverage & Health Monitor & Scope Resolver; Sufficiency; Assembler & infer outage from event silence \\
 EpisodeRevision / LateEvidenceRecord & Episode Synthesis & Feature; Sufficiency; Assembler / late store & rewrite a prior revision; admit beyond-horizon into membership \\
-FeatureVector $[D,C,m]$ & Feature Extractor & Scorer; Assembler & labels or inferred health \\
+FeatureVector $[D,C]$ & Feature Extractor & Stateless Scorer; Assembler & health/source mask; labels; scenario metadata \\
 Nullable $P$ & Calibrator (design) & Assembler & numeric unsupported output \\
 Structured $U$ & Sufficiency Evaluator & Assembler & scalarization that rewrites $P$ \\
 AssemblyOutcome & AuditRecord Assembler & Append-only store; replay & both success and failure; update/delete \\
@@ -99,9 +102,12 @@ coverage references; they do not infer health from empty event windows.
 
 Formation links events using process-causal, authenticated-session, endpoint-connection, and
 specific-entity relations under a 300\,s maximum inter-event gap and 3600\,s maximum episode
-span. Tie-breaks are deterministic (relation precedence, relation count, $\Delta t$, start time,
-episode ID). Hub suppression, parent merge, and exact event-time ordering are part of the frozen
-policy. Formation never reads labels, receipts, or scenario metadata.
+span. Tie-breaks are deterministic under the frozen canonical ordering contract (relation precedence,
+relation count, $\Delta t$, start time, episode ID). Hub suppression, parent merge, and exact
+event-time ordering are part of the frozen policy. Canonical event-time ordering is a mandatory
+preprocessing step of the production formation path rather than an optional replay repair: raw
+delivery order is not robust, whereas re-canonicalized input reproduces byte-identical results.
+Formation never reads labels, receipts, or scenario metadata.
 
 \begin{figure*}[t]
   \centering
@@ -117,19 +123,22 @@ policy. Formation never reads labels, receipts, or scenario metadata.
 \subsection{Immutable Revision Lifecycle}
 \label{sec:revision-lifecycle}
 
-Watermark lag finalizes open episodes. Late evidence inside a fixed 900\,s revision horizon may
-create an immutable successor revision; beyond-horizon or closed-lineage evidence produces a
-LateEvidenceRecord. Earlier revision digests are never rewritten. Deadlines are not extended by
+A watermark lag of 120\,s advances the watermark behind observed ingest and finalizes open
+episodes whose event-time end is at or before that watermark. Late evidence inside a fixed 900\,s
+revision horizon may create an immutable successor; beyond-horizon or closed-lineage evidence
+produces a LateEvidenceRecord. Earlier digests are never rewritten; deadlines are not extended by
 late arrivals.
 
 \subsection{Terminal Forensic Audit Contract}
 \label{sec:audit-assembly}
 
-At \texttt{revision.watermark}$+120$\,s the assembler inserts exactly one terminal outcome under
-$(episode\_id,revision)$: AuditRecord or AssemblyFailureRecord with a closed failure code set
-(schema, key, duplicate, digest, version, missing-input, timeout). Success cannot follow terminal
-failure. References are canonically ordered; RFC~8785/JCS serialization and SHA-256 digests bind
-versions. The store is append-only.
+Open episodes finalize once their event-time end is at or before the advancing watermark (lag
+120\,s behind observed ingest). The assembler then applies a separate 120\,s join deadline
+anchored at EpisodeRevision.watermark and inserts exactly one terminal outcome under
+$(episode\_id,revision)$: AuditRecord or AssemblyFailureRecord (schema, key, duplicate, digest,
+version, missing-input, timeout). These are distinct lifecycle deadlines with different anchors.
+Success cannot follow terminal failure. References are canonically ordered; RFC~8785/JCS
+serialization and SHA-256 digests bind versions. The store is append-only.
 
 \subsection{Agent-Facing Evidence Boundary}
 \label{sec:agent-boundary}
@@ -182,20 +191,26 @@ closed classes (Table~\ref{tab:loss-taxonomy}):
 \end{tabular}
 \end{table}
 
-Forbidden inference: treating F1~$=$~1.0 as exact-complete step recovery; treating missing tokens
-as formation failures without a waterfall.
+Forbidden inference: treating episode-match F1~$=$~1.0 as exact-complete step recovery; treating
+missing tokens as formation failures without a waterfall. In operational cases without a trusted
+execution receipt or equivalent predicate record, the waterfall may terminate in G rather than
+distinguishing execution failure from downstream evidence loss. Synthetic A--G fixtures exercise the
+closed diagnostic taxonomy; they are not field validation.
 
 \subsection{Scoring and Probability Extension (Design Only)}
 \label{sec:calibration}
 
-Schema fields may retain an optional score interface: version-bound, nullable $P$ outside support,
-and $U$ that must not rewrite $P$. This submission reports no fitted coefficients, Brier/NLL, or
-held-out ranking. Scoring and calibration are not empirical claims here.
+Design-only and unevaluated here: a Stateless Scorer consumes only $D$ and $C$ and emits
+$z=f_{\theta}(D,C)$; a Scope Resolver separately consumes source availability / manifest scope and
+emits a SupportDecision governing whether $P$ may be numeric. Source health must not influence $z$.
+Without supported scope and a fitted version-matched calibrator, $P$ remains JSON null. Structured
+$U$ cannot rewrite $z$ or $P$. This submission reports no fitted coefficients, Brier/NLL, or held-out
+ranking.
 
 \subsection{Boundary}
 \label{sec:method-boundary}
 
-The \emph{evaluated} contribution is deterministic episode reconstruction and replayable audit
-semantics, including evidence-loss localization and a deployed read-only case-materialization
-trace. Manifest-scoped probability is design-only. LLM generation quality, CTI enrichment, impact
-scoring, autonomous response, and OT/ICS generalization are excluded.
+The \emph{evaluated} contribution is deterministic reconstruction over canonicalized, version-bound
+inputs and replayable audit semantics, including evidence-loss localization and a deployed read-only
+case-materialization trace. Manifest-scoped probability is design-only. LLM generation quality, CTI
+enrichment, impact scoring, autonomous response, and OT/ICS generalization are excluded.

@@ -8,14 +8,14 @@
 \toprule
 \textbf{Card} & \textbf{Result} & \textbf{Expected} & \textbf{Observed} \\
 \midrule
-T1-PROCESS-CAUSAL & pass & fragment without causal & full-eps:1, abl-eps:2 \\
-T2-AUTH-SESSION & pass & session only links ablation fragm... & session-only:1, abl:2 \\
-T3-ENDPOINT-MAPPING & pass & endpoint only links ablation frag... & endpoint-only:1, abl:2 \\
-T4-HUB-GUARD & pass & hub guard changes membership or e... & full-eps:4, no-hub-eps:1 \\
-T5-PARENT-MERGE & pass & merge enabled creates parent epis... & full-parents:3, abl-parents:0 \\
-T6-LATE-SUCCESSOR & pass & disabling late successor increase... & full-rev:4, abl-rev:3, full-late:... \\
-T7-BEYOND-HORIZON & pass & beyond horizon emits LateEvidence... & late:1, reasons:(beyond-revision-... \\
-T8-TIE-BREAK & pass & canonical arrival order yields id... & equal:True; raw-reverse-differs:True \\
+T1-PROCESS-CAUSAL & pass & causal-off fragments & full 1; ablated 2 \\
+T2-AUTH-SESSION & pass & session-off fragments & full 1; ablated 2 \\
+T3-ENDPOINT-MAPPING & pass & endpoint-off fragments & full 1; ablated 2 \\
+T4-HUB-GUARD & pass & hub guard changes membership & full 4; no-hub 1 \\
+T5-PARENT-MERGE & pass & merge creates parents & full 3; ablated 0 \\
+T6-LATE-SUCCESSOR & pass & late successor preserved & full rev.\ 4; ablated 3 \\
+T7-BEYOND-HORIZON & pass & beyond horizon $\rightarrow$ late record & late record 1 \\
+T8-TIE-BREAK & pass & canonical replay equal & sorted equal; raw differs \\
 \bottomrule
 \end{tabular}
 \end{table*}
