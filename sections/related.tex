@@ -6,10 +6,10 @@
 Classical alert correlation reconstructs multi-step scenarios from intrusion alerts by temporal
 and causal linking~\cite{ning2002attackscenarios}. HOLMES and UNICORN recover APT context from
 system graphs~\cite{holmes2019,unicorn2020}; KAIROS, NODLINK, and CAPTAIN extend this line
-~\cite{kairos2024,nodlink2024,captain2025}. These systems motivate episode construction. Our
-research unit is instead the lifecycle contract governing mixed-EDR/NDR membership, late-data
-revisions, and terminal audit outcomes; detection and provenance context are complementary inputs,
-not effectiveness baselines.
+~\cite{kairos2024,nodlink2024,captain2025}. These systems motivate episode construction but optimize different output units. We therefore
+use them for conceptual positioning rather than as direct effectiveness baselines. \trustepisode
+instead evaluates the lifecycle contract governing mixed-EDR/NDR membership, late-data revisions,
+and terminal audit outcomes.
 
 \subsection{Digital Forensic Event Reconstruction}
 
@@ -21,7 +21,7 @@ work formalizes timestamp interpretation via time anchors and clock-skew anomali
 examined, what was unavailable, and how conclusions depend on incomplete traces
 ~\cite{carrier2005filesystem,nist80086}. TrustEpisode imports these audit requirements into
 \emph{online} EDR/NDR episode reconstruction: immutable revisions, explicit late stores, and
-digestable terminal outcomes under delayed delivery.
+digest-bound terminal outcomes under delayed delivery.
 
 \subsection{Reproducibility, Tool Validation, and Provenance}
 
@@ -29,17 +29,18 @@ Forensic tool and method validation requires documented procedures, known datase
 repeatable results before casework~\cite{swgde2018tooltesting,brunty2022validation,wales2026validation}.
 Chain-of-custody and provenance discipline demand that investigators show integrity of examined
 objects and distinguish observed from unavailable evidence~\cite{casey2011digitalevidence,nist80086}.
-TrustEpisode's contribution is not a higher detector F1; it is a single-owner revision contract,
-canonical replay boundary, and explicit terminal failure semantics that make reconstruction
-outcomes auditable under the same reproducibility expectations.
+\trustepisode applies these reproducibility expectations through a single-owner revision contract,
+a canonical replay boundary, and explicit terminal failure semantics that make reconstruction
+outcomes auditable under the same reproducibility requirements.
 
 \subsection{Incomplete Telemetry and Evidence-Loss Attribution}
 
-EDR and NDR fail differently; missing modality, parser blind spots, and collector health can
-erase or distort attack steps without implying that correlation ``missed'' an already-normalized
-event~\cite{missingmodality2024,vaseghipanah2026blindspots}. Reconstruction contracts must
-therefore separate sensor observability, normalization/token mapping, formation membership, and
-offline attribution when diagnosing incomplete episodes.
+Evidence loss can arise at multiple stages of an EDR/NDR pipeline, including sensor
+observability, parsing or normalization, and downstream reconstruction
+~\cite{missingmodality2024,vaseghipanah2026blindspots}. A missing attack step therefore
+should not automatically be attributed to correlation failure. Reconstruction contracts must
+distinguish upstream evidence loss from downstream attribution errors when diagnosing
+incomplete episodes.
 
 \subsection{Evidence-Grounded and Contained AI Investigation}
 
@@ -49,18 +50,19 @@ evidence, while Holmes packages network evidence into auditable anchors for an L
 ~\cite{cortex2025,auditableddos2026}. These systems motivate evidence-grounded AI assistance, but
 grounding also needs an upstream contract: citation presence does not by itself establish
 faithfulness~\cite{alce2023,ragfaithfulness2025}, and agent execution requires architectural
-containment rather than prompt-only trust~\cite{isolategpt2025}. \trustepisode addresses the
-complementary boundary below the agent. It fixes which EDR/NDR objects exist, which producer owns
-them, how missingness is represented, and which immutable references a later narrative may cite.
+containment rather than prompt-only trust~\cite{isolategpt2025}. \trustepisode provides the complementary upstream layer. It defines which normalized EDR/NDR
+objects are admitted to each versioned case state, which producer owns them, how missingness is
+represented, and which immutable references a later narrative may cite.
 We do not claim a superior LLM or better autonomous triage.
 
 \subsection{Positioning Summary}
 
 Table~\ref{tab:related-compare} maps research units and objectives; it is not an effectiveness
 leaderboard. Our unit is \emph{versioned evidence state}, not a score, suspicious subgraph, or
-narrative. The novelty claim is their contract composition: one membership writer, immutable
-successor/late-store semantics, source health separate from silence, one terminal outcome per
-revision, stage-localized loss, and citable read-only records. Contract invariants and formation
+narrative. The novelty claim concerns the composition and joint evaluation of these properties:
+a single membership writer, immutable successor and late-store semantics, source health
+separated from event silence, exactly one terminal outcome per revision, stage-localized
+evidence loss, and citable read-only records. Contract invariants and formation
 effectiveness are evaluated separately; no new detector or classifier is claimed.
 
 \begin{table*}[!t]
@@ -91,7 +93,7 @@ versioned EDR/NDR episodes and terminal audit outcomes & make canonicalized reco
 
 \trustepisode does not claim a new graph detector, AI ranking effectiveness, attribution beyond
 observable EDR/NDR, enterprise impact estimation, or autonomous response. The evaluated
-contribution is a canonicalized deterministic forensic reconstruction and audit contract for sealed EDR/NDR
-evidence under late arrival and incomplete observability. Its AISec relevance is architectural:
+contribution is a deterministic forensic reconstruction and audit contract over canonicalized, version-bound
+EDR/NDR inputs under late arrival and incomplete observability. Its AISec relevance is architectural:
 AI assistance is constrained to read and cite versioned case facts rather than silently redefining
 them.
