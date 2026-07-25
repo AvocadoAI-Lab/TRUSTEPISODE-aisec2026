@@ -128,13 +128,13 @@ M7 & concurrent-benign & $0.000\pm0.000$ & $0.000\pm0.000$ & $0.000\pm0.000$ & u
 
 Relative to legacy EB0, the sealed cohort shows a descriptive mean coverage increase from
 \EbZeroCov{} to \TeCov{} and exact-complete recovery from \EbZeroExact{} to \TeExact{} (no EB4$-$EB0
-paired CI is reported, so this is not a statistically resolved improvement). Fixed bins cut
-multi-minute chains at arbitrary boundaries; sliding gap/sessionization preserves those chains under
-the same span cap. Across recoverable M1--M6 families, EB4 obtains mean action coverage of $0.958$
-and exact-complete recovery of $0.833$; inclusion of the deliberately out-of-envelope M7 family
-reduces the aggregate to \TeCov{} and \TeExact{}. Although truth groups remain matched,
-concurrent-benign episodes exhibit a mean contamination of \ConcConcurrent{} across M1--M6, so
-successful episode matching does not imply clean membership or reduced analyst workload.
+paired CI is reported). Fixed bins cut multi-minute chains at arbitrary boundaries; sliding
+gap/sessionization preserves those chains under the same span cap. Across recoverable M1--M6
+families, EB4 obtains mean action coverage of $0.958$ and exact-complete recovery of $0.833$;
+inclusion of the deliberately out-of-envelope M7 family reduces the aggregate to \TeCov{} and
+\TeExact{}. Concurrent-benign M1--M6 episodes exhibit mean contamination \ConcConcurrent{}: successful
+episode matching does not imply clean membership or reduced analyst workload, and contamination is an
+offline diagnostic rather than an online decision threshold.
 
 \input{results/tables/tab_paired}
 
@@ -144,15 +144,19 @@ The fair sliding baselines are not identical. EB4 matches EB2 on all action-cove
 $[\EbOneActionCILo{},\EbOneActionCIHi{}]$; episode-match F1 has mean $\Delta=-0.010$ and 95\% CI
 $[-0.029,0]$. The single loss is the concurrent-benign M7 run
 \texttt{run-ee27d58be2db032c44d0774d9358c4b1}: EB1 recovers its truth group while EB4 does not.
-We therefore report the EB4--EB1 result as \emph{not statistically resolved}, not ``no observed
-difference,'' equivalence, or relation-aware superiority. EB3 shows the same one-run
-action-coverage pattern.
+We therefore report the EB4--EB1 result as \emph{not statistically resolved}, not equivalence or
+relation-aware superiority. EB3 shows the same one-run action-coverage pattern.
 
-\paragraph{Why sliding-time already suffices on M1--M7.}
-Advanced relations are not the unique linkage path here: EB4 matches EB2 on all 70 action-coverage
-pairs and EB1 on 69; the remaining concurrent-benign M7 run is recovered by EB1/EB3 but not EB4/EB2.
-Episode-match F1 alone can overstate policy complexity when the benchmark rarely stresses it. M7's
-zero recovery is the expected jointly out-of-envelope outcome, not a collection failure.
+\paragraph{What the fair negative result identifies.}
+The fair result is informative about the benchmark: advanced relations are not the unique linkage
+path when EB4 matches EB2 on all 70 action-coverage pairs and EB1 on 69. A cohort can report strong
+episode-match F1 while barely exercising the mechanisms that distinguish a relation-aware contract
+from a sliding builder. This primary design mainly validates sliding sessionization; relation-specific
+guards need targeted mechanism-coverage evidence. Future BAS cohorts should register those
+requirements before claiming relation-aware superiority---session-only, endpoint-only, causal-only,
+organic hub over-merge, parent merge, within-horizon late successor, beyond-horizon late evidence, and
+isolated $W_{gap}$/$W_{max}$ boundaries. Synthetic cards show conformance, not organic live
+effectiveness. M7's zero recovery remains the expected jointly out-of-envelope outcome.
 
 \subsection{Deployed Case-Materialization Trace}
 \label{sec:deployed-case-trace}
@@ -307,27 +311,26 @@ which forensic failure mode. They are reference implementations for isolation, n
 
 AI0 accepts an unchanged canonical AuditRecord. AI1--AI4 inject a generated fact, leak a label,
 force an unsupported 0.98 probability, or remove provenance; the closed schema rejects each.
-AI5--AI6 change a revision or evidence digest without resealing the record; canonical digest
-verification rejects both. AI7 changes the allowed $D$ field and recomputes the unkeyed
-RFC~8785/SHA-256 digest; validation accepts it, as expected. Thus
-\AgentBoundaryPass{}/\AgentBoundaryTotal{} cards match their specifications. The evaluated
-schema/digest layer detects invalid or unsealed canonical-record mutations, while write prevention
-depends on an external authorization layer that is not evaluated here. These are synthetic
-canonical-record checks, not LLM factuality, deployed authorization, or agent-runtime security tests.
+AI5--AI6 change a revision or evidence digest without resealing; digest verification rejects both.
+AI7 changes an allowed $D$ field and reseals with the unkeyed RFC~8785/SHA-256 digest; validation
+accepts it. Thus \AgentBoundaryPass{}/\AgentBoundaryTotal{} cards match their specifications.
+Integrity verification detects invalid or unsealed mutations; write prevention depends on external
+authorization. These cards evaluate canonical-record boundary conformance (property~A), not LLM
+factuality.
 
 \subsection{Held-Out Local-Model Grounding Audits}
 \label{sec:llm-grounding-pilot}
 
 \input{results/tables/tab_llm_grounding}
 
-After a separate unscored 18-card smoke test, we froze the prompt, schema, four re-digested
-AuditRecords, and 20 held-out tasks, then ran \texttt{qwen2.5:7b} once (temperature 0, seed
-20260723). After observing Qwen but before querying deployment-default \texttt{gemma3:1b}, we locked
-the same prompt/schema/cards/seed/scoring and ran Gemma once. Table~\ref{tab:llm-grounding} is
-therefore a synthetic, two-model, same-card, once-run exploratory transfer audit---not a
-preregistered or statistical model comparison, and not evidence of general factuality or safety.
-Qwen yields \LlmPilotExact{}/20 fully exact responses; Gemma yields \GemmaPilotExact{}/20. Typed
-input makes model-dependent failure inspectable; it does not make either model accurate.
+After an unscored smoke test, we froze the prompt, schema, four re-digested AuditRecords, and 20
+held-out tasks, then ran \texttt{qwen2.5:7b} once (temperature 0, seed 20260723). After observing
+Qwen but before querying deployment-default \texttt{gemma3:1b}, we locked the same protocol and ran
+Gemma once. Table~\ref{tab:llm-grounding} is a synthetic, two-model, same-card, once-run transfer
+audit of untrusted-reader behavior (property~B): extraction, abstention, and citation. Qwen yields
+\LlmPilotExact{}/20 fully exact responses; Gemma yields \GemmaPilotExact{}/20. The cross-model
+failures show why the model must remain outside the forensic root of trust and why typed evidence
+identity is needed for post-hoc verification.
 
 \subsection{Mechanism Conformance Cards}
 \label{sec:mechanism}
@@ -387,17 +390,19 @@ were cropped to exclude account-identifying chrome.
 \subsection{Limitations}
 \label{sec:discussion}
 
-Two Ubuntu targets; non-commercial EDR; $n=5$ per cell; no production base rates; benign controls
-are not false-positive trials. Fair sliding results largely overlap, but EB4 trails EB1/EB3 on one
-concurrent-benign M7 run. Synthetic cards $\neq$ field validation; raw order needs
-re-canonicalization; no fitted scorer/calibration or outage study; M2 mapping unrepaired in the
-primary cohort. Organic hub stress unobserved; wall-clock beyond-horizon LateEvidenceRecord not
-observed (2 sealed, 0/2). M7 is jointly out-of-contract, not an isolated $W_{max}$ test. Schema/digest
-checks are not writer authentication; LLM audits are synthetic, two-model, same-card, once-run
-(Gemma locked after Qwen) and support no general factuality claim.
+\textbf{External validity.} Two Ubuntu targets, a non-commercial EDR wrapper, and controlled
+Suricata/Wazuh-style telemetry; no Windows or commercial EDR and no production base rates.
+\textbf{Statistical and effectiveness limits.} $n{=}5$ per cell; benign controls are not
+false-positive trials; fair sliding results largely overlap, with one concurrent-benign M7 loss of
+EB4 versus EB1/EB3; concurrent-benign contamination remains nontrivial.
+\textbf{Mechanism coverage.} Organic hub stress is absent; wall-clock beyond-horizon
+LateEvidenceRecord is not observed (2 sealed, 0/2); M7 jointly stresses $W_{gap}$ and $W_{max}$;
+session/endpoint evidence is partly offline ablation.
+\textbf{Unevaluated extensions.} Fitted scoring/calibration, partial-telemetry/outage replay,
+writer authorization, and general LLM factuality remain outside the claims; raw arrival order
+requires re-canonicalization; M2 token mapping is unrepaired in the primary cohort.
 
 \paragraph{Analysis status.}
-Completed core analyses: 70 malicious formation runs plus 40 benign execution controls; fair
-EB0--EB4; T1--T8; M2; D1--D5; A1--A12; A--G; AB0--AB3; AI0--AI7; Qwen + locked Gemma; inclusive
-boundary fixtures. Supplemental (not primary): L1--L4 as above. Not executed: organic hub-stressed
-BAS; fitted scorer / RP / PO1.
+Completed: 70 malicious + 40 benign controls; fair EB0--EB4; T1--T8; M2; D1--D5; A1--A12; A--G;
+AB0--AB3; AI0--AI7; Qwen + locked Gemma; inclusive boundary fixtures. Supplemental: L1--L4.
+Not executed: organic hub-stressed BAS; fitted scorer / RP / PO1.

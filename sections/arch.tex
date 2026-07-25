@@ -1,14 +1,16 @@
 \section{TrustEpisode Reconstruction Contract}
 \label{sec:method}
 
-\trustepisode converts EDR/NDR telemetry into episode revisions and version-scoped forensic audit
-records that are deterministic over canonicalized, version-bound inputs. Evidence Fabric and Health
-Monitor own events and source health; Episode Synthesis alone owns membership; optional Feature
-Extractor / Scorer / Scope Resolver / Calibrator fields and sufficiency $U$ remain design-only schema
-interfaces without fitted artifacts in this submission and are outside the formation-effectiveness
-claim. For each revision, the AuditRecord Assembler emits exactly one terminal AssemblyOutcome: a
-canonical AuditRecord or an immutable AssemblyFailureRecord. Ground truth is joined only offline.
-Figure~\ref{fig:method-architecture} shows these boundaries.
+\trustepisode converts normalized EDR/NDR events and authenticated SourceCoverage into
+version-scoped forensic audit records that are deterministic over canonicalized, version-bound
+inputs. Episode Synthesis alone owns membership. The lifecycle is open episode $\rightarrow$
+finalized revision $\rightarrow$ immutable late successor or closed lineage $\rightarrow$
+beyond-horizon LateEvidenceRecord. Each revision yields exactly one terminal AssemblyOutcome
+(a canonical AuditRecord or an immutable AssemblyFailureRecord). Analysts and AI systems consume
+these records but cannot redefine membership, source health, probability support, or terminal status.
+Optional Feature Extractor / Scorer / Scope Resolver / Calibrator fields and sufficiency $U$ remain
+design-only schema interfaces. Figure~\ref{fig:method-architecture} shows these boundaries; ground
+truth is joined only offline.
 
 \subsection{Investigation and Threat Model}
 \label{sec:threat-model}

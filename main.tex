@@ -36,32 +36,29 @@
 \email{anonymous@anonymous.edu}
 
 \begin{abstract}
-AI-assisted security investigation turns sparse tool outputs into confident narratives, yet
-arrival order, collector failure, and late evidence can silently alter the facts exposed to an
-analyst or agent. We present \trustepisode{}, a deterministic (over canonicalized, version-bound
-inputs), auditable EDR/NDR episode-reconstruction contract. Episode Synthesis alone owns membership;
-revisions and terminal audit outcomes are append-only; source health differs from ``no detection;''
-unsupported probabilities remain null; and downstream AI reads versioned evidence without authority
-over case facts.
+AI-assisted security investigation requires more than grounded prompts: the underlying case state
+must remain reproducible, versioned, and independently auditable under delayed delivery and
+incomplete telemetry. We present \trustepisode{}, a canonicalized, single-writer reconstruction and
+audit contract for EDR/NDR evidence. Episode Synthesis alone owns membership; revisions and terminal
+audit outcomes are append-only; authenticated source health is separated from event silence;
+unsupported probabilities remain JSON null; and downstream AI consumes version-scoped records without
+authority over case facts.
 
-On 70 primary malicious formation runs (40 standalone benign controls are not detection trials),
-the sealed cohort shows a descriptive mean coverage increase from \EbZeroCov{} to \TeCov{} relative
-to the legacy fixed-bin reference. Fair sliding baselines show no superiority: EB4 ties EB2 on all
-action-coverage pairs (\EbTwoActionWTL{} W/T/L) and trails EB1 on one concurrent-benign M7 run
-(\EbOneActionWTL{}; mean $\Delta=\EbOneActionDelta{}$, 95\% CI
-$[\EbOneActionCILo{},\EbOneActionCIHi{}]$). Canonical replay is byte-identical on \DetNRuns{}
-M1--M6 runs, whereas raw arrival order is not robust without re-canonicalization.
-\AuditPass{}/\AuditTotal{} audit fixtures cover seven terminal failure codes; an A--G
-taxonomy localizes M2's repeatable gap to class D (token mapping failure); and a deployed case trace preserves one
-Suricata and two Wazuh events with ATT\&CK references.
+On 70 primary malicious formation runs (40 standalone benign controls are execution controls, not
+detection trials), the sealed cohort shows a descriptive mean coverage increase from \EbZeroCov{} to
+\TeCov{} versus a legacy fixed-bin reference. Fair sliding builders do not establish formation
+superiority: EB4 ties EB2 on all action-coverage pairs (\EbTwoActionWTL{} W/T/L) and trails EB1 on one
+concurrent-benign M7 run (\EbOneActionWTL{}; mean $\Delta=\EbOneActionDelta{}$, 95\% CI
+$[\EbOneActionCILo{},\EbOneActionCIHi{}]$). The cohort therefore mainly exercises sliding
+sessionization rather than relation-specific gains.
 
-All \AgentBoundaryPass{}/\AgentBoundaryTotal{} synthetic boundary cards behave as
-specified: the valid control is accepted, six invalid or unsealed mutations are rejected, and a
-resealed allowed-field mutation is accepted, showing digest integrity still requires external
-writer authorization. A once-run held-out 20-card Qwen2.5-7B pilot yields
-\LlmPilotExact{}/\LlmPilotTotal{} fully exact responses; locked same-card replication on
-deployment-default Gemma3-1B yields \GemmaPilotExact{}/20. These audited configurations support no
-general LLM-accuracy or fitted-calibration claim; typed evidence instead makes their errors reviewable.
+Canonical replay is byte-identical on \DetNRuns{} M1--M6 runs under re-canonicalization; raw arrival
+order is not robust. \AuditPass{}/\AuditTotal{} fixtures exercise all seven AssemblyFailureRecord
+codes; an A--G taxonomy localizes M2's gap to token mapping; and \AgentBoundaryPass{}/\AgentBoundaryTotal{}
+downstream cards reject six invalid or unsealed mutations while accepting a resealed allowed-field
+control. Once-run Qwen2.5-7B and locked Gemma3-1B audits yield \LlmPilotExact{}/\LlmPilotTotal{} and
+\GemmaPilotExact{}/20 fully exact responses. Rather than making an untrusted model inherently accurate,
+\trustepisode{} makes its evidence use falsifiable against immutable, version-scoped case records.
 \end{abstract}
 
 \keywords{AI-assisted security operations, attack episode reconstruction, EDR, NDR,

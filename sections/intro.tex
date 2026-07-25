@@ -2,10 +2,11 @@
 \label{sec:introduction}
 
 AI-assisted SOC systems increasingly use language-model agents to gather tool outputs, correlate
-alerts, and draft incident narratives~\cite{react2023,cortex2025,auditableddos2026}. Their output
-can be no more reviewable than the evidence interface below it: if arrival order changes episode
-membership, collector failure is encoded as benign silence, or a late event rewrites history, a
-fluent explanation may cite a case state that cannot be reproduced.
+alerts, and draft incident narratives~\cite{react2023,cortex2025,auditableddos2026}. Without a
+stable evidence substrate, those narratives are hard to audit: arrival order can change episode
+membership, late evidence can rewrite prior history, collector silence can be mistaken for benign
+absence, and a model can fill missing steps from conversational context until a generated assertion
+becomes indistinguishable from case fact.
 
 Security operations and digital-forensic investigations therefore need more than alert
 clustering. Multi-step attacks appear as dispersed EDR and NDR observations that become material
@@ -15,21 +16,18 @@ owns episode membership, how late evidence is admitted, how collector health dif
 detection,'' and how every revision leaves an independently verifiable terminal outcome
 ~\cite{casey2011digitalevidence,carrier2005filesystem,vanini2024timeanchors}.
 
-Prior alert-correlation and provenance systems motivate multi-stage context using rules, graphs,
-and learned representations~\cite{ning2002attackscenarios,holmes2019,unicorn2020,nodlink2024,kairos2024,captain2025}.
-Those lines do not remove the need for fixed ownership of membership, immutable revision history,
-and replayable audit semantics under incomplete observability. This submission evaluates
-\trustepisode as a \emph{reconstruction contract that is deterministic over canonicalized,
-version-bound inputs} for EDR/NDR evidence
-and as a typed, read-only boundary for downstream analyst or AI reasoning. The downstream model
-is deliberately outside the trusted computing base: it may summarize versioned AuditRecords but
-cannot own membership, infer source health, overwrite history, or convert unsupported evidence
-into a numeric probability. A compact scorer and calibrator remain optional schema interfaces and
-are not empirically validated here. Thus, our AI-security claim concerns \emph{evidence
-truthfulness and containment}, not broad LLM effectiveness. We additionally report a small,
-held-out Qwen pilot and a post-result locked replication on the deployment-default Gemma model
-to measure extraction, citation, and abstention over the typed record. They are boundary stress
-tests rather than a preregistered model comparison.
+Prior alert-correlation, provenance, and forensic systems optimize complementary research
+units: scenario graphs and alert chains~\cite{ning2002attackscenarios}; suspicious provenance
+subgraphs~\cite{holmes2019,unicorn2020,nodlink2024,kairos2024,captain2025}; and evidence-grounded
+agent interfaces that cite tool outputs~\cite{react2023,cortex2025}. They leave open the need for
+fixed membership ownership, immutable revision history, explicit missingness, and replayable audit
+semantics when telemetry is incomplete. \trustepisode addresses that lifecycle contract:
+reconstruction deterministic over canonicalized, version-bound inputs, plus a typed read-only
+boundary for downstream AI. The model remains outside the trusted computing base: it may summarize
+versioned AuditRecords but cannot own membership, infer source health, overwrite history, or invent
+unsupported probabilities. Our AISec claim is architectural containment of evidence use, not broad
+LLM effectiveness. Held-out Qwen and locked Gemma audits measure extraction, citation, and
+abstention as boundary tests, not model ranking.
 
 \paragraph{Research questions.}
 \begin{enumerate}
@@ -46,30 +44,30 @@ tests rather than a preregistered model comparison.
   \item[\textbf{RQ5}] What descriptive coverage change accompanies replacing fixed bins with
         sliding sessionization on the sealed cohort, and do fair relation-aware builders show
         additional measurable benefit?
-  \item[\textbf{RQ6}] Do closed schemas and digest bindings fail closed when a downstream
-        consumer injects asserted facts, labels, or unsupported probability; removes provenance;
-        or tampers with revision and evidence digests; what remains possible after a schema-valid
-        reseal; and how reliably do two local models follow the resulting read-only extraction,
-        citation, and abstention interface?
+  \item[\textbf{RQ6}] Do closed schemas and digest bindings fail closed under invalid or unsealed
+        mutations; what remains possible after a schema-valid reseal; and how do two local models
+        follow the resulting read-only extraction, citation, and abstention interface?
 \end{enumerate}
-These questions evaluate the evidence substrate. The deployed interface trace reported later
-checks end-to-end materialization but is not counted as an effectiveness trial, and its displayed
-operational confidence is not the unevaluated calibrated probability field defined by the
-contract.
+These questions evaluate the evidence substrate. The deployed interface trace checks end-to-end
+materialization but is not an effectiveness trial; its displayed operational confidence is not the
+contract's unevaluated calibrated probability.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-  \item a single-owner reconstruction and audit contract with immutable late-data semantics,
-        canonical references and digests, exactly one terminal AssemblyOutcome per revision, and a
-        read-only agent boundary;
-  \item a sealed evaluation separating evidence classes: 70 primary malicious formation runs plus
-        40 standalone benign execution controls, fair EB0--EB4 baselines, a 60-run determinism
-        matrix, a matrix covering all seven predefined AssemblyFailureRecord codes, contract
-        ablations, and an A--G loss taxonomy that localizes M2 to token mapping;
-  \item downstream stress tests that reject six schema-invalid or unsealed mutations, deliberately
-        accept a resealed allowed-field negative control to expose the writer-authorization
-        dependency, and reveal extraction/citation/abstention failures in held-out Qwen and
-        locked same-card Gemma audits, without claiming model superiority; and
-  \item an executable anonymous companion plus a deployed read-only trace showing
-        source-separated Suricata/Wazuh evidence and ATT\&CK support at the analyst surface.
+  \item \textbf{Contract.} A canonicalized single-writer evidence lifecycle with immutable
+        revisions, late-evidence handling, source-health separation, canonical references/digests,
+        and exactly one terminal AssemblyOutcome per revision
+        (Sections~\ref{sec:method}--\ref{sec:audit-assembly}).
+  \item \textbf{Evidence-class evaluation.} A sealed evaluation separating live formation, offline
+        replay, synthetic conformance, and local-model audits: 70 malicious M1--M7 runs, 40
+        standalone benign execution controls, fair EB0--EB4 baselines, and a 60-run determinism
+        matrix (Section~\ref{sec:evaluation}).
+  \item \textbf{Diagnostics and AI boundary.} A closed A--G evidence-loss taxonomy instantiated on
+        M2, plus downstream mutation cards that reject six invalid or unsealed mutations and accept
+        a resealed allowed-field control, exposing why writer authorization remains external
+        (Sections~\ref{sec:taxonomy}--\ref{sec:agent-boundary-conformance}).
+  \item \textbf{Reproducibility and deployment trace.} An executable anonymous companion and a
+        read-only deployed case trace showing that source-separated Suricata/Wazuh evidence and
+        ATT\&CK references survive into an analyst-facing view
+        (Sections~\ref{sec:deployed-case-trace},~\ref{sec:artifact}).
 \end{enumerate}
