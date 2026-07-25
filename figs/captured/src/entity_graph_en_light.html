@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --border:#e8eaed;
+    --title:#1f2430; --muted:#8a90a0; --label:#6b7280; --value:#1f2937;
+    --blue:#3b6ef5; --blue-bg:#eaf1ff;
+    --green:#1f9d57; --green-bg:#e7f6ee;
+    --orange:#d98324; --orange-bg:#fdecd8;
+    --teal:#16a394; --purple:#7c5cff; --purple-bg:#efeaff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#f4f5f7;}
+  body{width:700px;background:var(--bg);
+    font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--value);-webkit-font-smoothing:antialiased;}
+  .panel{padding:14px;}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;}
+  .h{font-size:16px;font-weight:700;color:var(--title);margin:0;}
+  .sub{font-size:12px;color:var(--muted);margin:5px 0 0;max-width:360px;line-height:1.4;}
+  .tabs{display:flex;gap:8px;}
+  .tab{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--border);
+       background:#fff;color:var(--label);}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .legend{display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+  .legend .items{display:flex;gap:20px;align-items:center;}
+  .leg{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--label);}
+  .line{width:26px;height:0;border-top-width:2px;}
+  .line.solid{border-top:2px solid var(--teal);}
+  .line.dashed{border-top:2px dashed var(--blue);}
+  .line.dotted{border-top:2px dotted #9aa1ad;}
+  .zoom{display:flex;gap:8px;align-items:center;}
+  .zgrp{display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden;}
+  .zgrp span{padding:5px 10px;font-size:12px;color:var(--label);}
+  .zgrp .b{padding:5px 11px;font-size:14px;color:var(--label);border-left:1px solid var(--border);border-right:1px solid var(--border);}
+  .fit{border:1px solid var(--border);border-radius:8px;background:#fff;padding:5px 12px;font-size:12px;color:var(--label);}
+
+  .canvas{position:relative;height:470px;margin-top:12px;background:#fafbfc;
+          border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  svg.edges{position:absolute;inset:0;width:100%;height:100%;}
+  .elab{position:absolute;z-index:5;font-size:10px;color:#7a8190;background:#fafbfc;padding:0 3px;
+        font-family:Consolas,monospace;white-space:nowrap;}
+  .epct{position:absolute;z-index:5;font-size:10px;color:#7a8190;font-weight:600;background:#fafbfc;padding:0 3px;}
+
+  .node{position:absolute;border-radius:12px;border:1px solid var(--border);padding:10px 12px;
+        box-shadow:0 1px 3px rgba(20,24,40,.06);}
+  .node .ntop{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .np{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;line-height:1.2;}
+  .np-src{background:var(--orange-bg);color:var(--orange);}
+  .np-ndr{background:var(--blue-bg);color:var(--blue);}
+  .np-host{background:var(--orange-bg);color:var(--orange);}
+  .np-ti{background:var(--purple-bg);color:var(--purple);}
+  .np-it{background:var(--blue-bg);color:var(--blue);}
+  .pct{font-size:11px;font-weight:700;color:var(--green);background:var(--green-bg);padding:2px 7px;border-radius:999px;}
+  .nt1{font-size:13px;font-weight:700;color:var(--title);margin-top:9px;line-height:1.3;}
+  .nt2{font-size:12px;color:var(--label);margin-top:3px;}
+  .nflow{font-size:10px;color:#8a90a0;font-family:Consolas,monospace;margin-top:6px;line-height:1.5;}
+
+  .n-src{background:#fdeef0;} .n-ndr{background:#eef4ff;} .n-host{background:#fff5ea;}
+  .n-ti{background:#f3eeff;} .n-it{background:#eef4ff;}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="head">
+    <div>
+      <p class="h">Entity Relationship Graph</p>
+      <p class="sub">Entity Graph: entity relations built from graph_nodes / graph_edges and event data.</p>
+    </div>
+    <div class="tabs">
+      <span class="tab">Evidence Graph</span>
+      <span class="tab active">Entity Graph</span>
+      <span class="tab">Attack Path</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="items">
+      <span class="leg"><span class="line solid"></span>Direct entity relation</span>
+      <span class="leg"><span class="line dashed"></span>Inferred relation</span>
+      <span class="leg"><span class="line dotted"></span>Weak relation</span>
+    </div>
+    <div class="zoom">
+      <span class="zgrp"><span class="b">&minus;</span><span>100%</span><span class="b">+</span></span>
+      <span class="fit">Fit</span>
+    </div>
+  </div>
+
+  <div class="canvas">
+    <svg class="edges" viewBox="0 0 672 470" preserveAspectRatio="none">
+      <line x1="166" y1="205" x2="250" y2="200" stroke="#16a394" stroke-width="2"/>
+      <line x1="410" y1="200" x2="505" y2="205" stroke="#16a394" stroke-width="2"/>
+      <line x1="195" y1="377" x2="250" y2="382" stroke="#3b6ef5" stroke-width="2" stroke-dasharray="6 5"/>
+    </svg>
+
+    <div class="elab" style="left:176px;top:184px;">observed_by</div>
+    <div class="epct" style="left:196px;top:210px;">95%</div>
+    <div class="elab" style="left:415px;top:184px;">same_target_ip</div>
+    <div class="epct" style="left:447px;top:210px;">95%</div>
+    <div class="elab" style="left:150px;top:300px;">related_indicator</div>
+    <div class="epct" style="left:208px;top:388px;">80%</div>
+
+    <!-- top row -->
+    <div class="node n-src" style="left:16px;top:150px;width:150px;">
+      <div class="ntop"><span class="np np-src">source</span><span class="pct">98%</span></div>
+      <div class="nt1">External source / Kali<br>172.30.12.10</div>
+      <div class="nt2">Attack source</div>
+    </div>
+
+    <div class="node n-ndr" style="left:250px;top:140px;width:160px;">
+      <div class="ntop"><span class="np np-ndr">NDR (Suricata)</span><span class="pct">98%</span></div>
+      <div class="nt1">Docker NDR Suricata&hellip;</div>
+      <div class="nt2">NDR (Suricata)</div>
+      <div class="nflow">172.30.11.10 -&gt; 172.31.0.10</div>
+    </div>
+
+    <div class="node n-host" style="left:505px;top:150px;width:150px;">
+      <div class="ntop"><span class="np np-host">host</span><span class="pct">98%</span></div>
+      <div class="nt1">172.30.11.10</div>
+      <div class="nt2">Target host</div>
+    </div>
+
+    <!-- bottom row -->
+    <div class="node n-ti" style="left:40px;top:320px;width:155px;">
+      <div class="ntop"><span class="np np-ti">Threat-intel indicator</span><span class="pct">80%</span></div>
+      <div class="nt1">Docker NDR Suricata&hellip;</div>
+      <div class="nt2">Docker NDR Suricata&hellip;</div>
+    </div>
+
+    <div class="node n-it" style="left:250px;top:320px;width:175px;">
+      <div class="ntop"><span class="np np-it">IT / Wazuh</span><span class="pct">98%</span></div>
+      <div class="nt1">TrustEpisode lab controlled&hellip;</div>
+      <div class="nt2">IT / Wazuh</div>
+      <div class="nflow">172.30.11.10 -&gt; 172.31.0.10<br>172.30.12.10 -&gt; 172.30.11.10</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

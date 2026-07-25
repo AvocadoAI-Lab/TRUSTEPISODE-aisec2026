@@ -149,37 +149,44 @@ boundary-stress outcome rather than a collection failure.
 \subsection{Deployed Case-Materialization Trace}
 \label{sec:deployed-case-trace}
 
+\begin{sloppypar}
 We additionally recorded a read-only trace from the deployed investigation surface on
 2026-07-23. This trace is artifact-level integration evidence, not another experimental sample
-and not part of any estimator above. Figure~\ref{fig:deployed-case-trace}(a) shows six
-workspace-scoped cases, five marked high risk, with both native and NDR-derived sources retained.
-The selected laboratory case in Figure~\ref{fig:deployed-case-trace}(b) materializes three
-normalized events---one Suricata NDR event and two Wazuh events---and exposes evidence references
-for ATT\&CK T1018 and T1041. The interface's 98\% operational confidence and
+and not part of any estimator above. Figure~\ref{fig:deployed-case-trace}(a) shows the selected
+laboratory case: an investigation-control summary over three normalized events---one Suricata NDR
+event and two Wazuh events---with source-separated evidence cards and an ATT\&CK support path for
+T1041 and T1018. Figure~\ref{fig:deployed-case-trace}(b) shows the corresponding entity-relationship
+graph, which links the external source, the NDR and Wazuh evidence, and the target host from the same
+\texttt{graph\_nodes}/\texttt{graph\_edges} records. The interface's 98\% operational confidence and
 \texttt{isolate\_or\_investigate} recommendation belong to the downstream case engine; they are
 \emph{not} \trustepisode's nullable calibrated $P$ and are not used as evidence of model accuracy.
 The trace supports only the narrower claim that source-separated evidence and technique support
 survive into a human-reviewable case view.
+\end{sloppypar}
 
 \begin{figure*}[!t]
   \centering
   \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=\linewidth,trim=165bp 0bp 15bp 58.5bp,clip]{system_case_list_20260723.png}
-    \par\smallskip\scriptsize (a) Workspace-scoped case queue and selected case summary.
+    \includegraphics[width=\linewidth]{case_detail_en_light.png}
+    \par\smallskip\scriptsize (a) Selected case: investigation control, source-separated key
+    evidence, and the ATT\&CK support path, with the NDR evidence detail.
   \end{minipage}\hfill
   \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=\linewidth,trim=360bp 30bp 15bp 52.5bp,clip]{system_case_attack_chain_20260723.png}
-    \par\smallskip\scriptsize (b) Source-separated evidence cards and ATT\&CK support map.
+    \includegraphics[width=\linewidth]{entity_graph_en_light.png}
+    \par\smallskip\scriptsize (b) Entity-relationship graph linking the external source,
+    NDR/Wazuh evidence, and the target host.
   \end{minipage}
-  \caption{Read-only deployed case trace from the isolated TrustEpisode laboratory. The capture
-  panels are cropped to remove account-identifying chrome. They demonstrate end-to-end evidence
-  materialization, not calibrated probability or LLM effectiveness.}
-  \Description{Two screenshots from a dark-themed investigation interface. The left panel shows
-  six workspace-scoped cases, five high-risk cases, two evidence modalities, and a selected case.
-  The right panel shows one Suricata and two Wazuh evidence cards with ATT\&CK technique support
-  references for T1018 and T1041.}
+  \caption{Read-only deployed case trace from the isolated TrustEpisode laboratory (light-theme,
+  English interface). The panels are cropped to remove account-identifying chrome; they demonstrate
+  end-to-end evidence materialization, not calibrated probability or LLM effectiveness.}
+  \Description{Two screenshots from a light-themed, English investigation interface. The left panel
+  shows the selected case: an investigation-control header with a 98\% confidence score, a
+  key-evidence summary of one Suricata NDR event and two Wazuh events, a MITRE ATT\&CK path from
+  T1041 to T1018, and the detailed NDR evidence record. The right panel shows an entity-relationship
+  graph linking the external Kali source, the NDR (Suricata) and Wazuh evidence, a threat-intel
+  indicator, and the target host 172.30.11.10.}
   \label{fig:deployed-case-trace}
 \end{figure*}
 

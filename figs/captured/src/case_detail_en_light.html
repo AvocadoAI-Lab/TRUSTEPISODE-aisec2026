@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --border:#e8eaed;
+    --title:#1f2430; --muted:#8a90a0; --label:#6b7280; --value:#1f2937;
+    --blue:#3b6ef5; --blue-bg:#eaf1ff;
+    --green:#1f9d57; --green-bg:#e7f6ee;
+    --orange:#d98324; --orange-bg:#fdecd8;
+    --red:#e04545; --red-bg:#fde8e8;
+    --purple:#7c5cff; --purple-bg:#efeaff;
+    --tag:#4b5563; --tag-bg:#f1f2f4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#f4f5f7;}
+  body{
+    width:1024px; background:var(--bg);
+    font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--value); -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:flex;gap:14px;padding:14px;}
+  .col-left{flex:0 0 634px;display:flex;flex-direction:column;gap:14px;}
+  .col-right{flex:1;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+        box-shadow:0 1px 2px rgba(20,24,40,.04);padding:16px 18px;}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;}
+  .h{font-size:16px;font-weight:700;color:var(--title);margin:0;}
+  .sub{font-size:12px;color:var(--muted);margin:4px 0 0;}
+  .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;
+        padding:3px 9px;border-radius:999px;line-height:1.2;white-space:nowrap;}
+  .pill-open{background:var(--red-bg);color:var(--red);}
+  .pill-blue{background:var(--blue-bg);color:var(--blue);}
+  .pill-green{background:var(--green-bg);color:var(--green);}
+  .pill-high{background:var(--orange-bg);color:var(--orange);}
+  .pill-crit{background:var(--red-bg);color:var(--red);}
+  .pill-ndr{background:var(--orange-bg);color:var(--orange);font-weight:700;}
+  .pill-wazuh{background:var(--blue-bg);color:var(--blue);font-weight:700;}
+  .link{color:var(--blue);font-size:12px;font-weight:600;text-decoration:none;}
+
+  .metrics{display:flex;gap:26px;margin-top:14px;align-items:center;}
+  .metric .mlabel{font-size:12px;color:var(--label);margin-bottom:6px;}
+  .conf{display:flex;align-items:center;gap:12px;}
+  .conf .num{font-size:34px;font-weight:800;color:var(--title);letter-spacing:-1px;}
+  .ring{width:46px;height:46px;border-radius:50%;
+        background:conic-gradient(var(--blue) 0 98%, #e6eaf2 98% 100%);
+        display:flex;align-items:center;justify-content:center;}
+  .ring::after{content:"";width:34px;height:34px;border-radius:50%;background:#fff;}
+  .yes{color:var(--red);font-weight:700;font-size:15px;}
+  .mval{font-size:14px;color:var(--value);margin-top:2px;}
+  .mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .tag{background:var(--tag-bg);color:var(--tag);font-size:12px;padding:4px 10px;border-radius:6px;
+       font-family:"SFMono-Regular",Consolas,Menlo,monospace;}
+
+  .ev-row{display:flex;gap:12px;margin-top:12px;}
+  .ev{flex:1;border:1px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff;}
+  .ev-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);}
+  .ev-time{font-family:Consolas,monospace;font-size:11px;color:var(--muted);}
+  .ev-title{font-size:13px;font-weight:600;color:var(--title);margin:8px 0 6px;line-height:1.3;}
+  .ev-flow{font-size:11px;color:var(--label);font-family:Consolas,monospace;}
+  .ev-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+
+  .chain{display:flex;align-items:center;gap:14px;margin-top:14px;}
+  .tech{flex:1;border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:#fbfbfd;}
+  .tech-head{display:flex;justify-content:space-between;align-items:center;}
+  .tech-id{font-size:16px;font-weight:800;color:var(--title);font-family:Consolas,monospace;}
+  .tech-sub{font-size:12px;color:var(--label);margin-top:6px;}
+  .tech-ev{font-size:12px;color:var(--muted);margin-top:6px;}
+  .arrow{color:var(--muted);font-size:18px;font-weight:700;}
+
+  /* right panel */
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:13px;}
+  .kv .k{color:var(--label);}
+  .kv .v{color:var(--value);text-align:right;font-family:Consolas,monospace;}
+  .kv .v.wrap-msg{white-space:normal;max-width:210px;font-family:inherit;}
+  .src-big{font-size:16px;font-weight:700;color:var(--title);margin:2px 0 8px;}
+  .sev-bar{background:var(--red-bg);color:var(--red);text-align:center;font-weight:600;
+           border-radius:6px;padding:5px 0;font-size:12px;margin-top:2px;}
+  .hr{height:1px;background:var(--border);margin:12px 0;}
+  .twocol{display:flex;gap:16px;}
+  .twocol .c{flex:1;}
+  .mini-h{font-size:12px;color:var(--label);font-weight:600;margin-bottom:6px;}
+  .mini-k{font-size:11px;color:var(--muted);margin-top:8px;}
+  .mini-v{font-size:12px;color:var(--value);font-family:Consolas,monospace;}
+  .raw{background:#f6f7f9;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:12px;}
+  .raw-h{font-size:12px;color:var(--label);font-weight:600;margin-bottom:6px;}
+  .raw-id{font-size:11px;color:var(--label);font-family:Consolas,monospace;line-height:1.4;word-break:break-all;}
+  .raw-msg{font-size:12px;color:var(--value);margin-top:6px;line-height:1.35;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="col-left">
+
+    <!-- Investigation Control -->
+    <div class="card">
+      <div class="card-head">
+        <div><p class="h">Investigation Control</p>
+          <p class="sub">The backend alone decides open / observe / suppress / augment-evidence; the frontend only renders results.</p></div>
+        <span class="pill pill-open">Open investigation</span>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="mlabel">Confidence</div>
+          <div class="conf"><span class="num">98%</span><span class="ring"></span></div>
+        </div>
+        <div class="metric">
+          <div class="mlabel">Attack-chain status</div>
+          <div class="yes">Yes</div>
+          <div class="mval">Attack chain confirmed</div>
+        </div>
+        <div class="metric">
+          <div class="mlabel">Recommended action</div>
+          <div class="mval mono">isolate_or_investigate</div>
+        </div>
+      </div>
+      <div class="tags">
+        <span class="tag">attack_pattern_match</span><span class="tag">endpoint_attack_sequence</span>
+        <span class="tag">mitre_support</span><span class="tag">multi_signal_endpoint_episode</span>
+        <span class="tag">ndr_edr</span><span class="tag">same_agent_ip</span>
+        <span class="tag">same_network_peer_ip</span><span class="tag">same_protocol</span>
+        <span class="tag">same_site</span><span class="tag">same_target_ip</span>
+        <span class="tag">same_workspace</span><span class="tag">severity_alignment</span>
+        <span class="tag">stage_compatible</span><span class="tag">temporal_episode</span>
+        <span class="tag">temporal_proximity</span>
+      </div>
+    </div>
+
+    <!-- Key Evidence Summary -->
+    <div class="card">
+      <div class="card-head">
+        <div><p class="h">Key Evidence Summary</p>
+          <p class="sub">Aggregated cross-source key events; primary source 172.30.12.10</p></div>
+        <a class="link" href="#">View all</a>
+      </div>
+      <div class="ev-row">
+        <div class="ev">
+          <div class="ev-top"><span class="pill pill-ndr">NDR</span><span class="ev-time">07/13 15:06:17</span></div>
+          <div class="ev-title">Docker NDR Suricata observed&hellip;</div>
+          <div class="ev-flow">172.30.11.10 &rarr; 172.31.0.10 (app=http)</div>
+          <div class="ev-foot"><span class="pill pill-high">high</span><a class="link" href="#">Captured</a></div>
+        </div>
+        <div class="ev">
+          <div class="ev-top"><span class="pill pill-wazuh">Wazuh</span><span class="ev-time">07/13 15:06:17</span></div>
+          <div class="ev-title">TrustEpisode lab controlled&hellip;</div>
+          <div class="ev-flow">172.30.11.10 &rarr; 172.31.0.10 (app=http)</div>
+          <div class="ev-foot"><span class="pill pill-crit">critical</span><a class="link" href="#">View details</a></div>
+        </div>
+        <div class="ev">
+          <div class="ev-top"><span class="pill pill-wazuh">Wazuh</span><span class="ev-time">07/13 15:06:17</span></div>
+          <div class="ev-title">TrustEpisode lab peer discovery&hellip;</div>
+          <div class="ev-flow">172.30.12.10 &rarr; 172.30.11.10 (app=ssh)</div>
+          <div class="ev-foot"><span class="pill pill-high">high</span><a class="link" href="#">View details</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attack Chain Path -->
+    <div class="card">
+      <div class="card-head">
+        <div><p class="h">Attack Chain Path</p>
+          <p class="sub">Linked by MITRE ATT&amp;CK techniques: AI-detected and candidate path</p></div>
+        <span class="pill pill-blue">98%</span>
+      </div>
+      <div class="chain">
+        <div class="tech">
+          <div class="tech-head"><span class="tech-id">T1041</span><span class="pill pill-high">Support / Inferred</span></div>
+          <div class="tech-sub">MITRE ATT&amp;CK technique</div>
+          <div class="tech-ev">evidence support: Medium</div>
+        </div>
+        <span class="arrow">&rarr;</span>
+        <div class="tech">
+          <div class="tech-head"><span class="tech-id">T1018</span><span class="pill pill-high">Support / Inferred</span></div>
+          <div class="tech-sub">MITRE ATT&amp;CK technique</div>
+          <div class="tech-ev">evidence support: Medium</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Evidence Details -->
+  <div class="col-right">
+    <div class="card">
+      <div class="card-head">
+        <p class="h">Evidence Details</p>
+        <span class="pill pill-high">Selected: NDR evidence</span>
+      </div>
+      <div class="mini-k" style="margin-top:12px;">Source</div>
+      <div class="src-big">NDR / suricata</div>
+      <div class="kv"><span class="k">source-ip</span><span class="v">172.30.11.10</span></div>
+      <div class="kv"><span class="k">source-label</span><span class="v">suricata</span></div>
+      <div class="kv"><span class="k">dest-ip</span><span class="v">172.31.0.10</span></div>
+      <div class="kv"><span class="k">dest-label</span><span class="v">172.30.11.10</span></div>
+      <div class="kv"><span class="k">dest-port</span><span class="v">-</span></div>
+      <div class="kv"><span class="k">protocol</span><span class="v">http</span></div>
+      <div class="kv"><span class="k">app</span><span class="v">http</span></div>
+      <div class="kv"><span class="k">msg</span><span class="v wrap-msg">Docker NDR Suricata observed controlled exfiltration-like lab flow</span></div>
+      <div class="kv"><span class="k">Event time</span><span class="v">07/13 15:06:17</span></div>
+      <div class="kv"><span class="k">Severity</span></div>
+      <div class="sev-bar">high</div>
+      <div class="hr"></div>
+      <div class="twocol">
+        <div class="c">
+          <div class="mini-h">Source info</div>
+          <div class="mini-k">Source IP</div><div class="mini-v">172.30.11.10</div>
+          <div class="mini-k">Source type</div><div class="mini-v">NDR / suricata</div>
+        </div>
+        <div class="c">
+          <div class="mini-h">Destination info</div>
+          <div class="mini-k">Destination IP</div><div class="mini-v">172.31.0.10</div>
+          <div class="mini-k">Asset type</div><div class="mini-v">172.30.11.10</div>
+        </div>
+      </div>
+      <div class="raw">
+        <div class="raw-h">Raw reference</div>
+        <div class="raw-id">ndr-gateway-01:suricata:trustepisode-ndr-gateway-01-exfil-demo</div>
+        <div class="raw-msg">Docker NDR Suricata observed controlled exfiltration-like lab flow</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
